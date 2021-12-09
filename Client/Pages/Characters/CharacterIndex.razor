@@ -1,0 +1,62 @@
+﻿@page "/characters"
+@attribute [Authorize]
+@inject IApiService ApiService
+
+<h1>Characters</h1>
+<NavLink href="characters/add" class="btn btn-sm btn-success mb-2">Add Character</NavLink>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Player</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (characters != null)
+        {
+            foreach (var character in characters)
+            {
+                <tr>
+                    <td>@character.Name</td>
+                    <td>@character.PlayerName</td>
+                    <td style="white-space: nowrap">
+                        <NavLink href="@($"characters/edit/{character.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveCharacter(character))">
+                            <span class="oi oi-trash" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        @if (loading)
+        { 
+            <tr>
+                <td colspan="4" class="text-center">
+                    <span class="spinner-border spinner-border-lg align-center"></span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private bool loading;
+    private List<CharacterResponse> characters = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        characters = await ApiService.GetAllEntities<CharacterResponse>();
+        loading = false;
+    }
+
+    private async Task RemoveCharacter(CharacterResponse character)
+    {
+        characters.Remove(character);
+        await ApiService.RemoveEntity<CharacterResponse>(character.Id);
+    }
+}

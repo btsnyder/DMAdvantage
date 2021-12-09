@@ -1,0 +1,62 @@
+﻿@page "/creatures"
+@attribute [Authorize]
+@inject IApiService ApiService
+
+<h1>Creatures</h1>
+<NavLink href="creatures/add" class="btn btn-sm btn-success mb-2">Add Creature</NavLink>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Challenge</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (creatures != null)
+        {
+            foreach (var creature in creatures)
+            {
+                <tr>
+                    <td>@creature.Name</td>
+                    <td>@creature.ChallengeRating</td>
+                    <td style="white-space: nowrap">
+                        <NavLink href="@($"creatures/edit/{creature.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveCreature(creature))">
+                            <span class="oi oi-trash" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        @if (loading)
+        { 
+            <tr>
+                <td colspan="4" class="text-center">
+                    <span class="spinner-border spinner-border-lg align-center"></span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private bool loading;
+    private List<CreatureResponse> creatures = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
+        loading = false;
+    }
+
+    private async Task RemoveCreature(CreatureResponse creature)
+    {
+        creatures.Remove(creature);
+        await ApiService.RemoveEntity<CreatureResponse>(creature.Id);
+    }
+}

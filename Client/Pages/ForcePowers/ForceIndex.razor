@@ -1,0 +1,60 @@
+﻿@page "/forcepowers"
+@attribute [Authorize]
+@inject IApiService ApiService
+
+<h1>Force Powers</h1>
+<NavLink href="forcepowers/add" class="btn btn-sm btn-success mb-2">Add Force Power</NavLink>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (forcePowers != null)
+        {
+            foreach (var power in forcePowers)
+            {
+                <tr>
+                    <td>@power.Name</td>
+                    <td style="white-space: nowrap">
+                        <NavLink href="@($"forcepowers/edit/{power.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveForcePower(power))">
+                            <span class="oi oi-trash" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+        }
+        @if (loading)
+        { 
+            <tr>
+                <td colspan="4" class="text-center">
+                    <span class="spinner-border spinner-border-lg align-center"></span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private bool loading;
+    private List<ForcePowerResponse> forcePowers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        loading = true;
+        forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+        loading = false;
+    }
+
+    private async Task RemoveForcePower(ForcePowerResponse forcePower)
+    {
+        forcePowers.Remove(forcePower);
+        await ApiService.RemoveEntity<ForcePowerResponse>(forcePower.Id);
+    }
+}

@@ -1,0 +1,22 @@
+﻿@inherits LayoutComponentBase
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+@if (AccountService.GetLoggedIn())
+{
+    <nav class="navbar navbar-expand navbar-dark bg-dark">
+        <div class="navbar-nav">
+            <NavLink href="" Match="NavLinkMatch.All" class="nav-item nav-link">Home</NavLink>
+            <NavLink href="characters" class="nav-item nav-link">Characters</NavLink>
+            <NavLink href="creatures" class="nav-item nav-link">Creatures</NavLink>
+            <NavLink href="forcepowers" class="nav-item nav-link">Force Powers</NavLink>
+            <NavLink href="techpowers" class="nav-item nav-link">Tech Powers</NavLink>
+            <NavLink href="account/logout" class="nav-item nav-link">Logout</NavLink>
+        </div>
+    </nav>
+}
+
+<div class="app-container @(AccountService.GetLoggedIn() ? "bg-light" : "")">
+    <Alert />
+    @Body
+</div>

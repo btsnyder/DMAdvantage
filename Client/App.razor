@@ -1,0 +1,22 @@
+@inject IAccountService AccountService
+@inject NavigationManager NavigationManager
+
+<Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true" OnNavigateAsync="@OnNavigateAsync">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+@code {
+    private async Task OnNavigateAsync(NavigationContext context)
+    {
+        if (!AccountService.GetLoggedIn() && context.Path != "account/login")
+            NavigationManager.NavigateTo("account/login");
+        await Task.CompletedTask;
+    }
+}
