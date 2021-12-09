@@ -6,8 +6,8 @@ namespace DMAdvantage.Shared.Models
     {
         public decimal ChallengeRating { get; set; }
         public List<BaseAction> Actions { get; set; } = new();
-        public DamageType[] Vulnerabilities { get; set; } = Array.Empty<DamageType>();
-        public DamageType[] Immunities { get; set; } = Array.Empty<DamageType>();
-        public DamageType[] Resistances { get; set; } = Array.Empty<DamageType>();
+        public List<Guid> VulnerabilityIds { get; set; } = new();
+        public List<Guid> ImmunityIds { get; set; } = new();
+        public List<Guid> ResistanceIds { get; set; } = new();
     }
 }

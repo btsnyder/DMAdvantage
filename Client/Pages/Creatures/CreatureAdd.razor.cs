@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Client.Models;
 using DMAdvantage.Client.Services;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -9,6 +10,7 @@ namespace DMAdvantage.Client.Pages.Creatures
     {
         private readonly CreatureRequest _model = new();
         private bool _loading;
+        private IEnumerable<DamageType> _damageTypes;
 
         [Inject]
         IAlertService AlertService { get; set; }
@@ -16,6 +18,12 @@ namespace DMAdvantage.Client.Pages.Creatures
         IApiService ApiService { get; set; }
         [Inject]
         NavigationManager NavigationManager { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            var damages = await ApiService.GetAllEntities<DamageTypeResponse>();
+            _damageTypes = damages as IEnumerable<DamageType> ?? Array.Empty<DamageType>();
+        }
 
         private async void OnValidSubmit()
         {

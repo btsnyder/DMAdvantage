@@ -18,13 +18,7 @@ namespace DMAdvantage.Data
             CreateMap<Creature, CreatureRequest>();
             CreateMap<CreatureRequest, Creature>()
                 .ForMember(c => c.Actions, opt => opt.Ignore())
-                .ForMember(c => c.ActionsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Actions, (JsonSerializerOptions?)null)))
-                .ForMember(c => c.Vulnerabilities, opt => opt.Ignore())
-                .ForMember(c => c.VulnerabilitiesCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Vulnerabilities, (JsonSerializerOptions?)null)))
-                .ForMember(c => c.Immunities, opt => opt.Ignore())
-                .ForMember(c => c.ImmunitiesCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Immunities, (JsonSerializerOptions?)null)))
-                .ForMember(c => c.Resistances, opt => opt.Ignore())
-                .ForMember(c => c.ResistancesCahce, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Resistances, (JsonSerializerOptions?)null)));
+                .ForMember(c => c.ActionsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Actions, (JsonSerializerOptions?)null)));
             CreateMap<Creature, CreatureResponse>().ReverseMap();
             CreateMap<CreatureResponse, CreatureRequest>();
             CreateMap<Being, Creature>();
@@ -42,6 +36,9 @@ namespace DMAdvantage.Data
             CreateMap<TechPower, TechPowerRequest>().ReverseMap();
             CreateMap<TechPower, TechPowerResponse>().ReverseMap();
             CreateMap<TechPowerResponse, TechPowerRequest>();
+            CreateMap<DamageType, DamageTypeRequest>().ReverseMap();
+            CreateMap<DamageType, DamageTypeResponse>().ReverseMap();
+            CreateMap<DamageTypeResponse, DamageTypeRequest>();
             CreateMap<User, LoginResponse>();
             
         }

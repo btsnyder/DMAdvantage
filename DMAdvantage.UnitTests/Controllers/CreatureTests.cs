@@ -127,9 +127,9 @@ namespace DMAdvantage.UnitTests.Controllers
                 CharismaBonus = _mockCreatureData[0].CharismaBonus,
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = _mockCreatureData[0].Actions,
-                Vulnerabilities = Generation.DamageTypes(),
-                Immunities = _mockCreatureData[0].Immunities,
-                Resistances = Generation.DamageTypes(),
+                VulnerabilityIds = Generation.Guids(),
+                ImmunityIds = _mockCreatureData[0].ImmunityIds,
+                ResistanceIds = Generation.Guids(),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPowerIds = _mockCreatureData[0].TechPowerIds
             };
@@ -168,9 +168,9 @@ namespace DMAdvantage.UnitTests.Controllers
                 CharismaBonus = _mockCreatureData[0].CharismaBonus,
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = _mockCreatureData[0].Actions,
-                Vulnerabilities = Generation.DamageTypes(),
-                Immunities = _mockCreatureData[0].Immunities,
-                Resistances = Generation.DamageTypes(),
+                VulnerabilityIds = Generation.Guids(),
+                ImmunityIds = _mockCreatureData[0].ImmunityIds,
+                ResistanceIds = Generation.Guids(),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPowerIds = _mockCreatureData[0].TechPowerIds
             };

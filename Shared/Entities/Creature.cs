@@ -11,15 +11,9 @@ namespace DMAdvantage.Shared.Entities
         public decimal ChallengeRating { get; set; }
         public string? ActionsCache { get; set; }
         public List<BaseAction> Actions => JsonSerializer.Deserialize<List<BaseAction>>(ActionsCache ?? string.Empty) ?? new();
-        public string? VulnerabilitiesCache { get; set; }
-        public DamageType[] Vulnerabilities => 
-           JsonSerializer.Deserialize<DamageType[]>(VulnerabilitiesCache ?? string.Empty) ?? Array.Empty<DamageType>();
-        public string? ImmunitiesCache { get; set; }
-        public DamageType[] Immunities =>
-           JsonSerializer.Deserialize<DamageType[]>(ImmunitiesCache ?? string.Empty) ?? Array.Empty<DamageType>();
-        public string? ResistancesCahce { get; set; }
-        public DamageType[] Resistances =>
-           JsonSerializer.Deserialize<DamageType[]>(ResistancesCahce ?? string.Empty) ?? Array.Empty<DamageType>();
+        public List<Guid> VulnerabilityIds { get; set; } = new();
+        public List<Guid> ImmunityIds { get; set; } = new();
+        public List<Guid> ResistanceIds { get; set; } = new();
         public override string OrderBy()
         {
             return Name ?? string.Empty;

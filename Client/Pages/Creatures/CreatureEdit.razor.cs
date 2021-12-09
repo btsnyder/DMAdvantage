@@ -1,6 +1,6 @@
 ﻿using DMAdvantage.Client.Models;
 using DMAdvantage.Client.Services;
-using DMAdvantage.Shared.Enums;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -9,6 +9,7 @@ namespace DMAdvantage.Client.Pages.Creatures
     public partial class CreatureEdit
     {
         private CreatureRequest? _model;
+        private IEnumerable<DamageType> _damageTypes;
         private bool _loading;
 
         [Inject]
@@ -25,6 +26,8 @@ namespace DMAdvantage.Client.Pages.Creatures
             var creature = await ApiService.GetEntityById<CreatureResponse>(Guid.Parse(Id));
             _model = CustomMapper.Mapper.Map<CreatureRequest>(creature);
 
+            var damages = await ApiService.GetAllEntities<DamageTypeResponse>();
+            _damageTypes = damages as IEnumerable<DamageType> ?? Array.Empty<DamageType>();
         }
 
         private async void OnValidSubmit()

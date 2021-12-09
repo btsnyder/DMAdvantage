@@ -142,30 +142,21 @@
     <div class="row my-2">
         <div class="form-group col">
             <label>Vulnerabilities</label>
-            <InputSelect @bind-Value="_model.Vulnerabilities" class="form-control">
-                @foreach (var damage in Enum.GetValues<DamageType>())
-                { 
-                    <option value="@damage">@damage.ToString()</option>
-                }
-            </InputSelect>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                @bind-Value=@_model.VulnerabilityIds TextProperty="Name" ValueProperty="Id"
+                Multiple="true" Placeholder="Select..." Data=@_damageTypes/>
         </div>
         <div class="form-group col">
             <label>Immunities</label>
-            <InputSelect @bind-Value="_model.Immunities" class="form-control">
-                @foreach (var damage in Enum.GetValues<DamageType>())
-                { 
-                    <option value="@damage">@damage.ToString()</option>
-                }
-            </InputSelect>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                @bind-Value=@_model.ImmunityIds TextProperty="Name" ValueProperty="Id"
+                Multiple="true" Placeholder="Select..." Data=@_damageTypes/>
         </div>
          <div class="form-group col">
             <label>Resistances</label>
-            <InputSelect @bind-Value="_model.Resistances" class="form-control">
-                @foreach (var damage in Enum.GetValues<DamageType>())
-                { 
-                    <option value="@damage">@damage.ToString()</option>
-                }
-            </InputSelect>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                @bind-Value=@_model.ResistanceIds TextProperty="Name" ValueProperty="Id"
+                Multiple="true" Placeholder="Select..." Data=@_damageTypes/>
         </div>
     </div>
     <div class="form-group">

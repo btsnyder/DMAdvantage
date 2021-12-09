@@ -23,6 +23,7 @@ namespace DMAdvantage.Data
                 nameof(Encounter) => (IList<T>)_ctx.Encounters.Where(c => c.User != null && c.User.UserName == username).ToList(),
                 nameof(ForcePower) => (IList<T>)_ctx.ForcePowers.Where(c => c.User != null && c.User.UserName == username).ToList(),
                 nameof(TechPower) => (IList<T>)_ctx.TechPowers.Where(c => c.User != null && c.User.UserName == username).ToList(),
+                nameof(DamageType) => (IList<T>)_ctx.DamageTypes.Where(c => c.User != null && c.User.UserName == username).ToList(),
                 _ => throw new NotImplementedException(),
             };
         }

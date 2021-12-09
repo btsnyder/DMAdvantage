@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
+using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace DMAdvantage.Data
@@ -22,6 +23,7 @@ namespace DMAdvantage.Data
         public DbSet<Encounter> Encounters => Set<Encounter>();
         public DbSet<ForcePower> ForcePowers => Set<ForcePower>();
         public DbSet<TechPower> TechPowers => Set<TechPower>();
+        public DbSet<DamageType> DamageTypes => Set<DamageType>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder bldr)
         {
@@ -38,58 +40,21 @@ namespace DMAdvantage.Data
 
             modelBuilder.Ignore<BaseAction>();
 
-            modelBuilder.Entity<Encounter>()
-              .Property(i => i.CharacterIds)
-              .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions?)null) ?? new List<Guid>(),
-                 new ValueComparer<List<Guid>>(
-                    (c1, c2) => c1 == null ? c2 == null : c2 != null && c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList()));
+            AddGuidList(modelBuilder, (Encounter e) => e.CharacterIds);
+            AddGuidList(modelBuilder, (Encounter e) => e.CreatureIds);
+            AddGuidList(modelBuilder, (Character c) => c.ForcePowerIds);
+            AddGuidList(modelBuilder, (Character c) => c.TechPowerIds);
+            AddGuidList(modelBuilder, (Creature c) => c.ForcePowerIds);
+            AddGuidList(modelBuilder, (Creature c) => c.TechPowerIds);
+            AddGuidList(modelBuilder, (Creature c) => c.VulnerabilityIds);
+            AddGuidList(modelBuilder, (Creature c) => c.ImmunityIds);
+            AddGuidList(modelBuilder, (Creature c) => c.ResistanceIds);
+        }
 
-            modelBuilder.Entity<Encounter>()
-              .Property(i => i.CreatureIds)
-              .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions?)null) ?? new List<Guid>(),
-                 new ValueComparer<List<Guid>>(
-                    (c1, c2) => c1 == null ? c2 == null : c2 != null && c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList()));
-
-            modelBuilder.Entity<Character>()
-              .Property(i => i.ForcePowerIds)
-              .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions?)null) ?? new List<Guid>(),
-                 new ValueComparer<List<Guid>>(
-                    (c1, c2) => c1 == null ? c2 == null : c2 != null && c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList()));
-
-            modelBuilder.Entity<Character>()
-              .Property(i => i.TechPowerIds)
-              .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions?)null) ?? new List<Guid>(),
-                 new ValueComparer<List<Guid>>(
-                    (c1, c2) => c1 == null ? c2 == null : c2 != null && c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList()));
-
-            modelBuilder.Entity<Creature>()
-              .Property(i => i.ForcePowerIds)
-              .HasConversion(
-                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions?)null) ?? new List<Guid>(),
-                 new ValueComparer<List<Guid>>(
-                    (c1, c2) => c1 == null ? c2 == null : c2 != null && c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
-                    c => c.ToList()));
-
-            modelBuilder.Entity<Creature>()
-              .Property(i => i.TechPowerIds)
+        private static void AddGuidList<T>(ModelBuilder modelBuilder, Expression<Func<T, List<Guid>>> expression) where T : BaseEntity
+        {
+            modelBuilder.Entity<T>()
+              .Property(expression)
               .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                 v => JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions?)null) ?? new List<Guid>(),

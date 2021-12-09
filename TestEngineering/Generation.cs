@@ -79,9 +79,9 @@ namespace TestEngineering
                 CharismaBonus = Faker.RandomNumber.Next(),
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = new List<BaseAction> { BaseAction(), BaseAction() },
-                Vulnerabilities = DamageTypes(),
-                Immunities = DamageTypes(),
-                Resistances = DamageTypes(),
+                VulnerabilityIds = Guids(),
+                ImmunityIds = Guids(),
+                ResistanceIds = Guids(),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
             };
@@ -155,6 +155,24 @@ namespace TestEngineering
             return techPower;
         }
 
+        public static DamageTypeRequest DamageTypeRequest()
+        {
+            var damageTypeRequest = new DamageTypeRequest
+            {
+                Name = Nonsense(),
+            };
+
+            return damageTypeRequest;
+        }
+
+        public static DamageType DamageType()
+        {
+            var damageType = _mapper.Map<DamageType>(DamageTypeRequest());
+            damageType.Id = Guid.NewGuid();
+            damageType.User = MockHttpContext.CurrentUser;
+            return damageType;
+        }
+
         public static T RandomEnum<T>() where T : struct, Enum
         {
             var enumValues = Enum.GetValues<T>();
@@ -173,19 +191,14 @@ namespace TestEngineering
             };
         }
 
-        public static DamageType[] DamageTypes()
+        public static List<Guid> Guids(int max = 5)
         {
-            var damageTypes = Enum.GetValues<DamageType>().ToList();
-            var totalDamageTypes = damageTypes.Count;
-            var selections = Faker.RandomNumber.Next(0, totalDamageTypes);
-            var randomList = new List<DamageType>();
-            for (int i = 0; i < selections; i++)
+            var list = new List<Guid>();
+            for (int i = 0; i < max; i++)
             {
-                var index = Faker.RandomNumber.Next(0, damageTypes.Count - 1);
-                randomList.Add(damageTypes[index]);
-                damageTypes.RemoveAt(index);
+                list.Add(Guid.NewGuid());
             }
-            return randomList.ToArray();
+            return list;
         }
 
         public static string Nonsense(int size = 10)
