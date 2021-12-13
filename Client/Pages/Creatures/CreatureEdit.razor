@@ -144,21 +144,15 @@
         <div class="row my-2">
             <div class="form-group col">
                 <label>Vulnerabilities</label>
-                <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                    @bind-Value=@_model.VulnerabilityIds TextProperty="Name" ValueProperty="Id"
-                    Multiple="true" Placeholder="Select..." Data=@_damageTypes/>
+                <MultipleEntityDropdown TEntity="DamageTypeResponse" @bind-SelectedIds="_model.VulnerabilityIds"/>
             </div>
             <div class="form-group col">
                 <label>Immunities</label>
-                <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                    @bind-Value=@_model.ImmunityIds TextProperty="Name" ValueProperty="Id"
-                    Multiple="true" Placeholder="Select..." Data=@_damageTypes/>
+                <MultipleEntityDropdown TEntity="DamageTypeResponse" @bind-SelectedIds="_model.ImmunityIds"/>
             </div>
-             <div class="form-group col">
+            <div class="form-group col">
                 <label>Resistances</label>
-                <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                    @bind-Value=@_model.ResistanceIds TextProperty="Name" ValueProperty="Id"
-                    Multiple="true" Placeholder="Select..." Data=@_damageTypes/>
+                <MultipleEntityDropdown TEntity="DamageTypeResponse" @bind-SelectedIds="_model.ResistanceIds"/>
             </div>
         </div>
         <div class="form-group">

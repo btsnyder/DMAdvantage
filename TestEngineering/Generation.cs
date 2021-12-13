@@ -78,10 +78,10 @@ namespace TestEngineering
                 Charisma = Faker.RandomNumber.Next(),
                 CharismaBonus = Faker.RandomNumber.Next(),
                 ChallengeRating = Faker.RandomNumber.Next(),
-                Actions = new List<BaseAction> { BaseAction(), BaseAction() },
-                VulnerabilityIds = Guids(),
-                ImmunityIds = Guids(),
-                ResistanceIds = Guids(),
+                Actions = RandomList(() => BaseAction()),
+                VulnerabilityIds = RandomList(() => Guid.NewGuid()),
+                ImmunityIds = RandomList(() => Guid.NewGuid()),
+                ResistanceIds = RandomList(() => Guid.NewGuid()),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
             };
@@ -164,6 +164,16 @@ namespace TestEngineering
 
             return damageTypeRequest;
         }
+        public static DamageTypeResponse DamageTypeResponse()
+        {
+            var damageTypeResponse = new DamageTypeResponse
+            {
+                Name = Nonsense(),
+            };
+
+            return damageTypeResponse;
+        }
+
 
         public static DamageType DamageType()
         {
@@ -191,12 +201,12 @@ namespace TestEngineering
             };
         }
 
-        public static List<Guid> Guids(int max = 5)
+        public static List<T> RandomList<T>(Func<T> creation, int max = 5)
         {
-            var list = new List<Guid>();
+            var list = new List<T>();
             for (int i = 0; i < max; i++)
             {
-                list.Add(Guid.NewGuid());
+                list.Add(creation.Invoke());
             }
             return list;
         }

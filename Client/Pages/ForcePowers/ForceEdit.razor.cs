@@ -21,8 +21,7 @@ namespace DMAdvantage.Client.Pages.ForcePowers
 
         protected override async Task OnInitializedAsync()
         {
-            var creature = await ApiService.GetEntityById<ForcePowerResponse>(Guid.Parse(Id));
-            _model = CustomMapper.Mapper.Map<ForcePowerRequest>(creature);
+            _model = await ApiService.GetEntityById<ForcePowerResponse>(Guid.Parse(Id));
         }
 
         private async void OnValidSubmit()
@@ -32,7 +31,7 @@ namespace DMAdvantage.Client.Pages.ForcePowers
             {
                 await ApiService.UpdateEntity(Guid.Parse(Id), _model);
                 AlertService.Alert(AlertType.Success, "Update successful", keepAfterRouteChange: true);
-                NavigationManager.NavigateTo("forecepowers");
+                NavigationManager.NavigateTo("forcepowers");
             }
             catch (Exception ex)
             {

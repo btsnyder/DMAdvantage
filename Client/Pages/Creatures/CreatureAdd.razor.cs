@@ -10,7 +10,7 @@ namespace DMAdvantage.Client.Pages.Creatures
     {
         private readonly CreatureRequest _model = new();
         private bool _loading;
-        private IEnumerable<DamageType> _damageTypes;
+        private IEnumerable<DamageTypeResponse> _damageTypes;
 
         [Inject]
         IAlertService AlertService { get; set; }
@@ -22,7 +22,7 @@ namespace DMAdvantage.Client.Pages.Creatures
         protected override async Task OnInitializedAsync()
         {
             var damages = await ApiService.GetAllEntities<DamageTypeResponse>();
-            _damageTypes = damages as IEnumerable<DamageType> ?? Array.Empty<DamageType>();
+            _damageTypes = damages as IEnumerable<DamageTypeResponse> ?? Array.Empty<DamageTypeResponse>();
         }
 
         private async void OnValidSubmit()

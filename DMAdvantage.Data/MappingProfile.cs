@@ -20,25 +20,20 @@ namespace DMAdvantage.Data
                 .ForMember(c => c.Actions, opt => opt.Ignore())
                 .ForMember(c => c.ActionsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Actions, (JsonSerializerOptions?)null)));
             CreateMap<Creature, CreatureResponse>().ReverseMap();
-            CreateMap<CreatureResponse, CreatureRequest>();
             CreateMap<Being, Creature>();
             CreateMap<Being, CreatureRequest>();
             CreateMap<Being, CreatureResponse>();
             CreateMap<Encounter, EncounterRequest>().ReverseMap();
             CreateMap<Encounter, EncounterResponse>().ReverseMap();
-            CreateMap<EncounterResponse, EncounterRequest>();
             CreateMap<Being, Encounter>();
             CreateMap<Being, EncounterRequest>();
             CreateMap<Being, EncounterResponse>();
             CreateMap<ForcePower, ForcePowerRequest>().ReverseMap();
             CreateMap<ForcePower, ForcePowerResponse>().ReverseMap();
-            CreateMap<ForcePowerResponse, ForcePowerRequest>();
             CreateMap<TechPower, TechPowerRequest>().ReverseMap();
             CreateMap<TechPower, TechPowerResponse>().ReverseMap();
-            CreateMap<TechPowerResponse, TechPowerRequest>();
             CreateMap<DamageType, DamageTypeRequest>().ReverseMap();
             CreateMap<DamageType, DamageTypeResponse>().ReverseMap();
-            CreateMap<DamageTypeResponse, DamageTypeRequest>();
             CreateMap<User, LoginResponse>();
             
         }

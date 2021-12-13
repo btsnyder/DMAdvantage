@@ -127,10 +127,10 @@ namespace DMAdvantage.UnitTests.Controllers
                 CharismaBonus = _mockCreatureData[0].CharismaBonus,
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = _mockCreatureData[0].Actions,
-                VulnerabilityIds = Generation.Guids(),
+                VulnerabilityIds = Generation.RandomList(() => Guid.NewGuid()),
                 ImmunityIds = _mockCreatureData[0].ImmunityIds,
-                ResistanceIds = Generation.Guids(),
-                ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                ResistanceIds = Generation.RandomList(() => Guid.NewGuid()),
+                ForcePowerIds = Generation.RandomList(() => Guid.NewGuid()),
                 TechPowerIds = _mockCreatureData[0].TechPowerIds
             };
             var creatureController = CreateMockCreatureController(mockRepo.Object);
@@ -168,10 +168,10 @@ namespace DMAdvantage.UnitTests.Controllers
                 CharismaBonus = _mockCreatureData[0].CharismaBonus,
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = _mockCreatureData[0].Actions,
-                VulnerabilityIds = Generation.Guids(),
+                VulnerabilityIds = Generation.RandomList(() => Guid.NewGuid()),
                 ImmunityIds = _mockCreatureData[0].ImmunityIds,
-                ResistanceIds = Generation.Guids(),
-                ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                ResistanceIds = Generation.RandomList(() => Guid.NewGuid()),
+                ForcePowerIds = Generation.RandomList(() => Guid.NewGuid()),
                 TechPowerIds = _mockCreatureData[0].TechPowerIds
             };
             var originalCount = _mockCreatureData.Count;

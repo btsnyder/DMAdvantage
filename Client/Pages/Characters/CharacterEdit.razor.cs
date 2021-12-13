@@ -21,8 +21,7 @@ namespace DMAdvantage.Client.Pages.Characters
 
         protected override async Task OnInitializedAsync()
         {
-            var character = await ApiService.GetEntityById<CharacterResponse>(Guid.Parse(Id));
-            _model = CustomMapper.Mapper.Map<CharacterRequest>(character);
+            _model = await ApiService.GetEntityById<CharacterResponse>(Guid.Parse(Id));
         }
 
         private async void OnValidSubmit()

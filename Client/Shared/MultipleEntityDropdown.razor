@@ -1,0 +1,6 @@
+﻿@typeparam TEntity
+
+<RadzenDropDown AllowClear="true" AllowFiltering="true" TValue="IEnumerable<string>"
+                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                @bind-Value=@_selected Multiple="true" Placeholder="Select..." 
+                Data=@_names class="form-control" Change=@(args => OnChange())/>

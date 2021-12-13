@@ -1,4 +1,5 @@
 ﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using System.Collections;
 using TestEngineering.Mocks;
@@ -22,7 +23,7 @@ namespace TestEngineering
                 if (actualProp == null)
                     continue;
                 var actualValue = actualProp.GetValue(actual);
-                if (expectedValue is IList)
+                if (expectedValue is ICollection)
                     actualValue.Should().BeEquivalentTo(expectedValue, $"{prop.Name} is equal");
                 else
                     actualValue.Should().Be(expectedValue, $"{prop.Name} is equal");

@@ -10,19 +10,12 @@
             <InputText @bind-Value="@_model.Name" class="form-control" />
             <ValidationMessage For="@(() => _model.Name)" />
         </div>
-        <div class="form-group col-8">
-            <label>Challenge</label>
-            <InputText @bind-Value="@_model.Description" class="form-control" />
-            <ValidationMessage For="@(() => _model.Description)" />
-        </div>
         <div class="form-group col-1">
             <label>Level</label>
             <InputNumber @bind-Value="@_model.Level" class="form-control" />
             <ValidationMessage For="@(() => _model.Level)" />
         </div>
-    </div>
-    <div class="row my-2">
-        <div class="form-group col-3">
+        <div class="form-group col-2">
             <label>Casting Period</label>
             <InputSelect @bind-Value="@_model.CastingPeriod" class="form-control">
                 @foreach (var period in Enum.GetValues<CastingPeriod>())
@@ -32,12 +25,12 @@
             </InputSelect>
             <ValidationMessage For="@(() => _model.CastingPeriod)" />
         </div>
-        <div class="form-group col-3">
+        <div class="form-group col-2">
             <label>Casting Description</label>
             <InputText @bind-Value="@_model.CastingDescription" class="form-control"/>
             <ValidationMessage For="@(() => _model.CastingDescription)" />
         </div>
-        <div class="form-group col-3">
+        <div class="form-group col-2">
             <label>Range</label>
             <InputSelect @bind-Value="@_model.Range" class="form-control">
                 @foreach (var range in Enum.GetValues<PowerRange>())
@@ -47,10 +40,17 @@
             </InputSelect>
             <ValidationMessage For="@(() => _model.Range)" />
         </div>
-        <div class="form-group col-3">
+        <div class="form-group col-2">
             <label>Range Description</label>
             <InputText @bind-Value="@_model.RangeDescription" class="form-control"/>
             <ValidationMessage For="@(() => _model.RangeDescription)" />
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col-12" style="height: 250px;">
+            <label>Description</label>
+            <InputTextArea @bind-Value="@_model.Description" class="form-control h-75" />
+            <ValidationMessage For="@(() => _model.Description)" />
         </div>
     </div>
     <div class="row my-2">

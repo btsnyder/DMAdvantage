@@ -6,7 +6,7 @@
 
         public override string OrderBy()
         {
-            return Name ?? string.Empty;
+            return $"{Level} - {Name}";
         }
     }
 }

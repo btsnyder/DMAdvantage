@@ -21,8 +21,7 @@ namespace DMAdvantage.Client.Pages.TechPowers
 
         protected override async Task OnInitializedAsync()
         {
-            var creature = await ApiService.GetEntityById<TechPowerResponse>(Guid.Parse(Id));
-            _model = CustomMapper.Mapper.Map<TechPowerRequest>(creature);
+            _model = await ApiService.GetEntityById<TechPowerResponse>(Guid.Parse(Id));
         }
 
         private async void OnValidSubmit()
