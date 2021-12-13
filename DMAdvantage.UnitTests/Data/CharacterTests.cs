@@ -34,5 +34,16 @@ namespace DMAdvantage.UnitTests.Data
         {
             GetEntityByBadId_Null(Generation.Character());
         }
+
+        [Fact]
+        public void GetCharacterWithPaging_Success()
+        {
+            var characters = Generation.RandomList(() => Generation.Character(), 50);
+            for (int i = 0; i < characters.Count; i++)
+            {
+                characters[i].Name = $"Character - {string.Format("{0:00000}", i)}";
+            }
+            GetEntitiesWithPaging_Success(characters);
+        }
     }
 }

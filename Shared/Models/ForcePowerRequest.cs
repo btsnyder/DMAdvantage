@@ -6,5 +6,6 @@ namespace DMAdvantage.Shared.Models
     {
         public ForceAlignment Alignment { get; set; }
         public string? Potency { get; set; }
+        public Guid? PrerequisiteId { get; set; }
     }
 }

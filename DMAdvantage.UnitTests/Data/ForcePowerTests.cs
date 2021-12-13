@@ -34,5 +34,17 @@ namespace DMAdvantage.UnitTests.Data
         {
             GetEntityByBadId_Null(Generation.ForcePower());
         }
+
+        [Fact]
+        public void GetForcePowerWithPaging_Success()
+        {
+            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 50);
+            for (int i = 0; i < forcePowers.Count; i++)
+            {
+                forcePowers[i].Level = 0;
+                forcePowers[i].Name = $"ForcePower - {string.Format("{0:00000}", i)}";
+            }
+            GetEntitiesWithPaging_Success(forcePowers);
+        }
     }
 }

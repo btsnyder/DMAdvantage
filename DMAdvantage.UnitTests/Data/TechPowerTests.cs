@@ -34,5 +34,17 @@ namespace DMAdvantage.UnitTests.Data
         {
             GetEntityByBadId_Null(Generation.TechPower());
         }
+
+        [Fact]
+        public void GetTechPowerWithPaging_Success()
+        {
+            var techPowers = Generation.RandomList(() => Generation.TechPower(), 50);
+            for (int i = 0; i < techPowers.Count; i++)
+            {
+                techPowers[i].Level = 0;
+                techPowers[i].Name = $"TechPower - {string.Format("{0:00000}", i)}";
+            }
+            GetEntitiesWithPaging_Success(techPowers);
+        }
     }
 }

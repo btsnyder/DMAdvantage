@@ -1,5 +1,7 @@
 ﻿using DMAdvantage.Shared.Entities;
 using System;
+using System.Linq;
+using TestEngineering;
 using TestEngineering.Mocks;
 using Xunit;
 
@@ -35,6 +37,14 @@ namespace DMAdvantage.UnitTests.Data
         public void GetEncounterByBadId_Null()
         {
             GetEntityByBadId_Null(GenerateEncounter());
+        }
+
+        [Fact]
+        public void GetEncounterWithPaging_Success()
+        {
+            var encounters = Generation.RandomList(() => GenerateEncounter(), 50);
+            encounters = encounters.OrderBy(x => x.Id).ToList();
+            GetEntitiesWithPaging_Success(encounters);
         }
 
         private static Encounter GenerateEncounter()

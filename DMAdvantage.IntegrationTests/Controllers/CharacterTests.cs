@@ -6,6 +6,7 @@ using Xunit;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -40,6 +41,36 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var characters = await response.ParseEntityList<CharacterResponse>();
             var charactersFromDb = await client.GetAllEntities<CharacterResponse>();
             characters.Should().HaveCount(charactersFromDb.Count);
+        }
+
+        [Fact]
+        public async Task Get_AllCharactersWithPaging_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var characters = new List<CharacterResponse>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var character = Generation.CharacterRequest();
+                character.Name = $"Character - {string.Format("{0:00000}", i)}";
+                var characterResponse = await client.CreateCharacter(character);
+                if (characterResponse != null)
+                    characters.Add(characterResponse);
+            }
+
+            var paging = new PagingParameters
+            {
+                PageSize = 5,
+                PageNumber = 2
+            };
+
+            var response = await client.GetAsync($"/api/characters?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var charactersResponse = await response.ParseEntityList<CharacterResponse>();
+
+            charactersResponse.Should().HaveCount(paging.PageSize);
+            charactersResponse[0].Id.Should().Be(characters[0 + paging.PageSize].Id);
         }
 
         [Fact]

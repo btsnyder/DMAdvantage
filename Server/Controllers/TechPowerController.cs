@@ -22,9 +22,9 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllTechPowers()
+        public IActionResult GetAllTechPowers([FromQuery] PagingParameters? paging = null)
         {
-            return GetAllEntities();
+            return GetAllEntities(paging);
         }
 
         [HttpGet("{id}")]

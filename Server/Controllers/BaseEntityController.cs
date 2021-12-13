@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,13 +25,13 @@ namespace DMAdvantage.Server.Controllers
             _userManager = userManager;
         }
 
-        protected IActionResult GetAllEntities()
+        protected IActionResult GetAllEntities(PagingParameters? paging)
         {
             try
             {
                 var username = User?.Identity?.Name ?? string.Empty;
 
-                var results = _repository.GetAllEntities<TEntity>(username);
+                var results = _repository.GetAllEntities<TEntity>(username, paging);
                 return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
             }
             catch (Exception ex)

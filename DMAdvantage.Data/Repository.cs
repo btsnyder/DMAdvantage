@@ -1,4 +1,5 @@
 ﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Models;
 using Microsoft.Extensions.Logging;
 
 namespace DMAdvantage.Data
@@ -28,11 +29,18 @@ namespace DMAdvantage.Data
             };
         }
 
-        public IEnumerable<T> GetAllEntities<T>(string username) where T : BaseEntity
+        public IEnumerable<T> GetAllEntities<T>(string username, PagingParameters? paging = null) where T : BaseEntity
         {
-            return GetDbSet<T>(username)
+            if (paging == null)
+                return GetDbSet<T>(username)
+                        .OrderBy(c => c.OrderBy())
+                        .ToArray();
+            else
+                return GetDbSet<T>(username)
                     .OrderBy(c => c.OrderBy())
-                    .ToList();
+                    .Skip((paging.PageNumber - 1) * paging.PageSize)
+                    .Take(paging.PageSize)
+                    .ToArray();
         }
 
         public T? GetEntityById<T>(Guid id, string username) where T : BaseEntity

@@ -51,19 +51,21 @@ namespace TestEngineering
             return path.ToLower();
         }
 
-        public static async Task<CharacterResponse> CreateCharacter(this HttpClient client)
+        public static async Task<CharacterResponse> CreateCharacter(this HttpClient client, CharacterRequest? character = null)
         {
-            var character = Generation.CharacterRequest();
+            if (character == null)
+                character = Generation.CharacterRequest();
             var response = await client.PostAsync("/api/characters", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<CharacterResponse>();
             return created;
         }
 
-        public static async Task<CreatureResponse> CreateCreature(this HttpClient client)
+        public static async Task<CreatureResponse> CreateCreature(this HttpClient client, CreatureRequest? creature = null)
         {
-            var part = Generation.CreatureRequest();
-            var response = await client.PostAsync("/api/creatures", part);
+            if (creature == null)
+                creature = Generation.CreatureRequest();
+            var response = await client.PostAsync("/api/creatures", creature);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<CreatureResponse>();
             return created;

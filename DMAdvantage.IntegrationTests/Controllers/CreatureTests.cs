@@ -6,6 +6,7 @@ using Xunit;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -39,6 +40,36 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var creatures = await response.ParseEntityList<CreatureResponse>();
             var creaturesFromDb = await client.GetAllEntities<CreatureResponse>();
             creatures.Should().HaveCount(creaturesFromDb.Count);
+        }
+
+        [Fact]
+        public async Task Get_AllCreaturesWithPaging_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var creatures = new List<CreatureResponse>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var creature = Generation.CreatureRequest();
+                creature.Name = $"Creature - {string.Format("{0:00000}", i)}";
+                var creatureResponse = await client.CreateCreature(creature);
+                if (creatureResponse != null)
+                    creatures.Add(creatureResponse);
+            }
+
+            var paging = new PagingParameters
+            {
+                PageSize = 5,
+                PageNumber = 2
+            };
+
+            var response = await client.GetAsync($"/api/creatures?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var creaturesResponse = await response.ParseEntityList<CreatureResponse>();
+
+            creaturesResponse.Should().HaveCount(paging.PageSize);
+            creaturesResponse[0].Id.Should().Be(creatures[0 + paging.PageSize].Id);
         }
 
         [Fact]

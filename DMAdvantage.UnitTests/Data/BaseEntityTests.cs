@@ -1,8 +1,10 @@
 ﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using TestEngineering.Mocks;
 
@@ -67,6 +69,25 @@ namespace DMAdvantage.UnitTests.Data
             var entityFromRepo = _mockRepo.GetEntityById<T>(Guid.NewGuid(), entity.User?.UserName ?? string.Empty);
 
             entityFromRepo.Should().BeNull();
+        }
+
+        protected void GetEntitiesWithPaging_Success<T>(List<T> entities) where T : BaseEntity
+        {
+            foreach (var entity in entities)
+            {
+                _mockRepo.AddEntity(entity);
+            }
+            _mockRepo.SaveAll();
+            var paging = new PagingParameters
+            {
+                PageSize = 5,
+                PageNumber = 2
+            };
+            var pagedEntities = _mockRepo.GetAllEntities<T>(entities[0].User?.UserName ?? string.Empty, paging);
+
+            pagedEntities.Should().NotBeNull();
+            pagedEntities.First().Id.Should().Be(entities[5].Id);
+            pagedEntities.Should().HaveCount(paging.PageSize);
         }
     }
 }

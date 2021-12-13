@@ -53,7 +53,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllForcePowers_Success()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
                 .Returns(_mockForcePowerData);
             var forcePowerController = CreateMockForcePowerController(mockRepo.Object);
 
@@ -171,7 +171,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllForcePowers_Failure()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
                 .Throws(new Exception());
             var forcePowerController = CreateMockForcePowerController(mockRepo.Object);
 
@@ -225,9 +225,9 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllForcePowersWithWrongUser_ReturnsEmptyList()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(It.IsAny<string>()))
+            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(It.IsAny<string>(), It.IsAny<PagingParameters?>()))
                 .Returns(_mockForcePowerData);
-            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<ForcePower>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
                 .Returns(new List<ForcePower>());
             var forcePowerController = CreateMockForcePowerController(mockRepo.Object);
 
