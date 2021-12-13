@@ -156,7 +156,11 @@
     <div class="row my-2">
         <div class="form-group col">
             <label>Force Powers</label>
-            <MultipleEntityDropdown TEntity="ForcePowerResponse" @bind-SelectedIds="_model.ForcePowerIds"/>
+            <MultipleEntityDropdown TEntity="ForcePowerResponse" @bind-SelectedIds="_model.ForcePowerIds" />
+        </div>
+        <div class="form-group col">
+            <label>Tech Powers</label>
+            <MultipleEntityDropdown TEntity="TechPowerResponse" @bind-SelectedIds="_model.TechPowerIds"/>
         </div>
     </div>
     <div class="form-group">

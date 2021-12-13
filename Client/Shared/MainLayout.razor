@@ -4,16 +4,16 @@
 
 @if (AccountService.GetLoggedIn())
 {
-    <nav class="navbar navbar-expand navbar-dark bg-dark">
-        <div class="navbar-nav">
-            <NavLink href="" Match="NavLinkMatch.All" class="nav-item nav-link">Home</NavLink>
-            <NavLink href="characters" class="nav-item nav-link">Characters</NavLink>
-            <NavLink href="creatures" class="nav-item nav-link">Creatures</NavLink>
-            <NavLink href="forcepowers" class="nav-item nav-link">Force Powers</NavLink>
-            <NavLink href="techpowers" class="nav-item nav-link">Tech Powers</NavLink>
-            <NavLink href="account/logout" class="nav-item nav-link">Logout</NavLink>
-        </div>
-    </nav>
+     <RadzenMenu Class="navbar-expand bg-dark" >
+        <RadzenMenuItem Text="Home" Path="/" Icon="home" Class="nav-main-link"/>
+        <RadzenMenuItem Text="Data" Icon="topic" Class="nav-main-link">
+            <RadzenMenuItem Text="Characters" Path="characters" Icon="person" Class="nav-main-link nav-sub-main-link bg-secondary"/>
+            <RadzenMenuItem Text="Creatures" Path="creatures" Icon="groups" Class="nav-main-link nav-sub-main-link bg-secondary"/>
+            <RadzenMenuItem Text="Force Powers" Path="forcepowers" Icon="front_hand" Class="nav-main-link nav-sub-main-link bg-secondary"/>
+            <RadzenMenuItem Text="Tech Powers" Path="techpowers" Icon="memory" Class="nav-main-link nav-sub-main-link bg-secondary"/>
+        </RadzenMenuItem>
+        <RadzenMenuItem Text="Logout" Path="account/logout" Icon="logout" Class="nav-main-link"/>
+    </RadzenMenu>
 }
 
 <div class="app-container @(AccountService.GetLoggedIn() ? "bg-light" : "")">
