@@ -28,49 +28,55 @@ namespace DMAdvantage.Client.Services.Implementations
         public async Task<T?> Get<T>(string uri)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            return await SendRequest<T>(request);
+            return await ProcessRequest<T>(request);
+        }
+
+        public async Task<(T?, HttpResponseHeaders)> GetWithResponseHeader<T>(string uri)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, uri);
+            return await ProcessRequestWithHeaders<T>(request);
         }
 
         public async Task<T?> GetWithHeader<T>(string uri, string key, string value)
         {
             var request = CreateRequest(HttpMethod.Post, uri, new Dictionary<string, string> { { key, value } });
-            return await SendRequest<T>(request);
+            return await ProcessRequest<T>(request);
         }
 
         public async Task Post(string uri, object value)
         {
             var request = CreateRequest(HttpMethod.Post, uri, value);
-            await SendRequest(request);
+            await ProcessRequest(request);
         }
 
         public async Task<T?> Post<T>(string uri, object value)
         {
             var request = CreateRequest(HttpMethod.Post, uri, value);
-            return await SendRequest<T>(request);
+            return await ProcessRequest<T>(request);
         }
 
         public async Task Put(string uri, object value)
         {
             var request = CreateRequest(HttpMethod.Put, uri, value);
-            await SendRequest(request);
+            await ProcessRequest(request);
         }
 
         public async Task<T?> Put<T>(string uri, object value)
         {
             var request = CreateRequest(HttpMethod.Put, uri, value);
-            return await SendRequest<T>(request);
+            return await ProcessRequest<T>(request);
         }
 
         public async Task Delete(string uri)
         {
             var request = CreateRequest(HttpMethod.Delete, uri);
-            await SendRequest(request);
+            await ProcessRequest(request);
         }
 
         public async Task<T?> Delete<T>(string uri)
         {
             var request = CreateRequest(HttpMethod.Delete, uri);
-            return await SendRequest<T>(request);
+            return await ProcessRequest<T>(request);
         }
 
         private static HttpRequestMessage CreateRequest(HttpMethod method, string uri, object? value = null)
@@ -81,58 +87,43 @@ namespace DMAdvantage.Client.Services.Implementations
             return request;
         }
 
-        private async Task SendRequest(HttpRequestMessage request)
+        private async Task<HttpResponseMessage> SendAuthorizedRequest(HttpRequestMessage request)
         {
-            await AddJwtHeader(request);
+            await request.AddJwtHeader(_localStorageService);
 
-            using var response = await _httpClient.SendAsync(request);
-
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                _navigationManager.NavigateTo("account/logout");
-                return;
-            }
-
-            await HandleErrors(response);
+            return await _httpClient.SendAsync(request);
         }
 
-        private async Task<T?> SendRequest<T>(HttpRequestMessage request)
+        private async Task ProcessRequest(HttpRequestMessage request)
         {
-            await AddJwtHeader(request);
+            using var response = await SendAuthorizedRequest(request);
 
-            using var response = await _httpClient.SendAsync(request);
+            await response.ProcessResponseValidity(_navigationManager);
+        }
 
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
-            {
-                _navigationManager.NavigateTo("account/logout");
+        private async Task<T?> ProcessRequest<T>(HttpRequestMessage request)
+        {
+            using var response = await SendAuthorizedRequest(request);
+
+            var valid = await response.ProcessResponseValidity(_navigationManager);
+            
+            if (!valid)
                 return default;
-            }
 
-            await HandleErrors(response);
-
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            options.Converters.Add(new StringConverter());
-            return await response.Content.ReadFromJsonAsync<T>(options);
+            return await response.ParseContent<T>();
         }
 
-        private async Task AddJwtHeader(HttpRequestMessage request)
+        private async Task<(T?, HttpResponseHeaders)> ProcessRequestWithHeaders<T>(HttpRequestMessage request)
         {
-            var user = await _localStorageService.GetItem<LoginResponse>(AccountService.UserKey);
-            var isApiUrl = request.RequestUri?.IsAbsoluteUri == false;
-            if (user != null && isApiUrl)
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
-        }
+            using var response = await SendAuthorizedRequest(request);
 
-        private static async Task HandleErrors(HttpResponseMessage response)
-        {
-            if (!response.IsSuccessStatusCode)
-            {
-                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                throw new Exception(error == null ? "Unknown error occured." : error["message"]);
-            }
+            var valid = await response.ProcessResponseValidity(_navigationManager);
+
+            if (!valid)
+                return default;
+
+            var content = await response.ParseContent<T>();
+            return (content, response.Headers);
         }
     }
 }

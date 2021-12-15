@@ -6,6 +6,7 @@ using Xunit;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -39,6 +40,36 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var techPowers = await response.ParseEntityList<TechPowerResponse>();
             var techPowersFromDb = await client.GetAllEntities<TechPowerResponse>();
             techPowers.Should().HaveCount(techPowersFromDb.Count);
+        }
+
+        public async Task Get_AllTechPowersWithPaging_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var techPowers = new List<TechPowerResponse>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var techPower = Generation.TechPowerRequest();
+                techPower.Level = 0;
+                techPower.Name = $"{string.Format("{0:00000}", i)} - TechPower";
+                var techPowerResponse = await client.CreateTechPower(techPower);
+                if (techPowerResponse != null)
+                    techPowers.Add(techPowerResponse);
+            }
+
+            var paging = new PagingParameters
+            {
+                PageSize = 5,
+                PageNumber = 2
+            };
+
+            var response = await client.GetAsync($"/api/techpowers?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var techPowersResponse = await response.ParseEntityList<DamageTypeResponse>();
+
+            techPowersResponse.Should().HaveCount(paging.PageSize);
+            techPowersResponse[0].Id.Should().Be(techPowers[0 + paging.PageSize].Id);
         }
 
         [Fact]

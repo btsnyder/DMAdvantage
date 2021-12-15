@@ -2,8 +2,10 @@
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -25,13 +27,43 @@ namespace DMAdvantage.Server.Controllers
             _userManager = userManager;
         }
 
-        protected IActionResult GetAllEntities(PagingParameters? paging)
+        protected IActionResult GetAllEntities()
+        {
+            try
+            {
+                var username = User?.Identity?.Name ?? string.Empty;
+
+                var results = _repository.GetAllEntities<TEntity>(username);
+
+                return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return entities: {ex}");
+                return BadRequest($"Failed to return entities");
+            }
+        }
+
+        protected IActionResult GetAllEntities(PagingParameters paging)
         {
             try
             {
                 var username = User?.Identity?.Name ?? string.Empty;
 
                 var results = _repository.GetAllEntities<TEntity>(username, paging);
+
+                var metadata = new PagedData
+                {
+                    TotalCount = results.TotalCount,
+                    PageSize = results.PageSize,
+                    CurrentPage = results.CurrentPage,
+                    TotalPages = results.TotalPages,
+                    HasNext = results.HasNext,
+                    HasPrevious = results.HasPrevious
+                };
+
+                Response.Headers.Add(PagedData.Header, JsonSerializer.Serialize(metadata));
+
                 return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
             }
             catch (Exception ex)

@@ -1,0 +1,21 @@
+﻿@typeparam T
+
+@if (Data != null)
+{
+    <ul class="pagination justify-content-end">
+        <li class="page-item">
+            <button type="button" class="page-link" disabled=@(!Data.HasPrevious) @onclick="(() => UpdateCurrentPage(-1))">Previous</button>
+        </li>
+        @for (int i = 1; i <= Data.TotalPages; i++)
+        {
+            int buffer = i;
+            <li class="page-item">
+                <button type="button" class="page-link" @onclick="(() => UpdateCurrentPage(buffer))">@buffer</button>
+            </li>
+        }
+        <li class="page-item">
+            <button type="button" class="page-link" disabled=@(!Data.HasNext) @onclick="(() => UpdateCurrentPage(Data.CurrentPage + 1))">Next</button>
+        </li>
+    </ul>
+}
+

@@ -47,6 +47,52 @@ namespace DMAdvantage.IntegrationTests.Controllers
         }
 
         [Fact]
+        public async Task Get_AllEncountersWithPaging_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var encounters = new List<EncounterResponse>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var characters = new List<Guid>();
+                for (int j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
+                {
+                    var character = await client.CreateCharacter();
+                    characters.Add(character.Id);
+                }
+
+                var creatures = new List<Guid>();
+                for (int j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
+                {
+                    var creature = await client.CreateCreature();
+                    creatures.Add(creature.Id);
+                }
+
+                var encounter = new EncounterRequest
+                {
+                    CharacterIds = characters,
+                    CreatureIds = creatures
+                };
+                var encounterResponse = await client.CreateEncounter(encounter);
+                if (encounterResponse != null)
+                    encounters.Add(encounterResponse);
+            }
+
+            var paging = new PagingParameters
+            {
+                PageSize = 5,
+                PageNumber = 2
+            };
+
+            var response = await client.GetAsync($"/api/encounters?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var encountersResponse = await response.ParseEntityList<EncounterResponse>();
+
+            encountersResponse.Should().HaveCount(paging.PageSize);
+        }
+
+        [Fact]
         public async Task Post_CreateNewEncounter_Created()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();

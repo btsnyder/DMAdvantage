@@ -6,6 +6,7 @@ using Xunit;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -39,6 +40,36 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var damageTypes = await response.ParseEntityList<DamageTypeResponse>();
             var damageTypesFromDb = await client.GetAllEntities<DamageTypeResponse>();
             damageTypes.Should().HaveCount(damageTypesFromDb.Count);
+        }
+
+        [Fact]
+        public async Task Get_AllDamageTypesWithPaging_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var damageTypes = new List<DamageTypeResponse>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var damageType = Generation.DamageTypeRequest();
+                damageType.Name = $"{string.Format("{0:00000}", i)} - DamageType";
+                var damageTypeResponse = await client.CreateDamageType(damageType);
+                if (damageTypeResponse != null)
+                    damageTypes.Add(damageTypeResponse);
+            }
+
+            var paging = new PagingParameters
+            {
+                PageSize = 5,
+                PageNumber = 2
+            };
+
+            var response = await client.GetAsync($"/api/damagetypes?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var damageTypesResponse = await response.ParseEntityList<DamageTypeResponse>();
+
+            damageTypesResponse.Should().HaveCount(paging.PageSize);
+            damageTypesResponse[0].Id.Should().Be(damageTypes[0 + paging.PageSize].Id);
         }
 
         [Fact]

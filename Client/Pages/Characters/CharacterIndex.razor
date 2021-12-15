@@ -31,6 +31,11 @@
                     </td>
                 </tr>
             }
+            <tr>
+                <td colspan="4">
+                    <PagingFooter T=CharacterResponse @bind-Data=characters CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
+                </td>
+            </tr>
         }
         @if (loading)
         { 
@@ -45,18 +50,32 @@
 
 @code {
     private bool loading;
-    private List<CharacterResponse> characters = new();
+    private PagedList<CharacterResponse>? characters;
+    private PagingParameters paging = new();
 
     protected override async Task OnInitializedAsync()
     {
-        loading = true;
-        characters = await ApiService.GetAllEntities<CharacterResponse>();
-        loading = false;
+        await RefreshCharacters();   
     }
 
     private async Task RemoveCharacter(CharacterResponse character)
     {
+        if (characters == null)
+            return;
         characters.Remove(character);
         await ApiService.RemoveEntity<CharacterResponse>(character.Id);
+    }
+
+    private async Task RefreshCharacters()
+    {
+        loading = true;
+        characters = await ApiService.GetAllPagedEntities<CharacterResponse>(paging);
+        loading = false;   
+    }
+
+    private async Task CurrentPageChanged(int page)
+    {
+        paging.PageNumber = page;
+        await RefreshCharacters();
     }
 }

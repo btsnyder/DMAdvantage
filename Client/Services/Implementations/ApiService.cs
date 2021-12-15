@@ -1,4 +1,8 @@
-﻿namespace DMAdvantage.Client.Services.Implementations
+﻿using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
+using System.Text.Json;
+
+namespace DMAdvantage.Client.Services.Implementations
 {
     public class ApiService : IApiService
     {
@@ -31,6 +35,34 @@
         public async Task<List<T>?> GetAllEntities<T>()
         {
             return await _httpService.Get<List<T>>($"/api/{GetPath(typeof(T))}");
+        }
+
+        public async Task<PagedList<T>?> GetAllPagedEntities<T>(PagingParameters paging) where T : class
+        {
+            (var data, var headers) = await _httpService
+                .GetWithResponseHeader<List<T>>($"/api/{GetPath(typeof(T))}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+
+            if (data == null)
+                return null;
+
+            PagedData? pagingResponse = null;
+            if (headers.TryGetValues(PagedData.Header.ToLower(), out IEnumerable<string>? values))
+            {
+                var pagingHeader = values?.FirstOrDefault();
+                if (pagingHeader != null)
+                    pagingResponse = JsonSerializer.Deserialize<PagedData>(pagingHeader);
+            }
+
+            if (pagingResponse == null)
+                pagingResponse = new PagedData
+                {
+                    TotalCount = data.Count,
+                    PageSize = paging.PageSize,
+                    CurrentPage = paging.PageNumber,
+                    TotalPages = 1
+                };
+
+            return new PagedList<T>(data, pagingResponse.TotalCount, pagingResponse.CurrentPage, pagingResponse.PageSize);
         }
 
         public async Task RemoveEntity<T>(Guid id)

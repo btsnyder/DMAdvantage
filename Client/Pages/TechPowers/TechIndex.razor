@@ -29,6 +29,11 @@
                     </td>
                 </tr>
             }
+            <tr>
+                <td colspan="4">
+                    <PagingFooter T=TechPowerResponse @bind-Data=techPowers CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
+                </td>
+            </tr>
         }
         @if (loading)
         { 
@@ -43,18 +48,32 @@
 
 @code {
     private bool loading;
-    private List<TechPowerResponse> techPowers = new();
+    private PagedList<TechPowerResponse>? techPowers;
+    private PagingParameters paging = new();
 
     protected override async Task OnInitializedAsync()
     {
-        loading = true;
-        techPowers = await ApiService.GetAllEntities<TechPowerResponse>() ?? new();
-        loading = false;
+        await RefreshTechPowers();
     }
 
     private async Task RemoveForcePower(TechPowerResponse techPower)
     {
+        if (techPowers == null)
+            return;
         techPowers.Remove(techPower);
         await ApiService.RemoveEntity<TechPowerResponse>(techPower.Id);
+    }
+    
+    private async Task RefreshTechPowers()
+    {
+        loading = true;
+        techPowers = await ApiService.GetAllPagedEntities<TechPowerResponse>(paging);
+        loading = false;   
+    }
+
+    private async Task CurrentPageChanged(int page)
+    {
+        paging.PageNumber = page;
+        await RefreshTechPowers();
     }
 }

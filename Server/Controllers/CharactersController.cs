@@ -24,7 +24,10 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet]
         public IActionResult GetAllCharacters([FromQuery] PagingParameters? paging = null)
         {
-            return GetAllEntities(paging);
+            if (paging == null)
+                return GetAllEntities();
+            else
+                return GetAllEntities(paging);
         }
 
         [HttpGet("{id}")]

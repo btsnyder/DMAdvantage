@@ -52,7 +52,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllDamageTypes_Success()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<DamageType>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<DamageType>(MockHttpContext.CurrentUser.UserName))
                 .Returns(_mockDamageTypeData);
             var damageTypeController = CreateMockDamageTypeController(mockRepo.Object);
 
@@ -142,7 +142,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllDamageTypes_Failure()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<DamageType>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<DamageType>(MockHttpContext.CurrentUser.UserName))
                 .Throws(new Exception());
             var damageTypeController = CreateMockDamageTypeController(mockRepo.Object);
 
@@ -196,9 +196,9 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllDamageTypesWithWrongUser_ReturnsEmptyList()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<DamageType>(It.IsAny<string>(), It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<DamageType>(It.IsAny<string>()))
                 .Returns(_mockDamageTypeData);
-            mockRepo.Setup(x => x.GetAllEntities<DamageType>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<DamageType>(MockHttpContext.CurrentUser.UserName))
                 .Returns(new List<DamageType>());
             var damageTypeController = CreateMockDamageTypeController(mockRepo.Object);
 

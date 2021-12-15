@@ -7,17 +7,27 @@
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>Level</th>
             <th>Name</th>
             <th></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-        @if (forcePowers != null)
+        @if (loading)
+        { 
+            <tr>
+                <td colspan="4" class="text-center">
+                    <span class="spinner-border spinner-border-lg align-center"></span>
+                </td>
+            </tr>
+        }
+        else if (forcePowers != null)
         {
             foreach (var power in forcePowers)
             {
                 <tr>
+                    <td>@power.Level</td>
                     <td>@power.Name</td>
                     <td style="white-space: nowrap">
                         <NavLink href="@($"forcepowers/edit/{power.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
@@ -29,12 +39,9 @@
                     </td>
                 </tr>
             }
-        }
-        @if (loading)
-        { 
             <tr>
-                <td colspan="4" class="text-center">
-                    <span class="spinner-border spinner-border-lg align-center"></span>
+                <td colspan="4">
+                    <PagingFooter T=ForcePowerResponse @bind-Data=forcePowers CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
                 </td>
             </tr>
         }
@@ -43,18 +50,32 @@
 
 @code {
     private bool loading;
-    private List<ForcePowerResponse> forcePowers = new();
+    private PagingParameters paging = new();
+    private PagedList<ForcePowerResponse>? forcePowers;
 
     protected override async Task OnInitializedAsync()
     {
+        await RefreshForcePowers();
+    }
+
+    private async Task RefreshForcePowers()
+    {
         loading = true;
-        forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+        forcePowers = await ApiService.GetAllPagedEntities<ForcePowerResponse>(paging);
         loading = false;
     }
 
     private async Task RemoveForcePower(ForcePowerResponse forcePower)
     {
+        if (forcePowers == null)
+            return; 
         forcePowers.Remove(forcePower);
         await ApiService.RemoveEntity<ForcePowerResponse>(forcePower.Id);
+    }
+
+    private async Task CurrentPageChanged(int page)
+    {
+        paging.PageNumber = page;
+        await RefreshForcePowers();
     }
 }

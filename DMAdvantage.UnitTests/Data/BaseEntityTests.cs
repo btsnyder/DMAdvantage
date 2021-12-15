@@ -50,6 +50,7 @@ namespace DMAdvantage.UnitTests.Data
             _mockRepo.SaveAll();
             var encounterFromRepo = _mockRepo.GetEntityById<T>(entity.Id, entity.User?.UserName ?? string.Empty);
 
+            encounterFromRepo.Should().NotBeNull();
             encounterFromRepo.Id.Should().Be(entity.Id);
         }
 
@@ -88,6 +89,7 @@ namespace DMAdvantage.UnitTests.Data
             pagedEntities.Should().NotBeNull();
             pagedEntities.First().Id.Should().Be(entities[5].Id);
             pagedEntities.Should().HaveCount(paging.PageSize);
+            pagedEntities.TotalCount.Should().Be(entities.Count);
         }
     }
 }

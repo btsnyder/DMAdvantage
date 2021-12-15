@@ -6,6 +6,7 @@ using Xunit;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
+using System.Collections.Generic;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -39,6 +40,36 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var forcePowers = await response.ParseEntityList<ForcePowerResponse>();
             var forcePowersFromDb = await client.GetAllEntities<ForcePowerResponse>();
             forcePowers.Should().HaveCount(forcePowersFromDb.Count);
+        }
+
+        public async Task Get_AllForcePowersWithPaging_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var forcePowers = new List<ForcePowerResponse>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var forcePower = Generation.ForcePowerRequest();
+                forcePower.Level = 0;
+                forcePower.Name = $"{string.Format("{0:00000}", i)} - ForcePower";
+                var forcePowerResponse = await client.CreateForcePower(forcePower);
+                if (forcePowerResponse != null)
+                    forcePowers.Add(forcePowerResponse);
+            }
+
+            var paging = new PagingParameters
+            {
+                PageSize = 5,
+                PageNumber = 2
+            };
+
+            var response = await client.GetAsync($"/api/forcepowers?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var forcePowersResponse = await response.ParseEntityList<DamageTypeResponse>();
+
+            forcePowersResponse.Should().HaveCount(paging.PageSize);
+            forcePowersResponse[0].Id.Should().Be(forcePowers[0 + paging.PageSize].Id);
         }
 
         [Fact]

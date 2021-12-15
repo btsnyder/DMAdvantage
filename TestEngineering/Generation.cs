@@ -213,7 +213,7 @@ namespace TestEngineering
 
         public static string Nonsense(int size = 10)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
             return new string(Enumerable.Repeat(chars, size)
                 .Select(s => s[_random.Next(s.Length)]).ToArray());
         }

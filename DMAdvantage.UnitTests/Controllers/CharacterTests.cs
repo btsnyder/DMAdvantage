@@ -52,7 +52,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllCharacters_Success()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Character>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<Character>(MockHttpContext.CurrentUser.UserName))
                 .Returns(_mockCharacterData);
             var characterController = CreateMockCharacterController(mockRepo.Object);
 
@@ -184,7 +184,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllCharacters_Failure()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Character>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<Character>(MockHttpContext.CurrentUser.UserName))
                 .Throws(new Exception());
             var characterController = CreateMockCharacterController(mockRepo.Object);
 
@@ -238,9 +238,9 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllCharactersWithWrongUser_ReturnsEmptyList()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Character>(It.IsAny<string>(), It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<Character>(It.IsAny<string>()))
                 .Returns(_mockCharacterData);
-            mockRepo.Setup(x => x.GetAllEntities<Character>(MockHttpContext.CurrentUser.UserName, It.IsAny<PagingParameters?>()))
+            mockRepo.Setup(x => x.GetAllEntities<Character>(MockHttpContext.CurrentUser.UserName))
                 .Returns(new List<Character>());
             var characterController = CreateMockCharacterController(mockRepo.Object);
 

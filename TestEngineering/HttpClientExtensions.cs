@@ -71,54 +71,60 @@ namespace TestEngineering
             return created;
         }
 
-        public static async Task<EncounterResponse> CreateEncounter(this HttpClient client)
+        public static async Task<EncounterResponse> CreateEncounter(this HttpClient client, EncounterRequest? encounter = null)
         {
-            var characters = new List<Guid>();
-            for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
-            {
-                var character = await client.CreateCharacter();
-                characters.Add(character.Id);
-            }
+            if (encounter == null)
+            { 
+                var characters = new List<Guid>();
+                for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+                {
+                    var character = await client.CreateCharacter();
+                    characters.Add(character.Id);
+                }
 
-            var creatures = new List<Guid>();
-            for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
-            {
-                var creature = await client.CreateCreature();
-                creatures.Add(creature.Id);
-            }
+                var creatures = new List<Guid>();
+                for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+                {
+                    var creature = await client.CreateCreature();
+                    creatures.Add(creature.Id);
+                }
 
-            var encounter = new EncounterRequest
-            {
-                CharacterIds = characters,
-                CreatureIds = creatures
-            };
+                encounter = new EncounterRequest
+                {
+                    CharacterIds = characters,
+                    CreatureIds = creatures
+                };
+            }
             var response = await client.PostAsync("/api/encounters", encounter);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<EncounterResponse>();
             return created;
         }
 
-        public static async Task<ForcePowerResponse> CreateForcePower(this HttpClient client)
+        public static async Task<ForcePowerResponse> CreateForcePower(this HttpClient client, ForcePowerRequest? forcePower = null)
         {
-            var forcePower = Generation.ForcePowerRequest();
+            if (forcePower == null)
+                forcePower = Generation.ForcePowerRequest();
             var response = await client.PostAsync("/api/forcepowers", forcePower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<ForcePowerResponse>();
             return created;
         }
 
-        public static async Task<TechPowerResponse> CreateTechPower(this HttpClient client)
+        public static async Task<TechPowerResponse> CreateTechPower(this HttpClient client, TechPowerRequest? techPower = null)
         {
-            var techPower = Generation.ForcePowerRequest();
+            if (techPower == null)
+                techPower = Generation.TechPowerRequest();
             var response = await client.PostAsync("/api/techpowers", techPower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<TechPowerResponse>();
             return created;
         }
 
-        public static async Task<DamageTypeResponse> CreateDamageType(this HttpClient client)
+        public static async Task<DamageTypeResponse> CreateDamageType(this HttpClient client, DamageTypeRequest? damageType = null)
         {
-            var damageType = Generation.DamageTypeRequest();
+            if (damageType == null)
+                damageType = Generation.DamageTypeRequest();
             var response = await client.PostAsync("/api/damagetypes", damageType);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<DamageTypeResponse>();
