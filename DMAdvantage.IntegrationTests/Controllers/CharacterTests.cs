@@ -52,7 +52,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             for (int i = 0; i < 25; i++)
             {
                 var character = Generation.CharacterRequest();
-                character.Name = $"Character - {string.Format("{0:00000}", i)}";
+                character.Name = $"{string.Format("{0:00000}", i)} - Character";
                 var characterResponse = await client.CreateCharacter(character);
                 if (characterResponse != null)
                     characters.Add(characterResponse);

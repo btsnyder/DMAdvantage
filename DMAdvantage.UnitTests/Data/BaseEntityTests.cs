@@ -14,7 +14,7 @@ namespace DMAdvantage.UnitTests.Data
     {
         private readonly MockLogger<Repository> _mockLogger;
         private readonly Context _mockContext;
-        private readonly Repository _mockRepo;
+        protected readonly Repository _mockRepo;
 
         public BaseEntityTests()
         {

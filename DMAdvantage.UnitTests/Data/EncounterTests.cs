@@ -42,7 +42,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetEncounterWithPaging_Success()
         {
-            var encounters = Generation.RandomList(() => GenerateEncounter(), 50);
+            var encounters = Generation.RandomList(() => GenerateEncounter(), 50, true);
             encounters = encounters.OrderBy(x => x.Id).ToList();
             GetEntitiesWithPaging_Success(encounters);
         }

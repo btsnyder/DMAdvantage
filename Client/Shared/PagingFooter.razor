@@ -3,6 +3,7 @@
 @if (Data != null)
 {
     <ul class="pagination justify-content-end">
+        <text class="my-auto mx-2">@GetDisplay()</text>
         <li class="page-item">
             <button type="button" class="page-link" disabled=@(!Data.HasPrevious) @onclick="(() => UpdateCurrentPage(-1))">Previous</button>
         </li>

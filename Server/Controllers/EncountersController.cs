@@ -24,10 +24,7 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet]
         public IActionResult GetAllEncounters([FromQuery] PagingParameters? paging = null)
         {
-            if (paging == null)
-                return GetAllEntities();
-            else
-                return GetAllEntities(paging);
+            return GetAllEntities(paging);
         }
 
         [HttpGet("{id}")]

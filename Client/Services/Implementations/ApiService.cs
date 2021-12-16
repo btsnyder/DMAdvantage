@@ -32,15 +32,20 @@ namespace DMAdvantage.Client.Services.Implementations
             await _httpService.Put($"/api/{GetPath(typeof(T))}/{id}", model);
         }
 
-        public async Task<List<T>?> GetAllEntities<T>()
+        public async Task<List<T>?> GetAllEntities<T>(ISearchQuery? searching = null)
         {
-            return await _httpService.Get<List<T>>($"/api/{GetPath(typeof(T))}");
+            var uri = $"/api/{GetPath(typeof(T))}";
+            if (searching != null)
+                uri += $"?{searching.GetQuery()}";
+            return await _httpService.Get<List<T>>(uri);
         }
 
-        public async Task<PagedList<T>?> GetAllPagedEntities<T>(PagingParameters paging) where T : class
+        public async Task<PagedList<T>?> GetAllPagedEntities<T>(PagingParameters paging, ISearchQuery? searching = null, CancellationToken? token = null) where T : class
         {
-            (var data, var headers) = await _httpService
-                .GetWithResponseHeader<List<T>>($"/api/{GetPath(typeof(T))}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var uri = $"/api/{GetPath(typeof(T))}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}";
+            if (searching != null)
+                uri += $"&{searching.GetQuery()}";
+            (var data, var headers) = await _httpService.GetWithResponseHeader<List<T>>(uri, token);
 
             if (data == null)
                 return null;

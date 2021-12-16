@@ -3,32 +3,66 @@
 @inject IApiService ApiService
 
 <h1>Force Powers</h1>
-<NavLink href="forcepowers/add" class="btn btn-sm btn-success mb-2">Add Force Power</NavLink>
+<EditForm Model="@this" >
+    <div class="row my-2 py-2">
+        <div class="form-group col">
+            <label>Name</label>
+            <input class="form-control" type="text" @bind:event="oninput" @bind="@_searching.Search" @onchange=@((ChangeEventArgs e) => SearchChanged(e)) />
+        </div>
+        <div class="form-group col">
+            <label>Levels</label>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
+                @bind-Value=@_selectedLevels Data=@_levels class="form-control" Change=@(args => RefreshForcePowers())/>
+        </div>
+        <div class="form-group col">
+            <label>Alignment</label>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
+                @bind-Value=@_selectedAlignments Data=@_alignments class="form-control" Change=@(args => RefreshForcePowers())/>
+        </div>
+        <div class="form-group col">
+            <label>Casting Period</label>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
+                @bind-Value=@_selectedCastingPeriods Data=@_castingPeriods class="form-control" Change=@(args => RefreshForcePowers())/>
+        </div>
+        <div class="form-group col">
+            <label>Range</label>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
+                @bind-Value=@_selectedPowerRanges Data=@_powerRanges class="form-control" Change=@(args => RefreshForcePowers())/>
+        </div>
+    </div>
+</EditForm>
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Level</th>
             <th>Name</th>
-            <th></th>
-            <th></th>
+            <th>Alignment</th>
+            <th>Period</th>
+            <th>Range</th>
+            <th colspan=2>
+                <NavLink href="forcepowers/add" class="btn btn-sm btn-success">Add Force Power</NavLink>
+            </th>
         </tr>
     </thead>
     <tbody>
-        @if (loading)
+        @if (_loading)
         { 
             <tr>
-                <td colspan="4" class="text-center">
+                <td colspan="7" class="text-center">
                     <span class="spinner-border spinner-border-lg align-center"></span>
                 </td>
             </tr>
         }
-        else if (forcePowers != null)
+        else if (_forcePowers != null)
         {
-            foreach (var power in forcePowers)
+            foreach (var power in _forcePowers)
             {
                 <tr>
                     <td>@power.Level</td>
                     <td>@power.Name</td>
+                    <td>@power.Alignment.GetStringValue()</td>
+                    <td>@power.CastingPeriod.GetStringValue()</td>
+                    <td>@power.Range.GetStringValue()</td>
                     <td style="white-space: nowrap">
                         <NavLink href="@($"forcepowers/edit/{power.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
                     </td>
@@ -39,43 +73,10 @@
                     </td>
                 </tr>
             }
-            <tr>
-                <td colspan="4">
-                    <PagingFooter T=ForcePowerResponse @bind-Data=forcePowers CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
-                </td>
-            </tr>
         }
     </tbody>
 </table>
 
-@code {
-    private bool loading;
-    private PagingParameters paging = new();
-    private PagedList<ForcePowerResponse>? forcePowers;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await RefreshForcePowers();
-    }
-
-    private async Task RefreshForcePowers()
-    {
-        loading = true;
-        forcePowers = await ApiService.GetAllPagedEntities<ForcePowerResponse>(paging);
-        loading = false;
-    }
-
-    private async Task RemoveForcePower(ForcePowerResponse forcePower)
-    {
-        if (forcePowers == null)
-            return; 
-        forcePowers.Remove(forcePower);
-        await ApiService.RemoveEntity<ForcePowerResponse>(forcePower.Id);
-    }
-
-    private async Task CurrentPageChanged(int page)
-    {
-        paging.PageNumber = page;
-        await RefreshForcePowers();
-    }
-}
+<div class="row">
+    <PagingFooter T=ForcePowerResponse @bind-Data=_forcePowers CurrentPage=@_paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
+</div>

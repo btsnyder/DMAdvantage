@@ -7,6 +7,8 @@ using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
 using System.Collections.Generic;
+using DMAdvantage.Shared.Enums;
+using DMAdvantage.Shared.Query;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -42,6 +44,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             forcePowers.Should().HaveCount(forcePowersFromDb.Count);
         }
 
+        [Fact]
         public async Task Get_AllForcePowersWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
@@ -66,10 +69,54 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/forcepowers?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var forcePowersResponse = await response.ParseEntityList<DamageTypeResponse>();
+            var forcePowersResponse = await response.ParseEntityList<ForcePowerResponse>();
 
             forcePowersResponse.Should().HaveCount(paging.PageSize);
             forcePowersResponse[0].Id.Should().Be(forcePowers[0 + paging.PageSize].Id);
+        }
+
+        [Fact]
+        public async Task Get_AllForcePowersWithSearching_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var forcePowers = new List<ForcePowerResponse>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                var forcePower = Generation.ForcePowerRequest();
+                if (i < 5)
+                {
+                    forcePower.Alignment = ForceAlignment.Dark;
+                    forcePower.Name = "search";
+                }
+                else if (i < 15)
+                {
+                    forcePower.Name = "not found";
+                }
+                else
+                {
+                    forcePower.Name = "search";
+                    forcePower.Alignment = ForceAlignment.Light;
+                }
+                var forcePowerResponse = await client.CreateForcePower(forcePower);
+                if (forcePowerResponse != null)
+                    forcePowers.Add(forcePowerResponse);
+            }
+
+            var searching = new ForcePowerSearchParameters
+            {
+                Search = "search",
+                Alignments = new ForceAlignment[] { ForceAlignment.Dark }
+            };
+
+            var response = await client.GetAsync($"/api/forcepowers?{searching.GetQuery()}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var forcePowersResponse = await response.ParseEntityList<ForcePowerResponse>();
+
+            forcePowersResponse.Should().HaveCount(5);
+            forcePowersResponse.TrueForAll(x => x.Name == "search");
+            forcePowersResponse.TrueForAll(x => x.Alignment == ForceAlignment.Dark);
         }
 
         [Fact]

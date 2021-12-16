@@ -53,7 +53,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllTechPowers_Success()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<TechPower>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<TechPower>(MockHttpContext.CurrentUser.UserName, null))
                 .Returns(_mockTechPowerData);
             var techPowerController = CreateMockTechPowerController(mockRepo.Object);
 
@@ -169,7 +169,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllTechPowers_Failure()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<TechPower>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<TechPower>(MockHttpContext.CurrentUser.UserName, null))
                 .Throws(new Exception());
             var techPowerController = CreateMockTechPowerController(mockRepo.Object);
 
@@ -223,9 +223,9 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllTechPowersWithWrongUser_ReturnsEmptyList()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<TechPower>(It.IsAny<string>()))
+            mockRepo.Setup(x => x.GetAllEntities<TechPower>(It.IsAny<string>(), null))
                 .Returns(_mockTechPowerData);
-            mockRepo.Setup(x => x.GetAllEntities<TechPower>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<TechPower>(MockHttpContext.CurrentUser.UserName, null))
                 .Returns(new List<TechPower>());
             var techPowerController = CreateMockTechPowerController(mockRepo.Object);
 

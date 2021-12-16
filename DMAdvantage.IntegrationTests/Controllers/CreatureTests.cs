@@ -51,7 +51,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             for (int i = 0; i < 25; i++)
             {
                 var creature = Generation.CreatureRequest();
-                creature.Name = $"Creature - {string.Format("{0:00000}", i)}";
+                creature.Name = $"{string.Format("{0:00000}", i)} - Creature";
                 var creatureResponse = await client.CreateCreature(creature);
                 if (creatureResponse != null)
                     creatures.Add(creatureResponse);

@@ -11,10 +11,10 @@ namespace DMAdvantage.Server.Controllers
 {
     public class BaseEntityController<TEntity, TResponse, TRequest> : Controller where TEntity : BaseEntity
     {
-        private readonly IRepository _repository;
-        private readonly ILogger<BaseEntityController<TEntity, TResponse, TRequest>> _logger;
-        private readonly IMapper _mapper;
-        private readonly UserManager<User> _userManager;
+        protected readonly IRepository _repository;
+        protected readonly ILogger<BaseEntityController<TEntity, TResponse, TRequest>> _logger;
+        protected readonly IMapper _mapper;
+        protected readonly UserManager<User> _userManager;
 
         public BaseEntityController(IRepository repository,
             ILogger<BaseEntityController<TEntity, TResponse, TRequest>> logger,
@@ -27,42 +27,32 @@ namespace DMAdvantage.Server.Controllers
             _userManager = userManager;
         }
 
-        protected IActionResult GetAllEntities()
+        protected IActionResult GetAllEntities(PagingParameters? paging = null, ISearchParameters<TEntity>? searching = null)
         {
             try
             {
                 var username = User?.Identity?.Name ?? string.Empty;
 
-                var results = _repository.GetAllEntities<TEntity>(username);
+                IEnumerable<TEntity> results;
+                if (paging != null)
+                    results = _repository.GetAllEntities(username, paging, searching);
+                else
+                    results = _repository.GetAllEntities(username, searching);
 
-                return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest($"Failed to return entities");
-            }
-        }
-
-        protected IActionResult GetAllEntities(PagingParameters paging)
-        {
-            try
-            {
-                var username = User?.Identity?.Name ?? string.Empty;
-
-                var results = _repository.GetAllEntities<TEntity>(username, paging);
-
-                var metadata = new PagedData
+                if (results is PagedList<TEntity> pagedResults)
                 {
-                    TotalCount = results.TotalCount,
-                    PageSize = results.PageSize,
-                    CurrentPage = results.CurrentPage,
-                    TotalPages = results.TotalPages,
-                    HasNext = results.HasNext,
-                    HasPrevious = results.HasPrevious
-                };
+                    var metadata = new PagedData
+                    {
+                        TotalCount = pagedResults.TotalCount,
+                        PageSize = pagedResults.PageSize,
+                        CurrentPage = pagedResults.CurrentPage,
+                        TotalPages = pagedResults.TotalPages,
+                        HasNext = pagedResults.HasNext,
+                        HasPrevious = pagedResults.HasPrevious
+                    };
 
-                Response.Headers.Add(PagedData.Header, JsonSerializer.Serialize(metadata));
+                    Response.Headers.Add(PagedData.Header, JsonSerializer.Serialize(metadata));
+                }
 
                 return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
             }

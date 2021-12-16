@@ -31,10 +31,10 @@ namespace DMAdvantage.Client.Services.Implementations
             return await ProcessRequest<T>(request);
         }
 
-        public async Task<(T?, HttpResponseHeaders)> GetWithResponseHeader<T>(string uri)
+        public async Task<(T?, HttpResponseHeaders)> GetWithResponseHeader<T>(string uri, CancellationToken? token)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
-            return await ProcessRequestWithHeaders<T>(request);
+            return await ProcessRequestWithHeaders<T>(request, token);
         }
 
         public async Task<T?> GetWithHeader<T>(string uri, string key, string value)
@@ -87,10 +87,15 @@ namespace DMAdvantage.Client.Services.Implementations
             return request;
         }
 
-        private async Task<HttpResponseMessage> SendAuthorizedRequest(HttpRequestMessage request)
+        private async Task<HttpResponseMessage> SendAuthorizedRequest(HttpRequestMessage request, CancellationToken? token = null)
         {
+            if (token.HasValue && token.Value.IsCancellationRequested)
+                return new HttpResponseMessage();
+
             await request.AddJwtHeader(_localStorageService);
 
+            if (token.HasValue && token.Value.IsCancellationRequested)
+                return new HttpResponseMessage();
             return await _httpClient.SendAsync(request);
         }
 
@@ -101,27 +106,36 @@ namespace DMAdvantage.Client.Services.Implementations
             await response.ProcessResponseValidity(_navigationManager);
         }
 
-        private async Task<T?> ProcessRequest<T>(HttpRequestMessage request)
+        private async Task<T?> ProcessRequest<T>(HttpRequestMessage request, CancellationToken? token = null)
         {
-            using var response = await SendAuthorizedRequest(request);
+            using var response = await SendAuthorizedRequest(request, token);
+
+            if (token.HasValue && token.Value.IsCancellationRequested)
+                return default;
 
             var valid = await response.ProcessResponseValidity(_navigationManager);
-            
             if (!valid)
                 return default;
 
+            if (token.HasValue && token.Value.IsCancellationRequested)
+                return default;
             return await response.ParseContent<T>();
         }
 
-        private async Task<(T?, HttpResponseHeaders)> ProcessRequestWithHeaders<T>(HttpRequestMessage request)
+        private async Task<(T?, HttpResponseHeaders)> ProcessRequestWithHeaders<T>(HttpRequestMessage request, CancellationToken? token)
         {
-            using var response = await SendAuthorizedRequest(request);
+            using var response = await SendAuthorizedRequest(request, token);
+
+            if (token.HasValue && token.Value.IsCancellationRequested)
+                return default;
 
             var valid = await response.ProcessResponseValidity(_navigationManager);
 
             if (!valid)
                 return default;
 
+            if (token.HasValue && token.Value.IsCancellationRequested)
+                return default;
             var content = await response.ParseContent<T>();
             return (content, response.Headers);
         }

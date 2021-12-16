@@ -201,10 +201,15 @@ namespace TestEngineering
             };
         }
 
-        public static List<T> RandomList<T>(Func<T> creation, int max = 5)
+        public static List<T> RandomList<T>(Func<T> creation, int max = 5, bool generateMax = false)
         {
             var list = new List<T>();
-            for (int i = 0; i < max; i++)
+            int count;
+            if (generateMax)
+                count = max;
+            else
+                count = Faker.RandomNumber.Next(0, max);
+            for (int i = 0; i < count; i++)
             {
                 list.Add(creation.Invoke());
             }

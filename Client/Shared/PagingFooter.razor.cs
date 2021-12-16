@@ -47,5 +47,16 @@ namespace DMAdvantage.Client.Shared
             else
                 CurrentPage = newPage;
         }
+
+        public string GetDisplay()
+        {
+            if (_data == null)
+                return string.Empty;
+            var startingIndex = (_data.CurrentPage - 1) * _data.PageSize + 1;
+            if (_data.Count == 1)
+                return $"{startingIndex} of {_data.TotalCount}";
+            var endingIndex = Math.Min(_data.CurrentPage * _data.PageSize, startingIndex + _data.Count - 1);
+            return $"{startingIndex} - {endingIndex} of {_data.TotalCount}";
+        }
     }
 }

@@ -38,7 +38,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetTechPowerWithPaging_Success()
         {
-            var techPowers = Generation.RandomList(() => Generation.TechPower(), 50);
+            var techPowers = Generation.RandomList(() => Generation.TechPower(), 50, true);
             for (int i = 0; i < techPowers.Count; i++)
             {
                 techPowers[i].Level = 0;

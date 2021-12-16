@@ -38,7 +38,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetDamageTypeWithPaging_Success()
         {
-            var damageTypes = Generation.RandomList(() => Generation.DamageType(), 50);
+            var damageTypes = Generation.RandomList(() => Generation.DamageType(), 50, true);
             for (int i = 0; i < damageTypes.Count; i++)
             {
                 damageTypes[i].Name = $"DamageType - {string.Format("{0:00000}", i)}";

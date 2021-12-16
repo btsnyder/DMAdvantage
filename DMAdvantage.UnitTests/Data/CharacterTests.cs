@@ -38,7 +38,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetCharacterWithPaging_Success()
         {
-            var characters = Generation.RandomList(() => Generation.Character(), 50);
+            var characters = Generation.RandomList(() => Generation.Character(), 50, true);
             for (int i = 0; i < characters.Count; i++)
             {
                 characters[i].Name = $"Character - {string.Format("{0:00000}", i)}";

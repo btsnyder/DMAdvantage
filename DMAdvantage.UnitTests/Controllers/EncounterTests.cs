@@ -57,7 +57,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllEncounters_Success()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName, null))
                 .Returns(_mockEncounterData);
             var encounterController = CreateMockEncounterController(mockRepo.Object);
 
@@ -157,7 +157,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllEncounters_Failure()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName, null))
                 .Throws(new Exception());
             var encounterController = CreateMockEncounterController(mockRepo.Object);
 
@@ -211,9 +211,9 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllEncountersWithWrongUser_ReturnsEmptyList()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(It.IsAny<string>()))
+            mockRepo.Setup(x => x.GetAllEntities<Encounter>(It.IsAny<string>(), null))
                 .Returns(_mockEncounterData);
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName, null))
                 .Returns(new List<Encounter>());
             var encounterController = CreateMockEncounterController(mockRepo.Object);
 

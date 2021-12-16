@@ -52,7 +52,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllCreatures_Success()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName, null))
                 .Returns(_mockCreatureData);
             var creatureController = CreateMockCreatureController(mockRepo.Object);
 
@@ -190,7 +190,7 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllCreatures_Failure()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName, null))
                 .Throws(new Exception());
             var creatureController = CreateMockCreatureController(mockRepo.Object);
 
@@ -244,9 +244,9 @@ namespace DMAdvantage.UnitTests.Controllers
         public void Get_AllCreaturesWithWrongUser_ReturnsEmptyList()
         {
             var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(It.IsAny<string>()))
+            mockRepo.Setup(x => x.GetAllEntities<Creature>(It.IsAny<string>(), null))
                 .Returns(_mockCreatureData);
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName))
+            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName, null))
                 .Returns(new List<Creature>());
             var creatureController = CreateMockCreatureController(mockRepo.Object);
 
