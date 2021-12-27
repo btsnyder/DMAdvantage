@@ -1,6 +1,7 @@
 using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Services.Implementations;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Radzen;
 
 namespace DMAdvantage.Client
 {
@@ -17,6 +18,7 @@ namespace DMAdvantage.Client
                 .AddScoped<IAlertService, AlertService>()
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
+                .AddScoped<DialogService>()
                 .AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             await builder.Build().RunAsync();

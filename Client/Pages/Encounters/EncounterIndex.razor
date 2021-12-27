@@ -1,0 +1,79 @@
+﻿@page "/encounters"
+@attribute [Authorize]
+@inject IApiService ApiService
+
+<h1>Encounters</h1>
+<NavLink href="encounters/add" class="btn btn-sm btn-success mb-2">Add Encounter</NavLink>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (encounters != null)
+        {
+            foreach (var encounter in encounters)
+            {
+                <tr>
+                    <td>@encounter.Name</td>
+                    <td style="white-space: nowrap">
+                        <NavLink href="@($"encounters/edit/{encounter.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveEncounter(encounter))">
+                            <span class="oi oi-trash" aria-hidden="true"></span>
+                        </button>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="4">
+                    <PagingFooter T=EncounterResponse @bind-Data=encounters CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
+                </td>
+            </tr>
+        }
+        @if (loading)
+        { 
+            <tr>
+                <td colspan="4" class="text-center">
+                    <span class="spinner-border spinner-border-lg align-center"></span>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private bool loading;
+    private PagedList<EncounterResponse>? encounters;
+    private PagingParameters paging = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshEncounters();   
+    }
+
+    private async Task RemoveEncounter(EncounterResponse encounter)
+    {
+        if (encounters == null)
+            return;
+        encounters.Remove(encounter);
+        await ApiService.RemoveEntity<EncounterResponse>(encounter.Id);
+    }
+
+    private async Task RefreshEncounters()
+    {
+        loading = true;
+        encounters = await ApiService.GetAllPagedEntities<EncounterResponse>(paging);
+        loading = false;   
+    }
+
+    private async Task CurrentPageChanged(int page)
+    {
+        paging.PageNumber = page;
+        await RefreshEncounters();
+    }
+}

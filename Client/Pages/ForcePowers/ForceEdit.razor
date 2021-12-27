@@ -12,19 +12,12 @@
                 <InputText @bind-Value="@_model.Name" class="form-control" />
                 <ValidationMessage For="@(() => _model.Name)" />
             </div>
-            <div class="form-group col-8">
-                <label>Description</label>
-                <InputTextArea @bind-Value="@_model.Description" class="form-control" />
-                <ValidationMessage For="@(() => _model.Description)" />
-            </div>
             <div class="form-group col-1">
                 <label>Level</label>
                 <InputNumber @bind-Value="@_model.Level" class="form-control" />
                 <ValidationMessage For="@(() => _model.Level)" />
             </div>
-        </div>
-        <div class="row my-2">
-            <div class="form-group col-3">
+            <div class="form-group col-2">
                 <label>Casting Period</label>
                 <InputSelect @bind-Value="@_model.CastingPeriod" class="form-control">
                     @foreach (var period in Enum.GetValues<CastingPeriod>())
@@ -34,12 +27,12 @@
                 </InputSelect>
                 <ValidationMessage For="@(() => _model.CastingPeriod)" />
             </div>
-            <div class="form-group col-3">
+            <div class="form-group col-2">
                 <label>Casting Description</label>
                 <InputText @bind-Value="@_model.CastingDescription" class="form-control"/>
                 <ValidationMessage For="@(() => _model.CastingDescription)" />
             </div>
-            <div class="form-group col-3">
+            <div class="form-group col-2">
                 <label>Range</label>
                 <InputSelect @bind-Value="@_model.Range" class="form-control">
                     @foreach (var range in Enum.GetValues<PowerRange>())
@@ -49,19 +42,36 @@
                 </InputSelect>
                 <ValidationMessage For="@(() => _model.Range)" />
             </div>
-            <div class="form-group col-3">
+            <div class="form-group col-2">
                 <label>Range Description</label>
                 <InputText @bind-Value="@_model.RangeDescription" class="form-control"/>
                 <ValidationMessage For="@(() => _model.RangeDescription)" />
             </div>
         </div>
         <div class="row my-2">
-            <div class="form-group col-4">
+            <div class="form-group col-12" style="height: 250px;">
+                <label>Description</label>
+                <InputTextArea @bind-Value="@_model.Description" class="form-control h-75" />
+                <ValidationMessage For="@(() => _model.Description)" />
+            </div>
+        </div>
+        <div class="row my-2">
+            <div class="form-group col-2">
+                <label>Alignment</label>
+                <InputSelect @bind-Value="@_model.Alignment" class="form-control">
+                    @foreach (var alignment in Enum.GetValues<ForceAlignment>())
+                    { 
+                        <option value="@alignment">@alignment.GetStringValue()</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => _model.HitOption)" />
+            </div>
+            <div class="form-group col-3">
                 <label>Duration</label>
                 <InputText @bind-Value="@_model.Duration" class="form-control"/>
                 <ValidationMessage For="@(() => _model.Duration)" />
             </div>
-            <div class="form-group col-2">
+            <div class="form-group col-1">
                 <label class="row">Concentration</label>
                 <input type="checkbox" class="btn-check row" id="btn-check-outlined" autocomplete="off" @bind="@_model.Concentration">
                     @if(_model.Concentration)
@@ -91,17 +101,11 @@
             </div>
         </div>
         <div class="row my-2">
-            <div class="form-group col-3">
-                <label>Alignment</label>
-                <InputSelect @bind-Value="@_model.Alignment" class="form-control">
-                    @foreach (var alignment in Enum.GetValues<ForceAlignment>())
-                    { 
-                        <option value="@alignment">@alignment.GetStringValue()</option>
-                    }
-                </InputSelect>
-                <ValidationMessage For="@(() => _model.HitOption)" />
+            <div class="form-group col">
+                <label>Prerequisite</label>
+                <RadzenAutoComplete @bind-Value=_selectedPrerequisite Data=@_forcePowers TextProperty="Name" LoadData=@OnLoadData Change=@(args => OnChange(args)) Style="width: 100%"/>
             </div>
-            <div class="form-group col-9">
+            <div class="form-group col">
                 <label>Potency</label>
                 <InputText @bind-Value="@_model.Potency" class="form-control"/>
                 <ValidationMessage For="@(() => _model.Potency)" />
@@ -117,5 +121,5 @@
             </button>
             <NavLink href="forcepowers" class="btn btn-link">Cancel</NavLink>
         </div>
-    </EditForm>
+    </EditForm> 
 }

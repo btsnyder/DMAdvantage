@@ -1,7 +1,9 @@
 ﻿using DMAdvantage.Client.Models;
 using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
+using Radzen;
 
 namespace DMAdvantage.Client.Pages.ForcePowers
 {
@@ -9,6 +11,9 @@ namespace DMAdvantage.Client.Pages.ForcePowers
     {
         private ForcePowerRequest? _model;
         private bool _loading;
+        private List<ForcePowerResponse> _forcePowers;
+        private string? _selectedPrerequisite;
+        private readonly ForcePowerSearchParameters _search = new();
 
         [Inject]
         IAlertService AlertService { get; set; }
@@ -21,7 +26,16 @@ namespace DMAdvantage.Client.Pages.ForcePowers
 
         protected override async Task OnInitializedAsync()
         {
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+
             _model = await ApiService.GetEntityById<ForcePowerResponse>(Guid.Parse(Id));
+            if (_model?.PrerequisiteId != null)
+            {
+                var prereq = await ApiService.GetEntityById<ForcePowerResponse>(_model.PrerequisiteId.Value);
+                _selectedPrerequisite = prereq?.Name;
+            }
+            
+            await base.OnInitializedAsync();
         }
 
         private async void OnValidSubmit()
@@ -39,6 +53,26 @@ namespace DMAdvantage.Client.Pages.ForcePowers
                 _loading = false;
                 StateHasChanged();
             }
+        }
+
+        void OnChange(object value)
+        {
+            if (_model == null)
+                return;
+            var name = (string)value;
+            var power = _forcePowers.FirstOrDefault(x => x.Name == name);
+            if (power != null)
+                _model.PrerequisiteId = power.Id;
+            else
+                _model.PrerequisiteId = null;
+        }
+
+        async Task OnLoadData(LoadDataArgs args)
+        {
+            _search.Search = args.Filter;
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_search) ?? new();
+
+            await InvokeAsync(StateHasChanged);
         }
     }
 }

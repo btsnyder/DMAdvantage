@@ -2,12 +2,13 @@
 {
     public class Encounter : BaseEntity
     {
+        public string? Name { get; set; }
         public List<Guid> CharacterIds { get; set; } = new();
         public List<Guid> CreatureIds { get; set; } = new();
 
         public override string OrderBy()
         {
-            return Id.ToString();
+            return Name ?? string.Empty;
         }
     }
 }

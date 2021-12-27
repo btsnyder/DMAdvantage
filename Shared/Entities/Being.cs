@@ -1,6 +1,6 @@
 ﻿namespace DMAdvantage.Shared.Entities
 {
-    public abstract class Being : BaseEntity
+    public abstract class Being : BaseEntity, INamedEntity
     {
         public string? Name { get; set; }
         public int HitPoints { get; set; }

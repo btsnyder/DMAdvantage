@@ -34,9 +34,9 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task<List<T>?> GetAllEntities<T>(ISearchQuery? searching = null)
         {
-            var uri = $"/api/{GetPath(typeof(T))}";
+            var uri = $"/api/{GetPath(typeof(T))}?pageSize={int.MaxValue}";
             if (searching != null)
-                uri += $"?{searching.GetQuery()}";
+                uri += $"&{searching.GetQuery()}";
             return await _httpService.Get<List<T>>(uri);
         }
 
