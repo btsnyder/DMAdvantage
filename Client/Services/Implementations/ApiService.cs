@@ -83,5 +83,32 @@ namespace DMAdvantage.Client.Services.Implementations
             path += "s";
             return path.ToLower();
         }
+
+        public async Task<EncounterResponse?> GetEncounterView(Guid id)
+        {
+            return await _httpService.Get<EncounterResponse>($"/api/encountersview/encounter/{id}");
+        }
+
+        public async Task<List<CharacterResponse>> GetCharacterViews(IEnumerable<Guid> ids)
+        {
+            var query = "/api/encountersview/characters/?";
+            foreach (var id in ids)
+            {
+                query += $"ids={id}&";
+            }
+            query = query.TrimEnd('&');
+            return await _httpService.Get<List<CharacterResponse>>(query) ?? new();
+        }
+
+        public async Task<List<CreatureResponse>> GetCreatureViews(IEnumerable<Guid> ids)
+        {
+            var query = "/api/encountersview/creatures/?";
+            foreach (var id in ids)
+            {
+                query += $"ids={id}&";
+            }
+            query = query.TrimEnd('&');
+            return await _httpService.Get<List<CreatureResponse>>(query) ?? new();
+        }
     }
 }

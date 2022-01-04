@@ -39,9 +39,8 @@ namespace DMAdvantage.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Ignore<BaseAction>();
+            modelBuilder.Ignore<InitativeData>();
 
-            AddGuidList(modelBuilder, (Encounter e) => e.CharacterIds);
-            AddGuidList(modelBuilder, (Encounter e) => e.CreatureIds);
             AddGuidList(modelBuilder, (Character c) => c.ForcePowerIds);
             AddGuidList(modelBuilder, (Character c) => c.TechPowerIds);
             AddGuidList(modelBuilder, (Creature c) => c.ForcePowerIds);

@@ -14,6 +14,7 @@ using DMAdvantage.Server.Controllers;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Models;
 using FluentAssertions;
+using System.Text.Json;
 
 namespace DMAdvantage.UnitTests.Controllers
 {
@@ -23,8 +24,13 @@ namespace DMAdvantage.UnitTests.Controllers
         {
             new Encounter
             {
-                CharacterIds = new() { Guid.NewGuid(), Guid.NewGuid() },
-                CreatureIds = new() { Guid.NewGuid(), Guid.NewGuid() },
+                DataCache = JsonSerializer.Serialize(new List<InitativeData>
+                {
+                    new InitativeData { BeingId = Guid.NewGuid() },
+                    new InitativeData { BeingId = Guid.NewGuid() },
+                    new InitativeData { BeingId = Guid.NewGuid() },
+                    new InitativeData { BeingId = Guid.NewGuid() }
+                }),
                 User = MockHttpContext.CurrentUser
             }
         };
@@ -95,8 +101,13 @@ namespace DMAdvantage.UnitTests.Controllers
             mockRepo.Setup(x => x.SaveAll()).Returns(true);
             var newEncounter = new EncounterRequest
             {
-                CharacterIds = new() { Guid.NewGuid(), Guid.NewGuid() },
-                CreatureIds = new() { Guid.NewGuid(), Guid.NewGuid() }
+                Data = new() 
+                { 
+                    new InitativeData { BeingId = Guid.NewGuid() },
+                    new InitativeData { BeingId = Guid.NewGuid() },
+                    new InitativeData { BeingId = Guid.NewGuid() },
+                    new InitativeData { BeingId = Guid.NewGuid() }
+                }
             };
             var originalCount = _mockEncounterData.Count;
             var encounterController = CreateMockEncounterController(mockRepo.Object);
@@ -116,10 +127,17 @@ namespace DMAdvantage.UnitTests.Controllers
             mockRepo.Setup(x => x.GetEntityById<Encounter>(_mockEncounterData[0].Id, It.IsAny<string>()))
                 .Returns(_mockEncounterData[0]);
             mockRepo.Setup(x => x.SaveAll()).Returns(true);
+            var data = new List<InitativeData>();
+            data.AddRange(_mockEncounterData[0].Data.Take(2));
+            data.AddRange(new List<InitativeData>
+            {
+                new InitativeData { BeingId = Guid.NewGuid() },
+                new InitativeData { BeingId = Guid.NewGuid() }
+            });
+
             var editEncounter = new EncounterRequest
             {
-                CharacterIds = _mockEncounterData[0].CharacterIds,
-                CreatureIds = new() { Guid.NewGuid(), Guid.NewGuid() }
+                Data = data
             };
             var encounterController = CreateMockEncounterController(mockRepo.Object);
 
@@ -136,10 +154,16 @@ namespace DMAdvantage.UnitTests.Controllers
             mockRepo.Setup(x => x.AddEntity(It.IsAny<object>()))
                 .Callback((object obj) => _mockEncounterData.Add((Encounter)obj));
             mockRepo.Setup(x => x.SaveAll()).Returns(true);
+            var data = new List<InitativeData>();
+            data.AddRange(_mockEncounterData[0].Data.Take(2));
+            data.AddRange(new List<InitativeData>
+            {
+                new InitativeData { BeingId = Guid.NewGuid() },
+                new InitativeData { BeingId = Guid.NewGuid() }
+            });
             var editEncounter = new EncounterRequest
             {
-                CharacterIds = _mockEncounterData[0].CharacterIds,
-                CreatureIds = new() { Guid.NewGuid(), Guid.NewGuid() }
+                Data= data
             };
             var originalCount = _mockEncounterData.Count;
             var encounterController = CreateMockEncounterController(mockRepo.Object);

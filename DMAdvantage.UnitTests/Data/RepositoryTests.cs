@@ -1,9 +1,12 @@
 ﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using TestEngineering;
 using TestEngineering.Mocks;
 using Xunit;
@@ -30,7 +33,12 @@ namespace DMAdvantage.UnitTests.Data
         {
             var character = Generation.Character();
             var creature = Generation.Creature();
-            var encounter = new Encounter { CharacterIds = new() { character.Id }, CreatureIds = new() { creature.Id } };
+            var data = new List<InitativeData>
+            {
+                new InitativeData { BeingId = character.Id },
+                new InitativeData { BeingId = creature.Id }
+            };
+            var encounter = new Encounter { DataCache = JsonSerializer.Serialize(data) };
 
             _mockRepo.AddEntity(character);
             _mockRepo.AddEntity(creature);

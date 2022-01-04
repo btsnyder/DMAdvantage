@@ -1,0 +1,40 @@
+﻿@page "/encounters/view/{Id}"
+
+@if (_model != null)
+{
+    <div class="row my-2">
+        <div class="col">
+            <h1>@_model.Name</h1>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="col">
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr>
+                        <th>Init</th>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>AC</th>
+                        <th>HP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (_initatives != null)
+                    {
+                        foreach (var initative in _initatives)
+                        {
+                            <tr>
+                                <td style="max-width: 25px;">@initative.Initative</td>
+                                <td>@initative.Being.Name</td>
+                                <td></td>
+                                <td>@initative.Being.ArmorClass</td>
+                                <td>@initative.CurrentHP</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

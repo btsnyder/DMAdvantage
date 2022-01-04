@@ -12,7 +12,7 @@ namespace DMAdvantage.Client.Pages.Encounters
     {
         private readonly EncounterRequest _model = new();
         private bool _loading;
-        private List<InitativeData> _initatives;
+        private readonly List<InitativeDataModel> _initatives = new();
         private List<CharacterResponse> _characters;
         private List<CreatureResponse> _creatures;
         private CharacterResponse _selectedCharacter;
@@ -29,7 +29,6 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         protected override async Task OnInitializedAsync()
         {
-            _initatives = new List<InitativeData>();
             _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
             _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
 
@@ -41,6 +40,10 @@ namespace DMAdvantage.Client.Pages.Encounters
             _loading = true;
             try
             {
+                foreach (var init in _initatives)
+                {
+                    _model.Data.Add(init);
+                }
                 await ApiService.AddEntity(_model);
                 AlertService.Alert(AlertType.Success, "Character added successfully", keepAfterRouteChange: true);
                 NavigationManager.NavigateTo("encounters");
@@ -53,14 +56,14 @@ namespace DMAdvantage.Client.Pages.Encounters
             }
         }
 
-        void ConfirmHealth(InitativeData data)
+        void ConfirmHealth(InitativeDataModel data)
         {
             data.ApplyHP(_healthEdit);
             data.Healing = data.Damaging = false;
             _healthEdit = 0;
         }
 
-        void CancelHealth(InitativeData data)
+        void CancelHealth(InitativeDataModel data)
         {
             data.Healing = data.Damaging = false;
         }
@@ -100,20 +103,20 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         void OnAddCharacter()
         {
-            var data = new InitativeData(_selectedCharacter);
+            var data = new InitativeDataModel(_selectedCharacter);
             _initatives.Add(data);
         }
 
         void OnAddCreature()
         {
-            var data = new InitativeData(_selectedCreature);
+            var data = new InitativeDataModel(_selectedCreature);
             _initatives.Add(data);
         }
 
         void InitativeEditDone()
         {
             _initativeEditing = false;
-            _initatives.Sort(delegate (InitativeData data1, InitativeData data2) { return data2.Initative.CompareTo(data1.Initative); });
+            _initatives.Sort(delegate (InitativeDataModel data1, InitativeDataModel data2) { return data2.Initative.CompareTo(data1.Initative); });
         }
     }
 }

@@ -1,10 +1,13 @@
-﻿namespace DMAdvantage.Shared.Entities
+﻿using DMAdvantage.Shared.Models;
+using System.Text.Json;
+
+namespace DMAdvantage.Shared.Entities
 {
     public class Encounter : BaseEntity
     {
         public string? Name { get; set; }
-        public List<Guid> CharacterIds { get; set; } = new();
-        public List<Guid> CreatureIds { get; set; } = new();
+        public string? DataCache { get; set; }
+        public List<InitativeData> Data => JsonSerializer.Deserialize<List<InitativeData>>(DataCache ?? string.Empty) ?? new();
 
         public override string OrderBy()
         {

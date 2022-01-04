@@ -6,7 +6,6 @@ namespace DMAdvantage.Shared.Entities
     {
         public string? PlayerName { get; set; }
         public int Level { get; set; }
-        public SWClass? Class { get; set; }
 
         public override string OrderBy()
         {

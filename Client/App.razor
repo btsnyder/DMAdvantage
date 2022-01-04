@@ -15,7 +15,7 @@
 @code {
     private async Task OnNavigateAsync(NavigationContext context)
     {
-        if (!AccountService.GetLoggedIn() && context.Path != "account/login")
+        if (!AccountService.GetLoggedIn() && context.Path != "account/login" && !context.Path.StartsWith("encounters/view"))
             NavigationManager.NavigateTo("account/login");
         await Task.CompletedTask;
     }

@@ -68,11 +68,15 @@ namespace DMAdvantage.IntegrationTests.Controllers
                     creatures.Add(creature.Id);
                 }
 
+                var data = new List<InitativeData>();
+                data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
+                data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
+
                 var encounter = new EncounterRequest
                 {
-                    CharacterIds = characters,
-                    CreatureIds = creatures
+                    Data = data,
                 };
+
                 var encounterResponse = await client.CreateEncounter(encounter);
                 if (encounterResponse != null)
                     encounters.Add(encounterResponse);
@@ -137,10 +141,13 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 creatures.Add(creature.Id);
             }
 
+            var data = new List<InitativeData>();
+            data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
+            data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
+
             var encounterEdit = new EncounterRequest
             {
-                CharacterIds = characters,
-                CreatureIds = creatures
+                Data = data,
             };
             var response = await client.PutAsync($"api/encounters/{encounter.Id}", encounterEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

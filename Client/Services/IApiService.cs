@@ -11,5 +11,8 @@ namespace DMAdvantage.Client.Services
         Task<T?> GetEntityById<T>(Guid id);
         Task UpdateEntity<T>(Guid id, T model);
         Task RemoveEntity<T>(Guid id);
+        Task<EncounterResponse?> GetEncounterView(Guid id);
+        Task<List<CharacterResponse>> GetCharacterViews(IEnumerable<Guid> ids);
+        Task<List<CreatureResponse>> GetCreatureViews(IEnumerable<Guid> ids);
     }
 }

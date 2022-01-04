@@ -13,6 +13,7 @@ namespace DMAdvantage.Data
             CreateMap<Character, CharacterResponse>().ReverseMap();
             CreateMap<CharacterResponse, CharacterRequest>();
             CreateMap<Being, Character>();
+            CreateMap<Character, BeingModel>();
             CreateMap<Being, CharacterRequest>();
             CreateMap<Being, CharacterResponse>();
             CreateMap<Creature, CreatureRequest>();
@@ -21,13 +22,14 @@ namespace DMAdvantage.Data
                 .ForMember(c => c.ActionsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Actions, (JsonSerializerOptions?)null)));
             CreateMap<Creature, CreatureResponse>().ReverseMap();
             CreateMap<Being, Creature>();
+            CreateMap<Creature, BeingModel>();
             CreateMap<Being, CreatureRequest>();
             CreateMap<Being, CreatureResponse>();
-            CreateMap<Encounter, EncounterRequest>().ReverseMap();
+            CreateMap<Encounter, EncounterRequest>();
+            CreateMap<EncounterRequest, Encounter>()
+                .ForMember(c => c.Data, opt => opt.Ignore())
+                .ForMember(c => c.DataCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Data, (JsonSerializerOptions?)null))); ;
             CreateMap<Encounter, EncounterResponse>().ReverseMap();
-            CreateMap<Being, Encounter>();
-            CreateMap<Being, EncounterRequest>();
-            CreateMap<Being, EncounterResponse>();
             CreateMap<ForcePower, ForcePowerRequest>().ReverseMap();
             CreateMap<ForcePower, ForcePowerResponse>().ReverseMap();
             CreateMap<TechPower, TechPowerRequest>().ReverseMap();

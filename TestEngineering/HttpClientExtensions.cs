@@ -89,10 +89,13 @@ namespace TestEngineering
                     creatures.Add(creature.Id);
                 }
 
+                var data = new List<InitativeData>();
+                data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
+                data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
+
                 encounter = new EncounterRequest
                 {
-                    CharacterIds = characters,
-                    CreatureIds = creatures
+                    Data = data,
                 };
             }
             var response = await client.PostAsync("/api/encounters", encounter);

@@ -7,6 +7,5 @@ namespace DMAdvantage.Shared.Models
         public string? PlayerName { get; set; }
         [Required]
         public int Level { get; set; }
-        public string? Class { get; set; }
     }
 }

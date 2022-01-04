@@ -1,6 +1,9 @@
 ﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using TestEngineering;
 using TestEngineering.Mocks;
 using Xunit;
@@ -52,8 +55,11 @@ namespace DMAdvantage.UnitTests.Data
             return new Encounter
             {
                 Id = Guid.NewGuid(),
-                CharacterIds = new() { Guid.NewGuid() },
-                CreatureIds = new() { Guid.NewGuid() },
+                DataCache = JsonSerializer.Serialize(new List<InitativeData> 
+                { 
+                    new InitativeData { BeingId = Guid.NewGuid() },
+                    new InitativeData { BeingId = Guid.NewGuid() }
+                }),
                 User = MockHttpContext.CurrentUser
             };
         }

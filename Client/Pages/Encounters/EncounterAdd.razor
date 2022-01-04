@@ -169,10 +169,7 @@
                                     }
                                 </td>
                                 <td>@initative.Being.Name</td>
-                                <td>@if(initative.Being is CharacterResponse response)
-                                    {
-                                        @response.Class
-                                    }
+                                <td>
                                 </td>
                                 <td>@initative.Being.ArmorClass</td>
                                 <td>@initative.CurrentHP</td>
@@ -210,39 +207,6 @@
                     }
                 </tbody>
             </table>
-            @*<RadzenDataGrid @ref="_initativesGrid" PageSize="5" AllowSorting="true" EditMode="DataGridEditMode.Single"
-                Data="@_initatives" TItem="InitativeData" RowUpdate="@OnUpdateRow" RowCreate="@OnCreateRow" >
-                <Columns>
-                    <RadzenDataGridColumn TItem="InitativeData" Property="Initative" Title="Init" >
-                        <EditTemplate Context="init">
-                            <InputNumber @bind-Value="init.Initative" Data="@_initatives" TextProperty="Initative" ValueProperty="Initative" />
-                        </EditTemplate>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="InitativeData" Property="Being.Name" Title="Name" />
-                    <RadzenDataGridColumn TItem="InitativeData" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
-                        <Template Context="init">
-                            <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@(args => EditRow(init))" @onclick:stopPropagation="true">
-                            </RadzenButton>
-                        </Template>
-                        <EditTemplate Context="init">
-                            <RadzenButton Icon="check" ButtonStyle="ButtonStyle.Primary" Class="m-1" Click="@((args) => SaveRow(init))">
-                            </RadzenButton>
-                            <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Light" Class="m-1" Click="@((args) => CancelEdit(init))">
-                            </RadzenButton>
-                        </EditTemplate>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="InitativeData" Context="init" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
-                        <Template Context="init">
-                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Class="m-1" Click="@(args => DeleteRow(init))"  @onclick:stopPropagation="true">
-                            </RadzenButton>
-                        </Template>
-                        <EditTemplate Context="init">
-                            <RadzenButton ButtonStyle="ButtonStyle.Danger" Icon="delete" Class="m-1" Click="@(args => DeleteRow(init))">
-                            </RadzenButton>
-                        </EditTemplate>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>*@
         </div>
     </div>
     <div class="row my-2">

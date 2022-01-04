@@ -12,93 +12,206 @@
                 <InputText @bind-Value="@_model.Name" class="form-control" />
                 <ValidationMessage For="@(() => _model.Name)" />
             </div>
-            <div class="form-group col">
-                <label>Player</label>
-                <InputText @bind-Value="@_model.PlayerName" class="form-control" />
-                <ValidationMessage For="@(() => _model.PlayerName)" />
+        </div>
+        <div class="row my-2">
+            <div class="col">
+                <RadzenTabs TabPosition="TabPosition.Top" RenderMode="TabRenderMode.Client" style="margin-bottom: 10px">
+                    <Tabs>
+                        <RadzenTabsItem Text="Character">
+                            <div class="row">
+                                <RadzenAutoComplete Data=@_characters TextProperty="Name" LoadData=@OnLoadCharacterData 
+                                    Change=@(args => OnCharacterChange(args)) Class="col" Style="width: 100%"/>
+                            </div>
+                            @if (_selectedCharacter != null)
+                            {
+                                <div class="row mb-2">
+                                    <div class="col-3">
+                                        <label class="row">Name</label>
+                                        <b class="fs-5 row">@_selectedCharacter.Name</b>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">AC</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text=@_selectedCharacter.ArmorClass.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">HP</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@_selectedCharacter.HitPoints.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">LVL</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Info" Text=@_selectedCharacter.Level.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">STR</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCharacter.StrengthBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">DEX</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCharacter.DexterityBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">CON</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCharacter.ConstitutionBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">INT</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCharacter.IntelligenceBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">WIS</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCharacter.WisdomBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">CHA</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCharacter.CharismaBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <RadzenButton Icon="add_box" class="mb-2 btn-success" Text="Insert" Click="@OnAddCharacter" />
+                                </div>
+                            }
+                        </RadzenTabsItem>
+                        <RadzenTabsItem Text="Creature">
+                            <div class="row">
+                                <RadzenAutoComplete Data=@_creatures TextProperty="Name" LoadData=@OnLoadCreatureData 
+                                    Change=@(args => OnCreatureChange(args)) Class="col" Style="width: 100%"/>
+                            </div>
+                            @if (_selectedCreature != null)
+                            {
+                                <div class="row mb-2">
+                                    <div class="col-3">
+                                        <label class="row">Name</label>
+                                        <b class="fs-5 row">@_selectedCreature.Name</b>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">AC</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Warning" Text=@_selectedCreature.ArmorClass.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">HP</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Danger" Text=@_selectedCreature.HitPoints.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">CR</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Info" Text=@_selectedCreature.ChallengeRating.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">STR</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCreature.StrengthBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">DEX</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCreature.DexterityBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">CON</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCreature.ConstitutionBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">INT</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCreature.IntelligenceBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">WIS</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCreature.WisdomBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                    <div class="col">
+                                        <label class="row">CHA</label>
+                                        <RadzenBadge BadgeStyle="BadgeStyle.Secondary" Text=@_selectedCreature.CharismaBonus.ToString() class="fs-5 row"/>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <RadzenButton Icon="add_box" class="mb-2 btn-success" Text="Insert" Click="@OnAddCreature" />
+                                </div>
+                            }
+                        </RadzenTabsItem>
+                    </Tabs>
+                </RadzenTabs>
+                <table class="table table-striped text-center">
+                    <thead>
+                        <tr>
+                            <th>
+                                Init
+                                @if(_initativeEditing)
+                                {
+                                    <button type="button" class="btn btn-secondary btn-sm" @onclick="(() => InitativeEditDone())">
+                                        <span class="oi oi-x" aria-hidden="true"></span>
+                                    </button>   
+                                }
+                                else
+                                {
+                                    <button type="button" class="btn btn-secondary btn-sm" @onclick="(() => _initativeEditing = true)">
+                                        <span class="oi oi-pencil" aria-hidden="true"></span>
+                                    </button>   
+                                }
+                            </th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>AC</th>
+                            <th>HP</th>
+                            <th/>
+                            <th/>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (_initatives != null)
+                        {
+                            foreach (var initative in _initatives)
+                            {
+                                <tr>
+                                    <td style="max-width: 25px;">
+                                        @if (_initativeEditing)
+                                        {
+                                            <InputNumber @bind-Value="@initative.Initative" class="form-control"/>
+                                            <ValidationMessage For="@(() => initative.Initative)" />
+                                        }
+                                        else
+                                        {
+                                            @initative.Initative
+                                        }
+                                    </td>
+                                    <td>@initative.Being?.Name</td>
+                                    <td>
+                                    </td>
+                                    <td>@initative.Being?.ArmorClass</td>
+                                    <td>@initative.CurrentHP</td>
+                                    <td style="max-width: 40px;">
+                                        @if (!initative.Healing && !initative.Damaging)
+                                        {
+                                            <button type="button" class="btn btn-danger" @onclick="(() => initative.Damaging = true)">
+                                                <span class="oi oi-droplet" aria-hidden="true"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-success" @onclick="(() => initative.Healing = true)">
+                                                <span class="oi oi-heart" aria-hidden="true"></span>
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <div class="d-flex" >
+                                                <InputNumber @bind-Value="@_healthEdit" class="form-control"/>
+                                                <button type="button" class="btn btn-primary" @onclick="(() => ConfirmHealth(initative))">
+                                                    <span class="oi oi-check" aria-hidden="true"></span>
+                                                </button>
+                                                <button type="button" class="btn btn-secondary" @onclick="(() => CancelHealth(initative))">
+                                                    <span class="oi oi-x" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <ValidationMessage For="@(() => _healthEdit)" />
+                                        }
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" @onclick="(() => _initatives.Remove(initative))">
+                                            <span class="oi oi-trash" aria-hidden="true"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
         <div class="row my-2">
-            <div class="form-group col">
-                <label>Level</label>
-                <InputNumber @bind-Value="@_model.Level" class="form-control"/>
-                <ValidationMessage For="@(() => _model.Level)" />
-            </div>
-            <div class="form-group col">
-                <label>Hit Points</label>
-                <InputNumber @bind-Value="@_model.HitPoints" class="form-control" />
-                <ValidationMessage For="@(() => _model.HitPoints)" />
-            </div>
-            <div class="form-group col">
-                <label>Armor Class</label>
-                <InputNumber @bind-Value="@_model.ArmorClass" class="form-control" />
-                <ValidationMessage For="@(() => _model.ArmorClass)" />
-            </div>
-            <div class="form-group col">
-                <label>Speed</label>
-                <InputText @bind-Value="@_model.Speed" class="form-control" />
-                <ValidationMessage For="@(() => _model.Speed)" />
-            </div>
-        </div>
-        <div class="row my-2">
-            <div class="form-group col">
-                <label>Strength</label>
-                <InputNumber Value="@_model.Strength" ValueChanged="@( (int i) => _model.StrengthChanged(i) )" ValueExpression="() => _model.Strength" class="form-control" />
-                <ValidationMessage For="@(() => _model.Strength)" />
-            </div>
-            <div class="form-group col">
-                <label>Dexterity</label>
-                <InputNumber Value="@_model.Dexterity" ValueChanged="@( (int i) => _model.DexterityChanged(i) )" ValueExpression="() => _model.Dexterity" class="form-control" />
-                <ValidationMessage For="@(() => _model.Dexterity)" />
-            </div>
-            <div class="form-group col">
-                <label>Constitution</label>
-                <InputNumber Value="@_model.Constitution" ValueChanged="@( (int i) => _model.ConstitutionChanged(i) )" ValueExpression="() => _model.Constitution" class="form-control" />
-                <ValidationMessage For="@(() => _model.Constitution)" />
-            </div>
-            <div class="form-group col">
-                <label>Intelligence</label>
-                <InputNumber Value="@_model.Intelligence" ValueChanged="@( (int i) => _model.IntelligenceChanged(i) )" ValueExpression="() => _model.Intelligence" class="form-control" />
-                <ValidationMessage For="@(() => _model.Intelligence)" />
-            </div>
-            <div class="form-group col">
-                <label>Wisdom</label>
-                <InputNumber Value="@_model.Wisdom" ValueChanged="@( (int i) => _model.WisdomChanged(i) )" ValueExpression="() => _model.Wisdom" class="form-control" />
-                <ValidationMessage For="@(() => _model.Wisdom)" />
-            </div>
-            <div class="form-group col">
-                <label>Charisma</label>
-                <InputNumber Value="@_model.Charisma" ValueChanged="@( (int i) => _model.CharismaChanged(i) )" ValueExpression="() => _model.Charisma" class="form-control" />
-                <ValidationMessage For="@(() => _model.Charisma)" />
-            </div>
-        </div>
-        <div class="row my-2">
-            <div class="form-group col">
-                <InputNumber @bind-Value="@_model.StrengthBonus" class="form-control" />
-                <ValidationMessage For="@(() => _model.StrengthBonus)" />
-            </div>
-            <div class="form-group col">
-                <InputNumber @bind-Value="@_model.DexterityBonus" class="form-control" />
-                <ValidationMessage For="@(() => _model.DexterityBonus)" />
-            </div>
-            <div class="form-group col">
-                <InputNumber @bind-Value="@_model.ConstitutionBonus" class="form-control" />
-                <ValidationMessage For="@(() => _model.ConstitutionBonus)" />
-            </div>
-            <div class="form-group col">
-                <InputNumber @bind-Value="@_model.IntelligenceBonus" class="form-control" />
-                <ValidationMessage For="@(() => _model.IntelligenceBonus)" />
-            </div>
-            <div class="form-group col">
-                <InputNumber @bind-Value="@_model.WisdomBonus" class="form-control" />
-                <ValidationMessage For="@(() => _model.WisdomBonus)" />
-            </div>
-            <div class="form-group col">
-                <InputNumber @bind-Value="@_model.CharismaBonus" class="form-control" />
-                <ValidationMessage For="@(() => _model.CharismaBonus)" />
-            </div>
-        </div>
-        <div class="form-group">
             <button disabled="@_loading" class="btn btn-primary">
                 @if (_loading)
                 {
@@ -106,7 +219,7 @@
                 }
                 Save
             </button>
-            <NavLink href="characters" class="btn btn-link">Cancel</NavLink>
+            <NavLink href="encounters" class="btn btn-link">Cancel</NavLink>
         </div>
     </EditForm>
 }

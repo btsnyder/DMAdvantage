@@ -44,6 +44,18 @@ namespace DMAdvantage.Data
             return GetFromDatabase<T>(username).FirstOrDefault(c => c.Id == id);
         }
 
+        public T? GetEntityByIdWithoutUser<T>(Guid id) where T : BaseEntity
+        {
+            if (id == Guid.Empty)
+                return null;
+            return GetFromDatabase<T>().FirstOrDefault(c => c.Id == id);
+        }
+
+        public IEnumerable<T> GetEntitiesByIdsWithoutUser<T>(Guid[] ids) where T : BaseEntity
+        {
+            return GetFromDatabase<T>().Where(c => ids.Contains(c.Id));
+        }
+
         public void AddEntity(object entity)
         {
             _ctx.Add(entity);
@@ -59,12 +71,15 @@ namespace DMAdvantage.Data
             return _ctx.SaveChanges() > 0;
         }
 
-        private IQueryable<T> GetFromDatabase<T>(string username) where T : BaseEntity
+        private IQueryable<T> GetFromDatabase<T>(string? username = null) where T : BaseEntity
         {
             try
             {
                 DbSet<T> dbSet = _ctx.Set<T>();
-                return dbSet.Where(c => c.User != null && c.User.UserName == username);
+                if (username == null)
+                    return dbSet;
+                else
+                    return dbSet.Where(c => c.User != null && c.User.UserName == username);
             }
             catch (Exception ex)
             {
