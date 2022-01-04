@@ -8,7 +8,7 @@ namespace DMAdvantage.Client.Shared
     {
         private List<TEntity> _data;
         private IEnumerable<string> _names;
-        private List<string> _nameDisplay = new();
+        private readonly List<string> _nameDisplay = new();
 
         private IEnumerable<string> _selectedNames = Array.Empty<string>();
         [Parameter]

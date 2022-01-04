@@ -9,8 +9,8 @@
             Being = being;
             BeingId = being.Id;
             CurrentHP = being.HitPoints;
-            if (being is CharacterResponse)
-                IsCharacter = true;
+            CurrentFP = being.ForcePoints;
+            CurrentTP = being.TechPoints;
         }
 
         public InitativeDataModel(IBeingResponse being, InitativeData data)
@@ -18,9 +18,10 @@
             Initative = data.Initative;
             BeingId = data.BeingId;
             CurrentHP = data.CurrentHP;
+            CurrentFP = data.CurrentFP;
+            CurrentTP = data.CurrentTP;
             Healing = data.Healing;
             Damaging = data.Damaging;
-            IsCharacter = data.IsCharacter;
             Being = being;
         }
 

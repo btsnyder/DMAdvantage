@@ -6,11 +6,10 @@ using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
-namespace DMAdvantage.Client.Pages.Encounters
+namespace DMAdvantage.Client.Shared
 {
-    public partial class EncounterAdd
+    public partial class EncounterEditForm
     {
-        private readonly EncounterRequest _model = new();
         private bool _loading;
         private readonly List<InitativeDataModel> _initatives = new();
         private List<CharacterResponse> _characters;
@@ -19,6 +18,14 @@ namespace DMAdvantage.Client.Pages.Encounters
         private CreatureResponse _selectedCreature;
         private int _healthEdit;
         private bool _initativeEditing;
+        private bool _firstEdit = true;
+
+        private EncounterRequest _model = new();
+
+        [Parameter]
+        public string? Id { get; set; }
+        [Parameter]
+        public EventCallback<EncounterRequest> ModelChanged { get; set; }
 
         [Inject]
         IAlertService AlertService { get; set; }
@@ -29,6 +36,24 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         protected override async Task OnInitializedAsync()
         {
+            if (Id != null)
+            {
+                _firstEdit = false; 
+
+                _model = await ApiService.GetEntityById<EncounterResponse>(Guid.Parse(Id)) ?? new();
+
+                List<IBeingResponse> beings = new();
+                var characters = await ApiService.GetCharacterViews(_model.Data.Select(x => x.BeingId));
+                var creatures = await ApiService.GetCreatureViews(_model.Data.Select(x => x.BeingId));
+                beings.AddRange(characters);
+                beings.AddRange(creatures);
+
+                foreach (var being in beings)
+                {
+                    _initatives.Add(new InitativeDataModel(being, _model.Data.First(x => x.BeingId == being.Id)));
+                }
+            }
+
             _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
             _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
 
@@ -40,17 +65,31 @@ namespace DMAdvantage.Client.Pages.Encounters
             _loading = true;
             try
             {
+                _model.Data.Clear();
                 foreach (var init in _initatives)
                 {
                     _model.Data.Add(init);
                 }
-                await ApiService.AddEntity(_model);
-                AlertService.Alert(AlertType.Success, "Character added successfully", keepAfterRouteChange: true);
-                NavigationManager.NavigateTo("encounters");
+                if (_firstEdit)
+                {
+                    await ApiService.AddEntity(_model);
+                    AlertService.Alert(AlertType.Success, "Character added successfully", keepAfterRouteChange: true);
+                    NavigationManager.NavigateTo("encounters");
+                }
+                else
+                {
+                    await ApiService.UpdateEntity(Guid.Parse(Id ?? string.Empty), _model);
+                    AlertService.Alert(AlertType.Success, "Update successful", keepAfterRouteChange: true);
+                }
             }
             catch (Exception ex)
             {
                 AlertService.Alert(AlertType.Error, ex.Message);
+                _loading = false;
+                StateHasChanged();
+            }
+            finally
+            {
                 _loading = false;
                 StateHasChanged();
             }
