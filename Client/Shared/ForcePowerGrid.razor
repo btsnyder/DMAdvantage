@@ -1,0 +1,50 @@
+﻿@if (Powers.Count > 0)
+{
+    <div class="mb-2">
+        <div class="d-flex flex-column">
+            <text style="font-size: large"><b>@Title</b></text>
+            <hr style="margin-top: -5px"/>
+        </div>
+        @foreach (var power in Powers)
+        {
+            <RadzenCard class="p-2">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 text-danger">
+                        <b>@power.Name</b>
+                    </div>
+                    <RadzenButton Text="CAST" ButtonStyle="ButtonStyle.Danger" class="me-2"/>
+                    @if (power == _selectedForcePower)
+                    {
+                        <RadzenButton Icon="expand_less" Click=@(() => HideForcePower()) ButtonStyle="ButtonStyle.Light"/>
+                    }
+                    else
+                    {
+                        <RadzenButton Icon="expand_more" Click=@(() => ShowForcePower(power)) ButtonStyle="ButtonStyle.Light"/>
+                    }
+                </div>
+                @if (power == _selectedForcePower)
+                {
+                    <div class="d-flex flex-column">
+                        <text><b>Alignment:</b> @power.Alignment</text>
+                        <text><b>Concentration:</b> @power.Concentration</text>
+                        <text><b>Hit:</b> @power.HitOption?.GetStringValue()</text>
+                        @if (!string.IsNullOrWhiteSpace(power.HitDescription))
+                        {
+                            <div><b>Description:</b> @power.HitDescription</div>
+                        }
+                        <text><b>Casting Time:</b> @power.CastingPeriod.GetStringValue()</text>
+                        <text><b>Range:</b> @power.Range.GetStringValue()</text>
+                        <text><b>Duration:</b> @power.Duration</text>
+                        <br/>
+                        <text>@power.Description</text>
+                        @if (!string.IsNullOrEmpty(power.Potency))
+                        {
+                            <br/>
+                            <div><b>Potency:</b> @power.Potency</div>
+                        }
+                    </div>
+                }
+            </RadzenCard>
+        }
+    </div>
+}

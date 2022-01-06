@@ -121,110 +121,111 @@
                     </RadzenTabsItem>
                 </Tabs>
             </RadzenTabs>
-            <table class="table table-striped text-center">
-                <thead>
-                    <tr>
-                        <th>
-                            Init
-                            @if(_initativeEditing)
+            <div class="d-flex mb-2">
+                @if (!_initativeEditing)
+                {
+                    <RadzenButton Icon="create" Text="Edit Initative" Click=@InitativeEditStart ButtonStyle="ButtonStyle.Light" Style="width: 200px" class="me-2"/>
+                }
+                else
+                {
+                    <RadzenButton Icon="close" Text="Close Edit" Click=@InitativeEditDone ButtonStyle="ButtonStyle.Danger" Style="width: 200px" class="me-2"/>
+                }
+                <RadzenButton Icon="chevron_left" Click=@InitativePrevious ButtonStyle="ButtonStyle.Primary" class="me-2"/>
+                <RadzenButton Icon="chevron_right" Click=@InitativeNext ButtonStyle="ButtonStyle.Primary" />
+            </div>
+            <div class="row mb-2">
+                <div class="col">
+                    <RadzenDataGrid @ref="_initativeGrid" Data="@_initatives" TItem="InitativeDataModel" @bind-Value="@_selectedInitatives"
+                        EditMode="DataGridEditMode.Multiple" RowSelect=OnRowSelect>
+                        <Columns>
+                            <RadzenDataGridColumn TItem="InitativeDataModel" Width="10%">
+                                <Template Context="initative">
+                                    @if (_currentPlayer == initative)
+                                    {
+                                        <RadzenIcon Icon="chevron_right" />
+                                    }
+                                </Template>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="InitativeDataModel" Property="Initative" Title="Init" Width="12%">
+                                <EditTemplate Context="initative">
+                                    <RadzenNumeric @bind-Value="initative.Initative" Style="width:100%" />
+                                </EditTemplate>
+                            </RadzenDataGridColumn>
+                            <RadzenDataGridColumn TItem="InitativeDataModel" Property="Name" Title="Name" Width="24%"/>
+                            <RadzenDataGridColumn TItem="InitativeDataModel" Property="Player" Title="Class" Width="24%" />
+                            <RadzenDataGridColumn TItem="InitativeDataModel" Property="CurrentHP" Title="HP" Width="10%" />
+                            <RadzenDataGridColumn TItem="InitativeDataModel" Property="CurrentFP" Title="FP" Width="10%" />
+                            <RadzenDataGridColumn TItem="InitativeDataModel" Property="CurrentTP" Title="TP" Width="10%" />
+                        </Columns>
+                    </RadzenDataGrid>
+                </div>
+                <div class="col">
+                    <RadzenCard>
+                        <div class="row mb-2">
+                            <div class="col">
+                                <text>Name: @_selectedInitative?.Name</text>
+                            </div>
+                            @if (_selectedInitative?.Being is CharacterResponse character)
                             {
-                                <button type="button" class="btn btn-secondary btn-sm" @onclick="(() => InitativeEditDone())">
-                                    <span class="oi oi-x" aria-hidden="true"></span>
-                                </button>   
+                                <div class="col">
+                                    <text>Player: @character.PlayerName</text>
+                                </div>
+                                <div class="col">
+                                    <text>Class: @character.Class</text>
+                                </div>
                             }
-                            else
-                            {
-                                <button type="button" class="btn btn-secondary btn-sm" @onclick="(() => _initativeEditing = true)">
-                                    <span class="oi oi-pencil" aria-hidden="true"></span>
-                                </button>   
-                            }
-                        </th>
-                        <th>Name</th>
-                        <th>Class</th>
-                        <th>AC</th>
-                        <th>FP</th>
-                        <th>TP</th>
-                        <th>HP</th>
-                        <th/>
-                        <th/>
-                        <th/>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (_initatives != null)
-                    {
-                        foreach (var initative in _initatives)
-                        {
-                            <tr>
-                                <td width="10%">
-                                    @if (_initativeEditing)
-                                    {
-                                        <InputNumber @bind-Value="@initative.Initative" class="form-control"/>
-                                        <ValidationMessage For="@(() => initative.Initative)" />
-                                    }
-                                    else
-                                    {
-                                        @initative.Initative
-                                    }
-                                </td>
-                                <td width="28%">@initative.Being?.Name</td>
-                                <td width="20%">
-                                    @if (initative.Being is CharacterResponse character)
-                                    {
-                                        @character.Class
-                                    }
-                                </td>
-                                <td width="5%">@initative.Being?.ArmorClass</td>
-                                <td width="7%">
-                                    <div class="d-flex">
-                                        <InputNumber @bind-Value="@initative.CurrentFP" class="form-control"/>
-                                        /@initative.Being?.ForcePoints
-                                    </div>
-                                </td>
-                                <td width="7%">
-                                    <div class="d-flex">
-                                        <InputNumber @bind-Value="@initative.CurrentTP" class="form-control"/>
-                                        /@initative.Being?.TechPoints
-                                    </div>
-                                </td>
-                                @if (!initative.Healing && !initative.Damaging)
-                                {
-                                    <td width="8%">@initative.CurrentHP</td>
-                                    <td width="5%">
-                                        <button type="button" class="btn btn-danger" @onclick="(() => initative.Damaging = true)">
-                                            <span class="oi oi-droplet" aria-hidden="true"></span>
-                                        </button>
-                                    </td>
-                                    <td width="5%">
-                                        <button type="button" class="btn btn-success" @onclick="(() => initative.Healing = true)">
-                                            <span class="oi oi-heart" aria-hidden="true"></span>
-                                        </button>
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td width="8%"><InputNumber @bind-Value="@_healthEdit" class="form-control"/></td>
-                                    <td width="5%">
-                                        <button type="button" class="btn btn-primary" @onclick="(() => ConfirmHealth(initative))">
-                                            <span class="oi oi-check" aria-hidden="true"></span>
-                                        </button>
-                                    </td>
-                                    <td width="5%">
-                                        <button type="button" class="btn btn-secondary" @onclick="(() => CancelHealth(initative))">
-                                            <span class="oi oi-x" aria-hidden="true"></span>
-                                        </button>
-                                    </td>
-                                }
-                                <td width="5%">
-                                    <button type="button" class="btn btn-danger" @onclick="(() => _initatives.Remove(initative))">
-                                        <span class="oi oi-trash" aria-hidden="true"></span>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
+                        </div>
+                        <div class="d-flex mb-2 align-items-center">
+                            <div class="me-4">
+                                HP: @_selectedInitative?.CurrentHP/@_selectedInitative?.Being?.HitPoints
+                            </div>
+                            <div class="me-2" style="width: 80px">
+                                <RadzenNumeric @bind-Value="_healthEdit" Style="width:100%" />
+                            </div>
+                            <div class="me-2">
+                                <button type="button" class="btn btn-danger" @onclick=@ApplyDamage>
+                                    <span class="oi oi-droplet" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                            <div>
+                                <button type="button" class="btn btn-success" @onclick=@ApplyHealth>
+                                    <span class="oi oi-heart" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="d-flex mb-2 justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="me-5">
+                                    FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b>
+                                </div>
+                                <div class="me-2">
+                                    <RadzenButton Icon="add" Click=@(() => _selectedInitative.CurrentFP++) ButtonStyle="ButtonStyle.Danger"/>
+                                </div>
+                                <div>
+                                    <RadzenButton Icon="remove" Click=@(() => _selectedInitative.CurrentFP--) ButtonStyle="ButtonStyle.Danger"/>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="me-5">
+                                    TP: <b>@_selectedInitative?.CurrentTP/@_selectedInitative?.Being?.TechPoints</b>
+                                </div>
+                                <div class="me-2">
+                                    <RadzenButton Icon="add" Click=@(() => _selectedInitative.CurrentTP++) ButtonStyle="ButtonStyle.Danger"/>
+                                </div>
+                                <div>
+                                    <RadzenButton Icon="remove" Click=@(() => _selectedInitative.CurrentTP--) ButtonStyle="ButtonStyle.Danger"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-2 align-items-bottom" style="font-size: x-large">
+                            <b>Force Powers</b>
+                        </div>
+                        <ForcePowerGrid Title="At-Will" Powers=@_selectedForcePowers.Where(x => x.Level == 0).ToList() />
+                        <ForcePowerGrid Title="Level 1" Powers=@_selectedForcePowers.Where(x => x.Level == 1).ToList() />
+                        <ForcePowerGrid Title="Level 2" Powers=@_selectedForcePowers.Where(x => x.Level == 2).ToList() />
+                    </RadzenCard>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row my-2">

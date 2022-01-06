@@ -5,15 +5,22 @@ using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
 using Radzen;
+using Radzen.Blazor;
 
 namespace DMAdvantage.Client.Shared
 {
     public partial class EncounterEditForm
     {
         private bool _loading;
-        private readonly List<InitativeDataModel> _initatives = new();
+        private List<InitativeDataModel> _initatives = new();
+        private RadzenDataGrid<InitativeDataModel> _initativeGrid;
+        private IList<InitativeDataModel> _selectedInitatives { get; set; }
+        private InitativeDataModel? _selectedInitative => _selectedInitatives?.FirstOrDefault();
+        private InitativeDataModel? _currentPlayer;
+        IList<ForcePowerResponse> _selectedForcePowers { get; set; } = new List<ForcePowerResponse>();
         private List<CharacterResponse> _characters;
         private List<CreatureResponse> _creatures;
+        private List<ForcePowerResponse> _forcePowers;
         private CharacterResponse _selectedCharacter;
         private CreatureResponse _selectedCreature;
         private int _healthEdit;
@@ -54,8 +61,11 @@ namespace DMAdvantage.Client.Shared
                 }
             }
 
+            _selectedInitatives = new List<InitativeDataModel>() { _initatives[0] };
+
             _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
             _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
 
             await base.OnInitializedAsync();
         }
@@ -70,6 +80,7 @@ namespace DMAdvantage.Client.Shared
                 {
                     _model.Data.Add(init);
                 }
+                _model.CurrentPlayer = _currentPlayer?.BeingId ?? Guid.Empty;
                 if (_firstEdit)
                 {
                     await ApiService.AddEntity(_model);
@@ -95,16 +106,16 @@ namespace DMAdvantage.Client.Shared
             }
         }
 
-        void ConfirmHealth(InitativeDataModel data)
+        void ApplyHealth()
         {
-            data.ApplyHP(_healthEdit);
-            data.Healing = data.Damaging = false;
+            _selectedInitative?.ApplyHP(_healthEdit);
             _healthEdit = 0;
         }
 
-        void CancelHealth(InitativeDataModel data)
+        void ApplyDamage()
         {
-            data.Healing = data.Damaging = false;
+            _selectedInitative?.ApplyHP(-1 * _healthEdit);
+            _healthEdit = 0;
         }
 
         void OnCharacterChange(object value)
@@ -124,6 +135,14 @@ namespace DMAdvantage.Client.Shared
                 _selectedCreature = creature;
         }
 
+        void OnRowSelect(InitativeDataModel data)
+        {
+            if (data.Being != null)
+            {
+                _selectedForcePowers = _forcePowers.Where(x => data.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
+            }
+        }
+
         async Task OnLoadCharacterData(LoadDataArgs args)
         {
             var characterSearch = new NamedSearchParameters<Character> { Search = args.Filter };
@@ -140,22 +159,61 @@ namespace DMAdvantage.Client.Shared
             await InvokeAsync(StateHasChanged);
         }
 
-        void OnAddCharacter()
+        async Task OnAddCharacter()
         {
             var data = new InitativeDataModel(_selectedCharacter);
-            _initatives.Add(data);
+            _initatives.Insert(0, data);
+            await _initativeGrid.InsertRow(data);
+            await _initativeGrid.UpdateRow(data);
         }
 
-        void OnAddCreature()
+        async Task OnAddCreature()
         {
             var data = new InitativeDataModel(_selectedCreature);
-            _initatives.Add(data);
+            _initatives.Insert(0, data);
+            await _initativeGrid.InsertRow(data);
+            await _initativeGrid.UpdateRow(data);
         }
 
-        void InitativeEditDone()
+        async Task InitativeEditStart()
+        {
+            _initativeEditing = true;
+            foreach (var row in _initatives)
+            {
+                await _initativeGrid.EditRow(row);
+            }
+        }
+
+        async Task InitativeEditDone()
         {
             _initativeEditing = false;
-            _initatives.Sort(delegate (InitativeDataModel data1, InitativeDataModel data2) { return data2.Initative.CompareTo(data1.Initative); });
+            foreach (var row in _initatives)
+            {
+                await _initativeGrid.UpdateRow(row);
+            }
+            var sorted = new List<InitativeDataModel>(_initatives);
+            sorted.Sort(delegate (InitativeDataModel data1, InitativeDataModel data2) { return data2.Initative.CompareTo(data1.Initative); });
+            _initatives = new(sorted); 
+        }
+
+        void InitativeNext()
+        {
+            int index;
+            if (_currentPlayer == null || _initatives.Last() == _currentPlayer)
+                index = -1;
+            else
+                index = _initatives.IndexOf(_currentPlayer);
+            _currentPlayer = _initatives[++index];
+        }
+
+        void InitativePrevious()
+        {
+            int index;
+            if (_currentPlayer == null || _initatives.First() == _currentPlayer)
+                index = _initatives.Count;
+            else
+                index = _initatives.IndexOf(_currentPlayer);
+            _currentPlayer = _initatives[--index];
         }
     }
 }

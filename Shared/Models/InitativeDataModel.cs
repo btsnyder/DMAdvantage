@@ -20,17 +20,15 @@
             CurrentHP = data.CurrentHP;
             CurrentFP = data.CurrentFP;
             CurrentTP = data.CurrentTP;
-            Healing = data.Healing;
-            Damaging = data.Damaging;
             Being = being;
         }
 
+        public string? Name => Being?.Name;
+        public string? Player => Being is CharacterResponse character ? character.PlayerName : string.Empty;
+
         public void ApplyHP(int value)
         {
-            if (Healing)
-                CurrentHP += value;
-            else
-                CurrentHP -= value;
+            CurrentHP += value;
         }
     }
 }
