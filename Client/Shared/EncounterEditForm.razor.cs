@@ -25,14 +25,11 @@ namespace DMAdvantage.Client.Shared
         private CreatureResponse _selectedCreature;
         private int _healthEdit;
         private bool _initativeEditing;
-        private bool _firstEdit = true;
 
         private EncounterRequest _model = new();
 
         [Parameter]
         public string? Id { get; set; }
-        [Parameter]
-        public EventCallback<EncounterRequest> ModelChanged { get; set; }
 
         [Inject]
         IAlertService AlertService { get; set; }
@@ -45,8 +42,6 @@ namespace DMAdvantage.Client.Shared
         {
             if (Id != null)
             {
-                _firstEdit = false; 
-
                 _model = await ApiService.GetEntityById<EncounterResponse>(Guid.Parse(Id)) ?? new();
 
                 List<IBeingResponse> beings = new();
@@ -81,7 +76,7 @@ namespace DMAdvantage.Client.Shared
                     _model.Data.Add(init);
                 }
                 _model.CurrentPlayer = _currentPlayer?.BeingId ?? Guid.Empty;
-                if (_firstEdit)
+                if (Id == null)
                 {
                     await ApiService.AddEntity(_model);
                     AlertService.Alert(AlertType.Success, "Character added successfully", keepAfterRouteChange: true);

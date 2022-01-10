@@ -4,6 +4,7 @@ using DMAdvantage.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMAdvantage.Server.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20220106213049_ProficientExpertSkills")]
+    partial class ProficientExpertSkills
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,26 +30,14 @@ namespace DMAdvantage.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool?>("Acrobatics")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("AnimalHandling")
-                        .HasColumnType("bit");
-
                     b.Property<int>("ArmorClass")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("Athletics")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Charisma")
                         .HasColumnType("int");
 
                     b.Property<int>("CharismaBonus")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("CharismaSave")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Class")
                         .HasColumnType("nvarchar(max)");
@@ -58,20 +48,15 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<int>("ConstitutionBonus")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("ConstitutionSave")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Deception")
-                        .HasColumnType("bit");
-
                     b.Property<int>("Dexterity")
                         .HasColumnType("int");
 
                     b.Property<int>("DexterityBonus")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("DexteritySave")
-                        .HasColumnType("bit");
+                    b.Property<string>("ExpertSkills")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ForcePoints")
                         .HasColumnType("int");
@@ -83,74 +68,33 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<int>("HitPoints")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("Insight")
-                        .HasColumnType("bit");
-
                     b.Property<int>("Intelligence")
                         .HasColumnType("int");
 
                     b.Property<int>("IntelligenceBonus")
                         .HasColumnType("int");
 
-                    b.Property<bool?>("IntelligenceSave")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Intimidation")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Investigation")
-                        .HasColumnType("bit");
-
                     b.Property<int>("Level")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("Lore")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Medicine")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Nature")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Perception")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Performance")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Persuasion")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Piloting")
-                        .HasColumnType("bit");
-
                     b.Property<string>("PlayerName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("SleightOfHand")
-                        .HasColumnType("bit");
+                    b.Property<string>("ProficientSkills")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Speed")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool?>("Stealth")
-                        .HasColumnType("bit");
 
                     b.Property<int>("Strength")
                         .HasColumnType("int");
 
                     b.Property<int>("StrengthBonus")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("StrengthSave")
-                        .HasColumnType("bit");
-
-                    b.Property<bool?>("Survival")
-                        .HasColumnType("bit");
 
                     b.Property<int>("TechPoints")
                         .HasColumnType("int");
@@ -159,23 +103,14 @@ namespace DMAdvantage.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("Technology")
-                        .HasColumnType("bit");
-
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("WeaponsCache")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Wisdom")
                         .HasColumnType("int");
 
                     b.Property<int>("WisdomBonus")
                         .HasColumnType("int");
-
-                    b.Property<bool?>("WisdomSave")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

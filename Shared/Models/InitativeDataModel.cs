@@ -24,6 +24,7 @@
         }
 
         public string? Name => Being?.Name;
+        public int? ArmorClass => Being?.ArmorClass;
         public string? Player => Being is CharacterResponse character ? character.PlayerName : string.Empty;
 
         public void ApplyHP(int value)

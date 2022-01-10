@@ -1,0 +1,43 @@
+﻿namespace DMAdvantage.Shared.Enums
+{
+    public enum WeaponProperty
+    {
+        Ammunition,
+        Auto,
+        Brutal,
+        Burst,
+        Defensive,
+        Dexterity,
+        Dire,
+        Disarming,
+        Disguised,
+        Disintegrate,
+        Disruptive,
+        Double,
+        Finesse,
+        Fixed,
+        Heavy,
+        Hidden,
+        Keen,
+        Light,
+        Luminous,
+        Mighty,
+        Neuralizing,
+        Piercing,
+        Range,
+        Rapid,
+        Reach,
+        Reload,
+        Returning,
+        Shocking,
+        Silent,
+        Sonorous,
+        Special,
+        Strength,
+        Switch,
+        Thrown,
+        TwoHanded,
+        Versatile,
+        Vicious
+    }
+}

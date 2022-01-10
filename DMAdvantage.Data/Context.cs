@@ -40,24 +40,25 @@ namespace DMAdvantage.Data
 
             modelBuilder.Ignore<BaseAction>();
             modelBuilder.Ignore<InitativeData>();
+            modelBuilder.Ignore<Weapon>();
 
-            AddGuidList(modelBuilder, (Character c) => c.ForcePowerIds);
-            AddGuidList(modelBuilder, (Character c) => c.TechPowerIds);
-            AddGuidList(modelBuilder, (Creature c) => c.ForcePowerIds);
-            AddGuidList(modelBuilder, (Creature c) => c.TechPowerIds);
-            AddGuidList(modelBuilder, (Creature c) => c.VulnerabilityIds);
-            AddGuidList(modelBuilder, (Creature c) => c.ImmunityIds);
-            AddGuidList(modelBuilder, (Creature c) => c.ResistanceIds);
+            AddPropertyList(modelBuilder, (Character c) => c.ForcePowerIds);
+            AddPropertyList(modelBuilder, (Character c) => c.TechPowerIds);
+            AddPropertyList(modelBuilder, (Creature c) => c.ForcePowerIds);
+            AddPropertyList(modelBuilder, (Creature c) => c.TechPowerIds);
+            AddPropertyList(modelBuilder, (Creature c) => c.VulnerabilityIds);
+            AddPropertyList(modelBuilder, (Creature c) => c.ImmunityIds);
+            AddPropertyList(modelBuilder, (Creature c) => c.ResistanceIds);
         }
 
-        private static void AddGuidList<T>(ModelBuilder modelBuilder, Expression<Func<T, List<Guid>>> expression) where T : BaseEntity
+        private static void AddPropertyList<T1, T2>(ModelBuilder modelBuilder, Expression<Func<T1, List<T2>>> expression) where T1 : BaseEntity
         {
-            modelBuilder.Entity<T>()
+            modelBuilder.Entity<T1>()
               .Property(expression)
               .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<Guid>>(v, (JsonSerializerOptions?)null) ?? new List<Guid>(),
-                 new ValueComparer<List<Guid>>(
+                v => JsonSerializer.Deserialize<List<T2>>(v, (JsonSerializerOptions?)null) ?? new List<T2>(),
+                 new ValueComparer<List<T2>>(
                     (c1, c2) => c1 == null ? c2 == null : c2 != null && c1.SequenceEqual(c2),
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
                     c => c.ToList()));
