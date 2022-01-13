@@ -79,9 +79,9 @@ namespace TestEngineering
                 CharismaBonus = Faker.RandomNumber.Next(),
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = RandomList(() => BaseAction()),
-                VulnerabilityIds = RandomList(() => Guid.NewGuid()),
-                ImmunityIds = RandomList(() => Guid.NewGuid()),
-                ResistanceIds = RandomList(() => Guid.NewGuid()),
+                Vulnerabilities = RandomList(() => RandomEnum<DamageType>().ToString()),
+                Immunities = RandomList(() => RandomEnum<DamageType>().ToString()),
+                Resistances = RandomList(() => RandomEnum<DamageType>().ToString()),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
             };
@@ -153,34 +153,6 @@ namespace TestEngineering
             techPower.Id = Guid.NewGuid();
             techPower.User = MockHttpContext.CurrentUser;
             return techPower;
-        }
-
-        public static DamageTypeRequest DamageTypeRequest()
-        {
-            var damageTypeRequest = new DamageTypeRequest
-            {
-                Name = Nonsense(),
-            };
-
-            return damageTypeRequest;
-        }
-        public static DamageTypeResponse DamageTypeResponse()
-        {
-            var damageTypeResponse = new DamageTypeResponse
-            {
-                Name = Nonsense(),
-            };
-
-            return damageTypeResponse;
-        }
-
-
-        public static DamageType DamageType()
-        {
-            var damageType = _mapper.Map<DamageType>(DamageTypeRequest());
-            damageType.Id = Guid.NewGuid();
-            damageType.User = MockHttpContext.CurrentUser;
-            return damageType;
         }
 
         public static T RandomEnum<T>() where T : struct, Enum

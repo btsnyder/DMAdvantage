@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using DMAdvantage.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace DMAdvantage.Shared.Models
 {

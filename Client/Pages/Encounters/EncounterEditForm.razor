@@ -1,4 +1,7 @@
-﻿<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+﻿@using DMAdvantage.Shared
+@inject DialogService DialogService
+
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <div class="row my-2">
         <div class="form-group col">
@@ -348,43 +351,113 @@
                                     {
                                         <RadzenCard class="p-2">
                                             <div class="row">
-                                                <div class="col-6">
+                                                <div class="col-4">
                                                     @weapon.Name
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="col-2">
                                                     +@characterActions.WeaponBonus(weapon.Melee)
                                                 </div>
-                                                <div class="col-3">
+                                                <div class="col-2">
                                                     @weapon.Damage+@characterActions.WeaponBonus(weapon.Melee, true)
                                                 </div>
+                                                <div class="col-4">
+                                                    @weapon.DamageType
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-wrap">
+                                                @foreach(var prop in weapon.PropertyDescriptions)
+                                                {
+                                                    <RadzenButton Text="@prop.ToString()" Click=@(() => ShowInlineDialog(prop)) Size="ButtonSize.Small" class="m-1 px-1"/>
+                                                }
+                                            </div>
+                                        </RadzenCard>       
+                                    }
+                                }
+                                @if (_selectedInitative?.Being is CreatureResponse creatureActions)
+                                {
+                                    @foreach(var action in creatureActions.Actions)
+                                    {
+                                        <RadzenCard>
+                                            <div class="row">
+                                                <div class="col-4">
+                                                    @action.Name
+                                                </div>
+                                                <div class="col">
+                                                    @action.Hit
+                                                </div>
+                                                <div class="col">
+                                                    @action.Range
+                                                </div>
+                                                <div class="col">
+                                                    @action.Damage
+                                                </div>
+                                                <div class="col-2">
+                                                    @if (!string.IsNullOrWhiteSpace(action.Damage))
+                                                    {
+                                                        @action.DamageType
+                                                    }
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <p>@action.Description</p>
                                             </div>
                                         </RadzenCard>       
                                     }
                                 }
                             </RadzenTabsItem>
                             <RadzenTabsItem Text="ForcePowers">
-                                <div class="d-flex mb-2 justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-5">
-                                            FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b>
+                                @if (_selectedInitative?.Being is CharacterResponse characterForce)
+                                {
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col"/>
+                                        <div class="col">
+                                            <text>Light</text>
                                         </div>
-                                        <div class="me-2">
-                                            <RadzenButton Icon="add" Click=@(() => _selectedInitative.CurrentFP++) ButtonStyle="ButtonStyle.Danger"/>
+                                        <div class="col">
+                                            <text>Universal</text>
                                         </div>
-                                        <div>
-                                            <RadzenButton Icon="remove" Click=@(() => _selectedInitative.CurrentFP--) ButtonStyle="ButtonStyle.Danger"/>
+                                        <div class="col">
+                                            <text>Dark</text>
                                         </div>
                                     </div>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-5">
-                                            TP: <b>@_selectedInitative?.CurrentTP/@_selectedInitative?.Being?.TechPoints</b>
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col">
+                                            <text>Modifier</text>
                                         </div>
-                                        <div class="me-2">
-                                            <RadzenButton Icon="add" Click=@(() => _selectedInitative.CurrentTP++) ButtonStyle="ButtonStyle.Danger"/>
+                                        <div class="col">
+                                            <text><b>+@characterForce.ForceAttackModifier(ForceAlignment.Light)</b></text>
                                         </div>
-                                        <div>
-                                            <RadzenButton Icon="remove" Click=@(() => _selectedInitative.CurrentTP--) ButtonStyle="ButtonStyle.Danger"/>
+                                        <div class="col">
+                                            <text><b>+@characterForce.ForceAttackModifier(ForceAlignment.Universal)</b></text>
                                         </div>
+                                        <div class="col">
+                                            <text><b>+@characterForce.ForceAttackModifier(ForceAlignment.Dark)</b></text>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2 align-items-center">
+                                        <div class="col">
+                                            <text>Save DC</text>
+                                        </div>
+                                        <div class="col">
+                                            <text><b>@characterForce.ForceSavingThrow(ForceAlignment.Light)</b></text>
+                                        </div>
+                                        <div class="col">
+                                            <text><b>@characterForce.ForceSavingThrow(ForceAlignment.Universal)</b></text>
+                                        </div>
+                                        <div class="col">
+                                            <text><b>@characterForce.ForceSavingThrow(ForceAlignment.Dark)</b></text>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="d-flex mb-2 align-items-center">
+                                    <div class="me-5">
+                                        FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b>
+                                    </div>
+                                    <div class="me-2">
+                                        <RadzenButton Icon="add" Click=@(() => _selectedInitative.CurrentFP++) ButtonStyle="ButtonStyle.Danger"/>
+                                    </div>
+                                    <div>
+                                        <RadzenButton Icon="remove" Click=@(() => _selectedInitative.CurrentFP--) ButtonStyle="ButtonStyle.Danger"/>
                                     </div>
                                 </div>
                                 <div class="row mb-2 align-items-bottom" style="font-size: x-large">
@@ -411,3 +484,13 @@
         <NavLink href="encounters" class="btn btn-link">Cancel</NavLink>
     </div>
 </EditForm>
+
+@code {
+    async Task ShowInlineDialog(WeaponDescription weapon)
+    {
+        var result = await DialogService.OpenAsync(weapon.Name, ds =>
+            @<div>
+                <p Style="margin-bottom: 1rem">@StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)]</p>
+            </div>);
+    }
+}

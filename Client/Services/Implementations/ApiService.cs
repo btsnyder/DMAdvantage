@@ -32,12 +32,21 @@ namespace DMAdvantage.Client.Services.Implementations
             await _httpService.Put($"/api/{GetPath(typeof(T))}/{id}", model);
         }
 
-        public async Task<List<T>?> GetAllEntities<T>(ISearchQuery? searching = null)
+        public async Task<List<T>?> GetAllEntities<T>(ISearchQuery? searching = null) where T : class
         {
-            var uri = $"/api/{GetPath(typeof(T))}?pageSize={int.MaxValue}";
-            if (searching != null)
-                uri += $"&{searching.GetQuery()}";
-            return await _httpService.Get<List<T>>(uri);
+            var data = new List<T>();
+            PagedList<T>? paged;
+            int pageNumber = 1;
+            do
+            {
+                paged = await GetAllPagedEntities<T>(new PagingParameters { PageNumber = pageNumber, PageSize = 100 }, searching);
+                if (paged != null)
+                {
+                    data.AddRange(paged);
+                    pageNumber = paged.CurrentPage + 1;
+                }
+            } while (paged?.HasNext == true);
+            return data;
         }
 
         public async Task<PagedList<T>?> GetAllPagedEntities<T>(PagingParameters paging, ISearchQuery? searching = null, CancellationToken? token = null) where T : class

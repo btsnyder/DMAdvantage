@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace DMAdvantage.Client.Shared
 {
-    public partial class MultipleEntityDropdown<TEntity> where TEntity : IEntityResponse
+    public partial class MultipleEntityDropdown<TEntity> where TEntity : class, IEntityResponse
     {
         private List<TEntity> _data;
         private IEnumerable<string> _names;

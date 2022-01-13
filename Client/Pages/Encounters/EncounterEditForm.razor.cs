@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Components;
 using Radzen;
 using Radzen.Blazor;
 
-namespace DMAdvantage.Client.Shared
+namespace DMAdvantage.Client.Pages.Encounters
 {
     public partial class EncounterEditForm
     {
@@ -37,6 +37,8 @@ namespace DMAdvantage.Client.Shared
         IApiService ApiService { get; set; }
         [Inject]
         NavigationManager NavigationManager { get; set; }
+        [Inject]
+        TooltipService TooltipService { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -61,6 +63,9 @@ namespace DMAdvantage.Client.Shared
             _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
             _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
             _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+
+            if (_selectedInitative != null)
+                OnRowSelect(_selectedInitative);
 
             await base.OnInitializedAsync();
         }

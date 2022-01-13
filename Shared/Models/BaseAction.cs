@@ -1,4 +1,6 @@
-﻿namespace DMAdvantage.Shared.Models
+﻿using DMAdvantage.Shared.Enums;
+
+namespace DMAdvantage.Shared.Models
 {
     public class BaseAction
     {
@@ -7,5 +9,6 @@
         public string? Hit { get; set; } 
         public string? Range { get; set; } 
         public string? Damage { get; set; }
+        public DamageType DamageType { get; set; }
     }
 }

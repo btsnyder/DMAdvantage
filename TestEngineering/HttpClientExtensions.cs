@@ -124,16 +124,6 @@ namespace TestEngineering
             return created;
         }
 
-        public static async Task<DamageTypeResponse> CreateDamageType(this HttpClient client, DamageTypeRequest? damageType = null)
-        {
-            if (damageType == null)
-                damageType = Generation.DamageTypeRequest();
-            var response = await client.PostAsync("/api/damagetypes", damageType);
-            response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<DamageTypeResponse>();
-            return created;
-        }
-
         public static async Task<string> CreateToken(this HttpClient client)
         {
             var login = new LoginRequest

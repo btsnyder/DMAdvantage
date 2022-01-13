@@ -4,14 +4,14 @@ using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 
-namespace DMAdvantage.Client.Shared
+namespace DMAdvantage.Client.Pages.Creatures
 {
-    public partial class CharacterEditForm
+    public partial class CreatureEditForm
     {
-        IEnumerable<string> _weaponProperities = Array.Empty<string>();
-        private CharacterRequest _model = new();
+        IEnumerable<string> _damageTypes = Array.Empty<string>();
+        private CreatureRequest _model = new();
         private bool _loading;
-        
+
         [Inject]
         IAlertService AlertService { get; set; }
         [Inject]
@@ -24,10 +24,10 @@ namespace DMAdvantage.Client.Shared
 
         protected override async Task OnInitializedAsync()
         {
-            _weaponProperities = Enum.GetNames<WeaponProperty>();
+            _damageTypes = Enum.GetNames<DamageType>();
             if (Id != null)
             {
-                _model = await ApiService.GetEntityById<CharacterResponse>(Guid.Parse(Id)) ?? new();
+                _model = await ApiService.GetEntityById<CreatureResponse>(Guid.Parse(Id)) ?? new();
             }
             await base.OnInitializedAsync();
         }
@@ -40,14 +40,14 @@ namespace DMAdvantage.Client.Shared
                 if (Id == null)
                 {
                     await ApiService.AddEntity(_model);
-                    AlertService.Alert(AlertType.Success, "Character added successfully", keepAfterRouteChange: true);
+                    AlertService.Alert(AlertType.Success, "Creature added successfully", keepAfterRouteChange: true);
                 }
                 else
                 {
                     await ApiService.UpdateEntity(Guid.Parse(Id), _model);
                     AlertService.Alert(AlertType.Success, "Update successful", keepAfterRouteChange: true);
                 }
-                NavigationManager.NavigateTo("characters");
+                NavigationManager.NavigateTo("creatures");
             }
             catch (Exception ex)
             {

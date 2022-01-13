@@ -66,7 +66,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/techpowers?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var techPowersResponse = await response.ParseEntityList<DamageTypeResponse>();
+            var techPowersResponse = await response.ParseEntityList<TechPowerResponse>();
 
             techPowersResponse.Should().HaveCount(paging.PageSize);
             techPowersResponse[0].Id.Should().Be(techPowers[0 + paging.PageSize].Id);

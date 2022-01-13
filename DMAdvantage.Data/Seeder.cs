@@ -38,19 +38,6 @@ namespace DMAdvantage.Data
                 }
             }
 
-            if (_ctx.DamageTypes.Count() == 0)
-            {
-                var names = new List<string>
-                {
-                    "Acid", "Cold", "Energy", "Fire", "Force", "Ion", "Kinetic",
-                    "Lightning", "Necrotic", "Poison", "Psychic", "Sonic"
-                };
-                foreach (var name in names)
-                {
-                    _ctx.Add(new DamageType { Name = name, User = user });
-                }
-            }
-
             _ctx.SaveChanges();
         }
     }

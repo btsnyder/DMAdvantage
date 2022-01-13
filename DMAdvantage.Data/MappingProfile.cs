@@ -37,8 +37,6 @@ namespace DMAdvantage.Data
             CreateMap<ForcePower, ForcePowerResponse>().ReverseMap();
             CreateMap<TechPower, TechPowerRequest>().ReverseMap();
             CreateMap<TechPower, TechPowerResponse>().ReverseMap();
-            CreateMap<DamageType, DamageTypeRequest>().ReverseMap();
-            CreateMap<DamageType, DamageTypeResponse>().ReverseMap();
             CreateMap<User, LoginResponse>();
             
         }

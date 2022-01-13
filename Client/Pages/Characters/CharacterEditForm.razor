@@ -230,16 +230,16 @@
     </div>
     @foreach (var weapon in _model.Weapons)
     {
-        <div class="row b-2">
-            <div class="form-group col-2">
+        <div class="row mb-2">
+            <div class="form-group col-3">
                 @if (_model.Weapons.First() == weapon) 
                 {<label>Name</label>}
                 <InputText @bind-Value="@weapon.Name" class="form-control" />
                 <ValidationMessage For="@(() => weapon.Name)" />
             </div>
-            <div class="form-group col-2">
+            <div class="form-group col-3">
                 @if (_model.Weapons.First() == weapon)
-                {<label>Type</label>}
+                {<label>Weapon Type</label>}
                 <InputSelect @bind-Value="@weapon.Type" class="form-control">
                     @foreach (var type in Enum.GetValues<WeaponType>())
                     { 
@@ -251,7 +251,15 @@
             <div class="form-group col">
                 @if (_model.Weapons.First() == weapon)
                 {<label>Melee</label>}
-                <InputCheckbox @bind-Value="@weapon.Melee" class="form-control"/>
+                <input type="checkbox" class="btn-check row" id="@weapon.Name" autocomplete="off" @bind="@weapon.Melee">
+                @if(weapon.Melee)
+                {
+                    <label class="btn btn-outline-primary" for="@weapon.Name">True</label> 
+                }
+                else
+                {
+                    <label class="btn btn-outline-primary" for="@weapon.Name">False</label> 
+                }
                 <ValidationMessage For="@(() => weapon.Melee)" />
             </div>
             <div class="form-group col-2">
@@ -259,20 +267,25 @@
                 {<label>Properties</label>}
                 <RadzenDropDown AllowClear="true" AllowFiltering="true" TValue="IEnumerable<string>"
                     @bind-Value=@weapon.Properties FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
-                    Multiple="true" Placeholder="Select..." Data=@_weaponProperities class="form-control" />
+                    Multiple="true" Placeholder="Select..." Data=@_weaponProperities class="form-control" Change=@(() => WeaponPropertyChanged(weapon)) />
                 <ValidationMessage For="@(() => weapon.Properties)" />
             </div>
-            <div class="form-group col-2">
-                @if (_model.Weapons.First() == weapon)
-                {<label>Description</label>}
-                <InputText @bind-Value="@weapon.Description" class="form-control" />
-                <ValidationMessage For="@(() => weapon.Description)" />
-            </div>
-            <div class="form-group col-2">
+            <div class="form-group col">
                 @if (_model.Weapons.First() == weapon)
                 {<label>Damage</label>}
                 <InputText @bind-Value="@weapon.Damage" class="form-control" />
                 <ValidationMessage For="@(() => weapon.Damage)" />
+            </div>
+            <div class="form-group col">
+                @if (_model.Weapons.First() == weapon)
+                {<label>Type</label>}
+                <InputSelect @bind-Value="@weapon.DamageType" class="form-control">
+                    @foreach (var type in Enum.GetValues<DamageType>())
+                    { 
+                        <option value="@type">@type.GetStringValue()</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => weapon.Type)" />
             </div>
             <div class="form-group col mt-auto align-self-end">
                 <button type="button" class="btn btn-danger" @onclick="(() => _model.Weapons.Remove(weapon))">
@@ -280,6 +293,14 @@
                 </button>
             </div>
         </div>
+        <div class="d-flex mb-2 align-items-center">
+            @foreach(var prop in weapon.PropertyDescriptions.OrderBy(x => x.Name))
+            {
+                <label class="me-1">@prop.Name:</label>
+                <InputText @bind-Value="@prop.Description" class="form-control me-2" />
+            }
+        </div>
+        <hr />
     }
     <div class="row my-2">
         <div class="form-group col-5">

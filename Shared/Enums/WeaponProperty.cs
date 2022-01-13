@@ -36,6 +36,7 @@
         Strength,
         Switch,
         Thrown,
+        [EnumString("Two-Handed")]
         TwoHanded,
         Versatile,
         Vicious

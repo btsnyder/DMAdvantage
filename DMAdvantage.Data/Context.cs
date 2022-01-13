@@ -23,7 +23,6 @@ namespace DMAdvantage.Data
         public DbSet<Encounter> Encounters => Set<Encounter>();
         public DbSet<ForcePower> ForcePowers => Set<ForcePower>();
         public DbSet<TechPower> TechPowers => Set<TechPower>();
-        public DbSet<DamageType> DamageTypes => Set<DamageType>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder bldr)
         {
@@ -46,9 +45,9 @@ namespace DMAdvantage.Data
             AddPropertyList(modelBuilder, (Character c) => c.TechPowerIds);
             AddPropertyList(modelBuilder, (Creature c) => c.ForcePowerIds);
             AddPropertyList(modelBuilder, (Creature c) => c.TechPowerIds);
-            AddPropertyList(modelBuilder, (Creature c) => c.VulnerabilityIds);
-            AddPropertyList(modelBuilder, (Creature c) => c.ImmunityIds);
-            AddPropertyList(modelBuilder, (Creature c) => c.ResistanceIds);
+            AddPropertyList(modelBuilder, (Creature c) => c.Vulnerabilities);
+            AddPropertyList(modelBuilder, (Creature c) => c.Immunities);
+            AddPropertyList(modelBuilder, (Creature c) => c.Resistances);
         }
 
         private static void AddPropertyList<T1, T2>(ModelBuilder modelBuilder, Expression<Func<T1, List<T2>>> expression) where T1 : BaseEntity

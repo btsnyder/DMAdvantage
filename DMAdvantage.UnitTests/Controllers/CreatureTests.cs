@@ -14,6 +14,7 @@ using DMAdvantage.Server.Controllers;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Models;
 using FluentAssertions;
+using DMAdvantage.Shared.Enums;
 
 namespace DMAdvantage.UnitTests.Controllers
 {
@@ -127,9 +128,9 @@ namespace DMAdvantage.UnitTests.Controllers
                 CharismaBonus = _mockCreatureData[0].CharismaBonus,
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = _mockCreatureData[0].Actions,
-                VulnerabilityIds = Generation.RandomList(() => Guid.NewGuid()),
-                ImmunityIds = _mockCreatureData[0].ImmunityIds,
-                ResistanceIds = Generation.RandomList(() => Guid.NewGuid()),
+                Vulnerabilities = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
+                Immunities = _mockCreatureData[0].Immunities,
+                Resistances = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
                 ForcePowerIds = Generation.RandomList(() => Guid.NewGuid()),
                 TechPowerIds = _mockCreatureData[0].TechPowerIds
             };
@@ -168,9 +169,9 @@ namespace DMAdvantage.UnitTests.Controllers
                 CharismaBonus = _mockCreatureData[0].CharismaBonus,
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = _mockCreatureData[0].Actions,
-                VulnerabilityIds = Generation.RandomList(() => Guid.NewGuid()),
-                ImmunityIds = _mockCreatureData[0].ImmunityIds,
-                ResistanceIds = Generation.RandomList(() => Guid.NewGuid()),
+                Vulnerabilities = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
+                Immunities = _mockCreatureData[0].Immunities,
+                Resistances = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
                 ForcePowerIds = Generation.RandomList(() => Guid.NewGuid()),
                 TechPowerIds = _mockCreatureData[0].TechPowerIds
             };
