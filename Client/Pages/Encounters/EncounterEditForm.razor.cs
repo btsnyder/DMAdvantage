@@ -14,10 +14,10 @@ namespace DMAdvantage.Client.Pages.Encounters
         private bool _loading;
         private List<InitativeDataModel> _initatives = new();
         private RadzenDataGrid<InitativeDataModel> _initativeGrid;
-        private IList<InitativeDataModel> _selectedInitatives { get; set; }
-        private InitativeDataModel? _selectedInitative => _selectedInitatives?.FirstOrDefault();
+        private IList<InitativeDataModel> SelectedInitatives { get; set; }
+        private InitativeDataModel? SelectedInitative => SelectedInitatives?.FirstOrDefault();
         private InitativeDataModel? _currentPlayer;
-        IList<ForcePowerResponse> _selectedForcePowers { get; set; } = new List<ForcePowerResponse>();
+        IList<ForcePowerResponse> SelectedForcePowers { get; set; } = new List<ForcePowerResponse>();
         private List<CharacterResponse> _characters;
         private List<CreatureResponse> _creatures;
         private List<ForcePowerResponse> _forcePowers;
@@ -25,6 +25,7 @@ namespace DMAdvantage.Client.Pages.Encounters
         private CreatureResponse _selectedCreature;
         private int _healthEdit;
         private bool _initativeEditing;
+        private readonly Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
 
         private EncounterRequest _model = new();
 
@@ -37,8 +38,6 @@ namespace DMAdvantage.Client.Pages.Encounters
         IApiService ApiService { get; set; }
         [Inject]
         NavigationManager NavigationManager { get; set; }
-        [Inject]
-        TooltipService TooltipService { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -56,16 +55,29 @@ namespace DMAdvantage.Client.Pages.Encounters
                 {
                     _initatives.Add(new InitativeDataModel(being, _model.Data.First(x => x.BeingId == being.Id)));
                 }
+
+                var sorted = new List<InitativeDataModel>(_initatives);
+                sorted.Sort(delegate (InitativeDataModel data1, InitativeDataModel data2) { return data2.Initative.CompareTo(data1.Initative); });
+                _initatives = new(sorted);
             }
 
-            _selectedInitatives = new List<InitativeDataModel>() { _initatives[0] };
+            SelectedInitatives = new List<InitativeDataModel>() { _initatives[0] };
 
             _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
             _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
             _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
 
-            if (_selectedInitative != null)
-                OnRowSelect(_selectedInitative);
+            if (SelectedInitative != null)
+                OnRowSelect(SelectedInitative);
+
+            _currentPlayer = _initatives.FirstOrDefault(x => x.BeingId == _model.CurrentPlayer);
+
+            foreach (var concentration in _model.ConcentrationPowers)
+            {
+                var power = _forcePowers.FirstOrDefault(x => x.Id == concentration.Value);
+                if (power != null)
+                    _concentrationPowers.Add(concentration.Key, power);
+            }
 
             await base.OnInitializedAsync();
         }
@@ -81,6 +93,11 @@ namespace DMAdvantage.Client.Pages.Encounters
                     _model.Data.Add(init);
                 }
                 _model.CurrentPlayer = _currentPlayer?.BeingId ?? Guid.Empty;
+                _model.ConcentrationPowers.Clear();
+                foreach (var power in _concentrationPowers)
+                {
+                    _model.ConcentrationPowers.Add(power.Key, power.Value.Id);
+                }
                 if (Id == null)
                 {
                     await ApiService.AddEntity(_model);
@@ -108,13 +125,13 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         void ApplyHealth()
         {
-            _selectedInitative?.ApplyHP(_healthEdit);
+            SelectedInitative?.ApplyHP(_healthEdit);
             _healthEdit = 0;
         }
 
         void ApplyDamage()
         {
-            _selectedInitative?.ApplyHP(-1 * _healthEdit);
+            SelectedInitative?.ApplyHP(-1 * _healthEdit);
             _healthEdit = 0;
         }
 
@@ -139,7 +156,7 @@ namespace DMAdvantage.Client.Pages.Encounters
         {
             if (data.Being != null)
             {
-                _selectedForcePowers = _forcePowers.Where(x => data.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
+                SelectedForcePowers = _forcePowers.Where(x => data.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
             }
         }
 
@@ -214,6 +231,33 @@ namespace DMAdvantage.Client.Pages.Encounters
             else
                 index = _initatives.IndexOf(_currentPlayer);
             _currentPlayer = _initatives[--index];
+        }
+
+        async Task ForcePowerClicked(ForcePowerResponse? power)
+        {
+            if (SelectedInitative == null || power == null || power.Level < 1)
+                return;
+            if (SelectedInitative.CurrentFP < power.Level + 1)
+            {
+                #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                InvokeAsync(async () =>
+                {
+                    await Task.Delay(1500);
+                    DialogService.Close();
+                });
+                #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+
+                await BusyDialog($"Not enough force points!");
+            }
+            else
+            {
+                SelectedInitative.CurrentFP -= power.Level + 1;
+                if (power.Concentration)
+                {
+                    _concentrationPowers.Add(SelectedInitative.Name ?? $"Player {_initatives.IndexOf(SelectedInitative)}", power);
+                }
+                StateHasChanged();
+            }
         }
     }
 }

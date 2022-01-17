@@ -9,6 +9,8 @@ namespace DMAdvantage.Shared.Entities
         public Guid CurrentPlayer { get; set; }
         public string? DataCache { get; set; }
         public List<InitativeData> Data => JsonSerializer.Deserialize<List<InitativeData>>(DataCache ?? string.Empty) ?? new();
+        public string? ConcentrationCache { get; set; }
+        public Dictionary<string, Guid> ConcentrationPowers => JsonSerializer.Deserialize<Dictionary<string, Guid>>(ConcentrationCache ?? string.Empty) ?? new();
 
         public override string OrderBy()
         {

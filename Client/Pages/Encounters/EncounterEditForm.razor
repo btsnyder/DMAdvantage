@@ -124,6 +124,24 @@
                     </RadzenTabsItem>
                 </Tabs>
             </RadzenTabs>
+            <div class="row mb-2">
+                @if (_concentrationPowers.Count > 0)
+                {
+                    <RadzenCard>
+                        @foreach (var power in _concentrationPowers)
+                        {
+                            <div class="row">
+                                <div class="col">
+                                    @power.Key
+                                </div>
+                                <div class="col">
+                                    @power.Value.Name
+                                </div>
+                            </div>   
+                        }
+                    </RadzenCard>
+                }
+            </div>
             <div class="d-flex mb-2">
                 @if (!_initativeEditing)
                 {
@@ -138,7 +156,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col">
-                    <RadzenDataGrid @ref="_initativeGrid" Data="@_initatives" TItem="InitativeDataModel" @bind-Value="@_selectedInitatives"
+                    <RadzenDataGrid @ref="_initativeGrid" Data="@_initatives" TItem="InitativeDataModel" @bind-Value="@SelectedInitatives"
                         EditMode="DataGridEditMode.Multiple" RowSelect=OnRowSelect>
                         <Columns>
                             <RadzenDataGridColumn TItem="InitativeDataModel" Width="10%">
@@ -165,187 +183,190 @@
                         <Tabs>
                             <RadzenTabsItem Text="Basic">
                                 <div class="row mb-2">
-                                    <div class="col">
-                                        Name: @_selectedInitative?.Name
-                                    </div>
-                                    @if (_selectedInitative?.Being is CharacterResponse character)
-                                    {
+                                    <div class="col">Name: @SelectedInitative?.Name</div>
+                                </div>
+                                @if (SelectedInitative?.Being is CharacterResponse character)
+                                {
+                                    <div class="row mb-2">
                                         <div class="col">
                                             Player: @character.PlayerName
                                         </div>
                                         <div class="col">
                                             Class: @character.Class
                                         </div>
-                                    }
-                                </div>
+                                    </div>
+                                }
                                 <div class="row mb-2">
                                     <div class="col">
-                                        AC: <b>@_selectedInitative?.Being?.ArmorClass</b>
+                                        AC: <b>@SelectedInitative?.Being?.ArmorClass</b>
                                     </div>
                                     <div class="col">
-                                        Initiative: <b>+@_selectedInitative?.Being?.DexterityBonus</b>
+                                        Initiative: <b>@SelectedInitative?.Being?.DexterityBonus.PrintInt()</b>
                                     </div>
-                                    @if (_selectedInitative?.Being is CharacterResponse proficiencyCharacter)
+                                    @if (SelectedInitative?.Being is CharacterResponse proficiencyCharacter)
                                     {
                                         <div class="col">
-                                            Proficiency: <b>+@proficiencyCharacter.GetProficiencyBonus()</b>
+                                            Proficiency: <b>@proficiencyCharacter.GetProficiencyBonus().PrintInt()</b>
                                         </div>
                                     }
                                     <div class="col">
-                                        Speed: @_selectedInitative?.Being?.Speed
+                                        Speed:<b>@SelectedInitative?.Being?.Speed</b>
                                     </div>
                                 </div>
                                 <div class="d-flex mb-2 align-items-center">
+                                    <div class="me-2">
+                                        HP:
+                                    </div>
+                                    @if (SelectedInitative?.Being != null)
+                                    {
+                                        <RadzenProgressBar @bind-Value=@SelectedInitative.HPAsDouble Max=@SelectedInitative.Being.HitPoints ShowValue="false" class="me-2" style="width: 200px;"/>
+                                    }
                                     <div class="me-4">
-                                        HP: @_selectedInitative?.CurrentHP/@_selectedInitative?.Being?.HitPoints
+                                        @SelectedInitative?.CurrentHP/@SelectedInitative?.Being?.HitPoints
                                     </div>
                                     <div class="me-2" style="width: 80px">
                                         <RadzenNumeric @bind-Value="_healthEdit" Style="width:100%" />
                                     </div>
-                                    <div class="me-2">
-                                        <button type="button" class="btn btn-danger" @onclick=@ApplyDamage>
-                                            <span class="oi oi-droplet" aria-hidden="true"></span>
-                                        </button>
+                                    <button type="button" class="btn btn-danger me-2" @onclick=@ApplyDamage>
+                                        <span class="oi oi-droplet" aria-hidden="true"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-success" @onclick=@ApplyHealth>
+                                        <span class="oi oi-heart" aria-hidden="true"></span>
+                                    </button>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        STR: @SelectedInitative?.Being?.Strength
                                     </div>
-                                    <div>
-                                        <button type="button" class="btn btn-success" @onclick=@ApplyHealth>
-                                            <span class="oi oi-heart" aria-hidden="true"></span>
-                                        </button>
+                                    <div class="col">
+                                        DEX: @SelectedInitative?.Being?.Dexterity
+                                    </div>
+                                    <div class="col">
+                                        CON: @SelectedInitative?.Being?.Constitution
+                                    </div>
+                                    <div class="col">
+                                        INT: @SelectedInitative?.Being?.Intelligence
+                                    </div>
+                                    <div class="col">
+                                        WIS: @SelectedInitative?.Being?.Wisdom
+                                    </div>
+                                    <div class="col">
+                                        CHA: @SelectedInitative?.Being?.Charisma
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col">
-                                        STR: @_selectedInitative?.Being?.Strength
+                                        (<b>@SelectedInitative?.Being?.StrengthBonus.PrintInt()</b>)
                                     </div>
                                     <div class="col">
-                                        DEX: @_selectedInitative?.Being?.Dexterity
+                                        (<b>@SelectedInitative?.Being?.DexterityBonus.PrintInt()</b>)
                                     </div>
                                     <div class="col">
-                                        CON: @_selectedInitative?.Being?.Constitution
+                                        (<b>@SelectedInitative?.Being?.ConstitutionBonus.PrintInt()</b>)
                                     </div>
                                     <div class="col">
-                                        INT: @_selectedInitative?.Being?.Intelligence
+                                        (<b>@SelectedInitative?.Being?.IntelligenceBonus.PrintInt()</b>)
                                     </div>
                                     <div class="col">
-                                        WIS: @_selectedInitative?.Being?.Wisdom
+                                        (<b>@SelectedInitative?.Being?.WisdomBonus.PrintInt()</b>)
                                     </div>
                                     <div class="col">
-                                        CHA: @_selectedInitative?.Being?.Charisma
+                                        (<b>@SelectedInitative?.Being?.CharismaBonus.PrintInt()</b>)
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col">
-                                        (<b>+@_selectedInitative?.Being?.StrengthBonus</b>)
-                                    </div>
-                                    <div class="col">
-                                        (<b>+@_selectedInitative?.Being?.DexterityBonus</b>)
-                                    </div>
-                                    <div class="col">
-                                        (<b>+@_selectedInitative?.Being?.ConstitutionBonus</b>)
-                                    </div>
-                                    <div class="col">
-                                        (<b>+@_selectedInitative?.Being?.IntelligenceBonus</b>)
-                                    </div>
-                                    <div class="col">
-                                        (<b>+@_selectedInitative?.Being?.WisdomBonus</b>)
-                                    </div>
-                                    <div class="col">
-                                        (<b>+@_selectedInitative?.Being?.CharismaBonus</b>)
-                                    </div>
-                                </div>
-                                @if (_selectedInitative?.Being is CharacterResponse skillChar)
+                                @if (SelectedInitative?.Being is CharacterResponse skillChar)
                                 {
                                     <div class="row">
                                         <div class="col">
-                                            Save: <b>+@skillChar.SkillBonus(skillChar.StrengthBonus, skillChar.StrengthSave)</b>
+                                            Save: <b>@skillChar.SkillBonus(skillChar.StrengthBonus, skillChar.StrengthSave).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Save: <b>+@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.DexteritySave)</b>
+                                            Save: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.DexteritySave).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Save: <b>+@skillChar.SkillBonus(skillChar.ConstitutionBonus, skillChar.ConstitutionSave)</b>
+                                            Save: <b>@skillChar.SkillBonus(skillChar.ConstitutionBonus, skillChar.ConstitutionSave).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Save: <b>+@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.IntelligenceSave)</b>
+                                            Save: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.IntelligenceSave).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Save: <b>+@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.WisdomSave)</b>
+                                            Save: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.WisdomSave).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Save: <b>+@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.CharismaSave)</b>
+                                            Save: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.CharismaSave).PrintInt()</b>
                                         </div>
                                     </div>
                                     <hr />
                                     <div class="row">
                                         <div class="col">
-                                            Acrobatics: <b>+@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.Acrobatics)</b>
+                                            Acrobatics: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.Acrobatics).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Investigation: <b>+@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Investigation)</b>
+                                            Investigation: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Investigation).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Persuasion: <b>+@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Persuasion)</b>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            Animal Handling: <b>+@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.AnimalHandling)</b>
-                                        </div>
-                                        <div class="col">
-                                            Lore: <b>+@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Lore)</b>
-                                        </div>
-                                        <div class="col">
-                                            Piloting: <b>+@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Piloting)</b>
+                                            Persuasion: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Persuasion).PrintInt()</b>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                            Athletics: <b>+@skillChar.SkillBonus(skillChar.StrengthBonus, skillChar.Athletics)</b>
+                                            Animal Handling: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.AnimalHandling).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Medicine: <b>+@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Medicine)</b>
+                                            Lore: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Lore).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Sleight Of Hand: <b>+@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.SleightOfHand)</b>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col">
-                                            Deception: <b>+@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Deception)</b>
-                                        </div>
-                                        <div class="col">
-                                            Nature: <b>+@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Nature)</b>
-                                        </div>
-                                        <div class="col">
-                                            Stealth: <b>+@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.Stealth)</b>
+                                            Piloting: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Piloting).PrintInt()</b>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                            Insight: <b>+@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Insight)</b>
+                                            Athletics: <b>@skillChar.SkillBonus(skillChar.StrengthBonus, skillChar.Athletics).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Perception: <b>+@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Perception)</b>
+                                            Medicine: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Medicine).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Survival: <b>+@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Survival)</b>
+                                            Sleight Of Hand: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.SleightOfHand).PrintInt()</b>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col">
-                                            Intimidation: <b>+@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Intimidation)</b>
+                                            Deception: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Deception).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Performance: <b>+@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Performance)</b>
+                                            Nature: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Nature).PrintInt()</b>
                                         </div>
                                         <div class="col">
-                                            Technology: <b>+@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Technology)</b>
+                                            Stealth: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.Stealth).PrintInt()</b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            Insight: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Insight).PrintInt()</b>
+                                        </div>
+                                        <div class="col">
+                                            Perception: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Perception).PrintInt()</b>
+                                        </div>
+                                        <div class="col">
+                                            Survival: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Survival).PrintInt()</b>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            Intimidation: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Intimidation).PrintInt()</b>
+                                        </div>
+                                        <div class="col">
+                                            Performance: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Performance).PrintInt()</b>
+                                        </div>
+                                        <div class="col">
+                                            Technology: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Technology).PrintInt()</b>
                                         </div>
                                     </div>
                                 }
                             </RadzenTabsItem>
                             <RadzenTabsItem Text="Actions">
-                                @if (_selectedInitative?.Being is CharacterResponse characterActions)
+                                @if (SelectedInitative?.Being is CharacterResponse characterActions)
                                 {
                                     @foreach(var weapon in characterActions.Weapons)
                                     {
@@ -355,10 +376,10 @@
                                                     @weapon.Name
                                                 </div>
                                                 <div class="col-2">
-                                                    +@characterActions.WeaponBonus(weapon.Melee)
+                                                    @characterActions.WeaponBonus(weapon.Melee).PrintInt()
                                                 </div>
                                                 <div class="col-2">
-                                                    @weapon.Damage+@characterActions.WeaponBonus(weapon.Melee, true)
+                                                    @weapon.Damage@characterActions.WeaponBonus(weapon.Melee, true).PrintInt()
                                                 </div>
                                                 <div class="col-4">
                                                     @weapon.DamageType
@@ -373,7 +394,7 @@
                                         </RadzenCard>       
                                     }
                                 }
-                                @if (_selectedInitative?.Being is CreatureResponse creatureActions)
+                                @if (SelectedInitative?.Being is CreatureResponse creatureActions)
                                 {
                                     @foreach(var action in creatureActions.Actions)
                                     {
@@ -406,7 +427,7 @@
                                 }
                             </RadzenTabsItem>
                             <RadzenTabsItem Text="ForcePowers">
-                                @if (_selectedInitative?.Being is CharacterResponse characterForce)
+                                @if (SelectedInitative?.Being is CharacterResponse characterForce)
                                 {
                                     <div class="row mb-2 align-items-center">
                                         <div class="col"/>
@@ -425,13 +446,13 @@
                                             <text>Modifier</text>
                                         </div>
                                         <div class="col">
-                                            <text><b>+@characterForce.ForceAttackModifier(ForceAlignment.Light)</b></text>
+                                            <text><b>@characterForce.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></text>
                                         </div>
                                         <div class="col">
-                                            <text><b>+@characterForce.ForceAttackModifier(ForceAlignment.Universal)</b></text>
+                                            <text><b>@characterForce.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
                                         </div>
                                         <div class="col">
-                                            <text><b>+@characterForce.ForceAttackModifier(ForceAlignment.Dark)</b></text>
+                                            <text><b>@characterForce.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
                                         </div>
                                     </div>
                                     <div class="row mb-2 align-items-center">
@@ -451,21 +472,38 @@
                                 }
                                 <div class="d-flex mb-2 align-items-center">
                                     <div class="me-5">
-                                        FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b>
+                                        FP: <b>@SelectedInitative?.CurrentFP/@SelectedInitative?.Being?.ForcePoints</b>
                                     </div>
                                     <div class="me-2">
-                                        <RadzenButton Icon="add" Click=@(() => _selectedInitative.CurrentFP++) ButtonStyle="ButtonStyle.Danger"/>
+                                        <RadzenButton Icon="add" Click=@(() => SelectedInitative!.CurrentFP++) ButtonStyle="ButtonStyle.Danger"/>
                                     </div>
                                     <div>
-                                        <RadzenButton Icon="remove" Click=@(() => _selectedInitative.CurrentFP--) ButtonStyle="ButtonStyle.Danger"/>
+                                        <RadzenButton Icon="remove" Click=@(() => SelectedInitative!.CurrentFP--) ButtonStyle="ButtonStyle.Danger"/>
                                     </div>
                                 </div>
                                 <div class="row mb-2 align-items-bottom" style="font-size: x-large">
                                     <b>Force Powers</b>
                                 </div>
-                                <ForcePowerGrid Title="At-Will" Powers=@_selectedForcePowers.Where(x => x.Level == 0).ToList() />
-                                <ForcePowerGrid Title="Level 1" Powers=@_selectedForcePowers.Where(x => x.Level == 1).ToList() />
-                                <ForcePowerGrid Title="Level 2" Powers=@_selectedForcePowers.Where(x => x.Level == 2).ToList() />
+                                <ForcePowerGrid Title="At-Will" Powers=@SelectedForcePowers.Where(x => x.Level == 0).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 1" Powers=@SelectedForcePowers.Where(x => x.Level == 1).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 2" Powers=@SelectedForcePowers.Where(x => x.Level == 2).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 3" Powers=@SelectedForcePowers.Where(x => x.Level == 3).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 4" Powers=@SelectedForcePowers.Where(x => x.Level == 4).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 5" Powers=@SelectedForcePowers.Where(x => x.Level == 5).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 6" Powers=@SelectedForcePowers.Where(x => x.Level == 6).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 7" Powers=@SelectedForcePowers.Where(x => x.Level == 7).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 8" Powers=@SelectedForcePowers.Where(x => x.Level == 8).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
+                                <ForcePowerGrid Title="Level 9" Powers=@SelectedForcePowers.Where(x => x.Level == 9).ToList() Initative=@SelectedInitative 
+                                    Click=@((args) => ForcePowerClicked(args)) />
                             </RadzenTabsItem>
                         </Tabs>
                     </RadzenTabs>
@@ -492,5 +530,26 @@
             @<div>
                 <p Style="margin-bottom: 1rem">@StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)]</p>
             </div>);
+    }
+
+    async Task BusyDialog(string message)
+    {
+        await DialogService.OpenAsync("", ds =>
+        {
+            RenderFragment content = b =>
+            {
+                b.OpenElement(0, "div");
+                b.AddAttribute(1, "class", "row");
+
+                b.OpenElement(2, "div");
+                b.AddAttribute(3, "class", "col-md-12");
+
+                b.AddContent(4, message);
+
+                b.CloseElement();
+                b.CloseElement();
+            };
+            return content;
+        }, new DialogOptions() { ShowTitle = false, Style = "min-height:auto;min-width:auto;width:auto" });
     }
 }

@@ -74,5 +74,13 @@ namespace DMAdvantage.Client.Helpers
                 throw new Exception(error == null ? "Unknown error occured." : error["message"]);
             }
         }
+
+        public static string PrintInt(this int i)
+        {
+            if (i >= 0)
+                return $"+{i}";
+            else
+                return $"-{i}";
+        }
     }
 }

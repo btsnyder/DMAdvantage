@@ -12,7 +12,10 @@
                     <div class="flex-grow-1 text-danger">
                         <b>@power.Name</b>
                     </div>
-                    <RadzenButton Text="CAST" ButtonStyle="ButtonStyle.Danger" class="me-2"/>
+                    @if (ShowCast)
+                    {
+                        <RadzenButton Text="CAST" Click=@(() => ForceClicked(power)) ButtonStyle="ButtonStyle.Danger" class="me-2"/>
+                    }
                     @if (power == _selectedForcePower)
                     {
                         <RadzenButton Icon="expand_less" Click=@(() => HideForcePower()) ButtonStyle="ButtonStyle.Light"/>

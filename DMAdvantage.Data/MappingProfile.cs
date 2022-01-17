@@ -31,14 +31,15 @@ namespace DMAdvantage.Data
             CreateMap<Encounter, EncounterRequest>();
             CreateMap<EncounterRequest, Encounter>()
                 .ForMember(c => c.Data, opt => opt.Ignore())
-                .ForMember(c => c.DataCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Data, (JsonSerializerOptions?)null))); ;
+                .ForMember(c => c.DataCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Data, (JsonSerializerOptions?)null)))
+                .ForMember(c => c.ConcentrationPowers, opt => opt.Ignore())
+                .ForMember(c => c.ConcentrationCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.ConcentrationPowers, (JsonSerializerOptions?)null)));
             CreateMap<Encounter, EncounterResponse>().ReverseMap();
             CreateMap<ForcePower, ForcePowerRequest>().ReverseMap();
             CreateMap<ForcePower, ForcePowerResponse>().ReverseMap();
             CreateMap<TechPower, TechPowerRequest>().ReverseMap();
             CreateMap<TechPower, TechPowerResponse>().ReverseMap();
             CreateMap<User, LoginResponse>();
-            
         }
     }
 }
