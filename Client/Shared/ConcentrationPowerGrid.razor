@@ -1,0 +1,60 @@
+﻿@inject DialogService DialogService
+
+<div class="row mb-2">
+    @if (ConcentrationPowers.Count > 0)
+    {
+        <RadzenCard>
+            <h2>Concentration Powers</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr style="background-color: #D1CFCE">
+                        <th>Player</th>
+                        <th>Power</th>
+                        <th>Duration</th>
+                        <th/>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var power in ConcentrationPowers)
+                    {
+                        <tr>
+                            <td>@power.Key</td>
+                            <td>@power.Value.Name</td>
+                            <td>@power.Value.Duration</td>
+                            <td width="20px">                                            
+                                <RadzenButton Icon="info" Click=@(() => ShowInlineDialog(power.Value)) Size="ButtonSize.Small" style="background-color: #2155ff !important;"/>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </RadzenCard>
+    }
+</div>
+
+@code
+{
+    async Task ShowInlineDialog(ForcePowerResponse power)
+    {
+        var result = await DialogService.OpenAsync(power.Name, ds =>
+            @<div class="d-flex flex-column">
+                <text><b>Alignment:</b> @power.Alignment</text>
+                <text><b>Concentration:</b> @power.Concentration</text>
+                <text><b>Hit:</b> @power.HitOption?.GetStringValue()</text>
+                @if (!string.IsNullOrWhiteSpace(power.HitDescription))
+                {
+                    <div><b>Description:</b> @power.HitDescription</div>
+                }
+                <text><b>Casting Time:</b> @power.CastingPeriod.GetStringValue()</text>
+                <text><b>Range:</b> @power.Range.GetStringValue()</text>
+                <text><b>Duration:</b> @power.Duration</text>
+                <br/>
+                <text>@power.Description</text>
+                @if (!string.IsNullOrEmpty(power.Potency))
+                {
+                    <br/>
+                    <div><b>Potency:</b> @power.Potency</div>
+                }
+            </div>);
+    }
+}

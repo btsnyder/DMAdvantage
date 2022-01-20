@@ -12,24 +12,7 @@
             <RadzenButton Text="Refresh" Click=@ReloadEncounter Size="ButtonSize.Small" class="m-1 px-1"/>
         </div>
     </div>
-    <div class="row mb-2">
-        @if (_concentrationPowers.Count > 0)
-        {
-            <RadzenCard>
-                @foreach (var power in _concentrationPowers)
-                {
-                    <div class="row">
-                        <div class="col">
-                            @power.Key
-                        </div>
-                        <div class="col">
-                            @power.Value.Name
-                        </div>
-                    </div>   
-                }
-            </RadzenCard>
-        }
-    </div>
+    <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers />
     <div class="row mb-2">
         <div class="col">
             <table class="table table-striped">
@@ -39,6 +22,7 @@
                         <th>Name</th>
                         <th>AC</th>
                         <th>HP</th>
+                        <th>FP</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,7 +34,8 @@
                                 <td width="10%">@init.Initative</td>
                                 <td width="50%">@init.Name</td>
                                 <td width="10%">@init.ArmorClass</td>
-                                <td style="color: @init.GetHPColor()" width="20%"><b>@init.GetHPDisplay()</b></td>
+                                <td width="20%" style="color: @init.GetHPColor()"><b>@init.GetHPDisplay()</b></td>
+                                <td width="10%"><b>@init.ForcePoints</b></td>
                             </tr>
                         }
                     }

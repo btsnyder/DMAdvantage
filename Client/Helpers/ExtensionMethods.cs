@@ -80,7 +80,7 @@ namespace DMAdvantage.Client.Helpers
             if (i >= 0)
                 return $"+{i}";
             else
-                return $"-{i}";
+                return i.ToString();
         }
     }
 }

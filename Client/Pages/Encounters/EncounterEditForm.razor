@@ -124,24 +124,7 @@
                     </RadzenTabsItem>
                 </Tabs>
             </RadzenTabs>
-            <div class="row mb-2">
-                @if (_concentrationPowers.Count > 0)
-                {
-                    <RadzenCard>
-                        @foreach (var power in _concentrationPowers)
-                        {
-                            <div class="row">
-                                <div class="col">
-                                    @power.Key
-                                </div>
-                                <div class="col">
-                                    @power.Value.Name
-                                </div>
-                            </div>   
-                        }
-                    </RadzenCard>
-                }
-            </div>
+            <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers />
             <div class="d-flex mb-2">
                 @if (!_initativeEditing)
                 {

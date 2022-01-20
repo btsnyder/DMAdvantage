@@ -25,7 +25,7 @@ namespace DMAdvantage.Client.Pages.Encounters
         private CreatureResponse _selectedCreature;
         private int _healthEdit;
         private bool _initativeEditing;
-        private readonly Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
+        private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
 
         private EncounterRequest _model = new();
 

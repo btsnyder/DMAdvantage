@@ -13,7 +13,7 @@ namespace DMAdvantage.Client.Pages.Encounters
         private InitativeDataModel? _currentPlayer;
         private List<ForcePowerResponse> _forcePowers;
         IList<ForcePowerResponse> SelectedForcePowers { get; set; } = new List<ForcePowerResponse>();
-        private readonly Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
+        private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
 
         [Inject]
         IApiService ApiService { get; set; }

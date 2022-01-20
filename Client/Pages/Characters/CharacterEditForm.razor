@@ -1,4 +1,6 @@
-﻿<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+﻿@inject DialogService DialogService
+
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
     <div class="row my-2">
         <div class="form-group col">
@@ -20,11 +22,6 @@
     <div class="row my-2">
         <div class="form-group col">
             <label>Level</label>
-            <InputNumber @bind-Value="@_model.Level" class="form-control" />
-            <ValidationMessage For="@(() => _model.Level)" />
-        </div>
-        <div class="form-group col">
-            <label>Proficiency Bonus</label>
             <InputNumber @bind-Value="@_model.Level" class="form-control" />
             <ValidationMessage For="@(() => _model.Level)" />
         </div>
@@ -320,6 +317,30 @@
             <InputNumber @bind-Value="@_model.TechPoints" class="form-control" />
         </div>
     </div>
+    @for (int i = 0; i < 10; i++)
+    {
+        <h2>Level @i</h2>
+        <hr class="mt-0" />
+        <div class="row mb-2">
+            <div class="d-flex flex-wrap">
+                @foreach (var power in _forcePowers.Where(x => x.Level == i))
+                {
+                    <button type="button" class="btn m-1" style=@CssStyle(power) @onclick=@(() => UpdateForcePower(power)) disabled=@IsDisabled(power)>
+                        <div class="row px-1 d-flex">
+                            @power.Name
+                            <button type="button" class="btn p-0" style="width: 25px; color: white; font-size:12px" @onclick=@(() => InfoClicked(power))>
+                                <span class="oi oi-comment-square" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)
+                        {
+                            <div class="row px-1" style="font-size: 10px"><b>Pre-Req: @GetPowerName(power.PrerequisiteId)</b></div>
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+    }
     <div class="row my-2">
         <button disabled="@_loading" class="btn btn-primary">
             @if (_loading)
@@ -331,3 +352,30 @@
         <NavLink href="characters" class="btn btn-link">Cancel</NavLink>
     </div>
 </EditForm>
+
+@code
+{
+    async Task ShowInlineDialog(ForcePowerResponse power)
+    {
+        var result = await DialogService.OpenAsync(power.Name, ds =>
+            @<div class="d-flex flex-column">
+                <text><b>Alignment:</b> @power.Alignment</text>
+                <text><b>Concentration:</b> @power.Concentration</text>
+                <text><b>Hit:</b> @power.HitOption?.GetStringValue()</text>
+                @if (!string.IsNullOrWhiteSpace(power.HitDescription))
+                {
+                    <div><b>Description:</b> @power.HitDescription</div>
+                }
+                <text><b>Casting Time:</b> @power.CastingPeriod.GetStringValue()</text>
+                <text><b>Range:</b> @power.Range.GetStringValue()</text>
+                <text><b>Duration:</b> @power.Duration</text>
+                <br/>
+                <text>@power.Description</text>
+                @if (!string.IsNullOrEmpty(power.Potency))
+                {
+                    <br/>
+                    <div><b>Potency:</b> @power.Potency</div>
+                }
+            </div>);
+    }
+}
