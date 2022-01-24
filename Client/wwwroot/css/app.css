@@ -25,6 +25,10 @@ a, .btn-link {
     background-color: darkblue !important;
 }
 
+.rz-menu-toggle {
+    color: white !important;
+}
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

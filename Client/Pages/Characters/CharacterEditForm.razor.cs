@@ -114,6 +114,10 @@ namespace DMAdvantage.Client.Pages.Characters
 
         bool IsDisabled(ForcePowerResponse power)
         {
+            if (_model.ForcePowerIds.Contains(power.Id))
+                return false;
+            if (_model.ForcePowerIds.Count >= _model.TotalForcePowers)
+                return true;
             if (power.PrerequisiteId.HasValue && power.PrerequisiteId != Guid.Empty)
             {
                 return !_model.ForcePowerIds.Contains(power.PrerequisiteId.Value);
