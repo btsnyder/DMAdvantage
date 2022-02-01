@@ -95,29 +95,28 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task<EncounterResponse?> GetEncounterView(Guid id)
         {
-            return await _httpService.Get<EncounterResponse>($"/api/encountersview/encounter/{id}");
+            return await _httpService.Get<EncounterResponse>($"/api/view/encounter/{id}");
         }
 
-        public async Task<List<CharacterResponse>> GetCharacterViews(IEnumerable<Guid> ids)
+        public async Task<List<T>> GetViews<T>(IEnumerable<Guid>? ids = null)
         {
-            var query = "/api/encountersview/characters/?";
-            foreach (var id in ids)
+            var uri = $"/api/view/{GetPath(typeof(T))}";
+            if (ids != null && ids.Any())
             {
-                query += $"ids={id}&";
+                uri += "?";
+                foreach (var id in ids)
+                {
+                    uri += $"ids={id}&";
+                }
             }
-            query = query.TrimEnd('&');
-            return await _httpService.Get<List<CharacterResponse>>(query) ?? new();
+            uri = uri.TrimEnd('&');
+            return await _httpService.Get<List<T>>(uri) ?? new();
         }
 
-        public async Task<List<CreatureResponse>> GetCreatureViews(IEnumerable<Guid> ids)
+        public async Task<CharacterResponse> GetCharacterViewFromPlayerName(string name)
         {
-            var query = "/api/encountersview/creatures/?";
-            foreach (var id in ids)
-            {
-                query += $"ids={id}&";
-            }
-            query = query.TrimEnd('&');
-            return await _httpService.Get<List<CreatureResponse>>(query) ?? new();
+            var uri = $"/api/view/characters/player/{name}";
+            return await _httpService.Get<CharacterResponse>(uri) ?? new();
         }
     }
 }

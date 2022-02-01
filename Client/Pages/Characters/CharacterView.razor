@@ -1,0 +1,380 @@
+﻿@page "/characters/view/{PlayerName}"
+@inject DialogService DialogService
+
+<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+    <div class="row my-2">
+        <div class="form-group col">
+            <label>Name</label>
+            <InputText @bind-Value="@_model.Name" class="form-control" />
+            <ValidationMessage For="@(() => _model.Name)" />
+        </div>
+    </div>
+    <div class="row my-2">
+         <div class="form-group col">
+            <label>Player</label>
+            <InputText @bind-Value="@_model.PlayerName" class="form-control" />
+            <ValidationMessage For="@(() => _model.PlayerName)" />
+        </div>
+        <div class="form-group col">
+            <label>Class</label>
+            <InputText @bind-Value="@_model.Class" class="form-control" />
+            <ValidationMessage For="@(() => _model.Class)" />
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col">
+            <label>Level</label>
+            <InputNumber @bind-Value="@_model.Level" class="form-control" />
+            <ValidationMessage For="@(() => _model.Level)" />
+        </div>
+        <div class="form-group col">
+            <label>Hit Points</label>
+            <InputNumber @bind-Value="@_model.HitPoints" class="form-control" />
+            <ValidationMessage For="@(() => _model.HitPoints)" />
+        </div>
+        <div class="form-group col">
+            <label>Armor Class</label>
+            <InputNumber @bind-Value="@_model.ArmorClass" class="form-control" />
+            <ValidationMessage For="@(() => _model.ArmorClass)" />
+        </div>
+        <div class="form-group col">
+            <label>Speed</label>
+            <InputText @bind-Value="@_model.Speed" class="form-control" />
+            <ValidationMessage For="@(() => _model.Speed)" />
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col">
+            <label>Strength</label>
+            <InputNumber Value="@_model.Strength" ValueChanged="@( (int i) => _model.StrengthChanged(i) )" ValueExpression="() => _model.Strength" class="form-control" />
+            <ValidationMessage For="@(() => _model.Strength)" />
+        </div>
+        <div class="form-group col">
+            <label>Dexterity</label>
+            <InputNumber Value="@_model.Dexterity" ValueChanged="@( (int i) => _model.DexterityChanged(i) )" ValueExpression="() => _model.Dexterity" class="form-control" />
+            <ValidationMessage For="@(() => _model.Dexterity)" />
+        </div>
+        <div class="form-group col">
+            <label>Constitution</label>
+            <InputNumber Value="@_model.Constitution" ValueChanged="@( (int i) => _model.ConstitutionChanged(i) )" ValueExpression="() => _model.Constitution" class="form-control" />
+            <ValidationMessage For="@(() => _model.Constitution)" />
+        </div>
+        <div class="form-group col">
+            <label>Intelligence</label>
+            <InputNumber Value="@_model.Intelligence" ValueChanged="@( (int i) => _model.IntelligenceChanged(i) )" ValueExpression="() => _model.Intelligence" class="form-control" />
+            <ValidationMessage For="@(() => _model.Intelligence)" />
+        </div>
+        <div class="form-group col">
+            <label>Wisdom</label>
+            <InputNumber Value="@_model.Wisdom" ValueChanged="@( (int i) => _model.WisdomChanged(i) )" ValueExpression="() => _model.Wisdom" class="form-control" />
+            <ValidationMessage For="@(() => _model.Wisdom)" />
+        </div>
+        <div class="form-group col">
+            <label>Charisma</label>
+            <InputNumber Value="@_model.Charisma" ValueChanged="@( (int i) => _model.CharismaChanged(i) )" ValueExpression="() => _model.Charisma" class="form-control" />
+            <ValidationMessage For="@(() => _model.Charisma)" />
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col">
+            <InputNumber @bind-Value="@_model.StrengthBonus" class="form-control" />
+            <ValidationMessage For="@(() => _model.StrengthBonus)" />
+        </div>
+        <div class="form-group col">
+            <InputNumber @bind-Value="@_model.DexterityBonus" class="form-control" />
+            <ValidationMessage For="@(() => _model.DexterityBonus)" />
+        </div>
+        <div class="form-group col">
+            <InputNumber @bind-Value="@_model.ConstitutionBonus" class="form-control" />
+            <ValidationMessage For="@(() => _model.ConstitutionBonus)" />
+        </div>
+        <div class="form-group col">
+            <InputNumber @bind-Value="@_model.IntelligenceBonus" class="form-control" />
+            <ValidationMessage For="@(() => _model.IntelligenceBonus)" />
+        </div>
+        <div class="form-group col">
+            <InputNumber @bind-Value="@_model.WisdomBonus" class="form-control" />
+            <ValidationMessage For="@(() => _model.WisdomBonus)" />
+        </div>
+        <div class="form-group col">
+            <InputNumber @bind-Value="@_model.CharismaBonus" class="form-control" />
+            <ValidationMessage For="@(() => _model.CharismaBonus)" />
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.StrengthSave" Name="StrSave" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Saving Throw" Component="StrSave" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.DexteritySave" Name="DexSave" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Saving Throw" Component="DexSave" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.ConstitutionSave" Name="ConSave" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Saving Throw" Component="ConSave" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.IntelligenceSave" Name="IntSave" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Saving Throw" Component="IntSave" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.WisdomSave" Name="WisSave" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Saving Throw" Component="WisSave" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.CharismaSave" Name="ChaSave" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Saving Throw" Component="ChaSave" class="ms-2"/>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Athletics" Name="Athletics" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Athletics" Component="Athletics" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Acrobatics" Name="Acrobatics" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Acrobatics" Component="Acrobatics" class="ms-2"/>
+        </div>
+        <div class="form-group col"/>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Investigation" Name="Investigation" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Investigation" Component="Investigation" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.AnimalHandling" Name="AnimalHandling" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="AnimalHandling" Component="AnimalHandling" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Deception" Name="Deception" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Deception" Component="Deception" class="ms-2"/>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col"/>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.SleightOfHand" Name="SleightOfHand" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="SleightOfHand" Component="SleightOfHand" class="ms-2"/>
+        </div>
+        <div class="form-group col"/>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Lore" Name="Lore" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Lore" Component="Lore" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Insight" Name="Insight" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Insight" Component="Insight" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Intimidation" Name="Intimidation" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Intimidation" Component="Intimidation" class="ms-2"/>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col"/>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Stealth" Name="Stealth" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Stealth" Component="Stealth" class="ms-2"/>
+        </div>
+        <div class="form-group col"/>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Nature" Name="Nature" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Nature" Component="Nature" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Medicine" Name="Medicine" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Medicine" Component="Medicine" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Performance" Name="Performance" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Performance" Component="Performance" class="ms-2"/>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col"/>
+        <div class="form-group col"/>
+        <div class="form-group col"/>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Piloting" Name="Piloting" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Piloting" Component="Piloting" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Perception" Name="Perception" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Perception" Component="Perception" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Persuasion" Name="Persuasion" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Persuasion" Component="Persuasion" class="ms-2"/>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="form-group col"/>
+        <div class="form-group col"/>
+        <div class="form-group col"/>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Technology" Name="Technology" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Technology" Component="Technology" class="ms-2"/>
+        </div>
+        <div class="form-group col">
+            <RadzenCheckBox @bind-Value="@_model.Survival" Name="Survival" TriState="true" TValue="bool?" />
+            <RadzenLabel Text="Survival" Component="Survival" class="ms-2"/>
+        </div>
+        <div class="form-group col"/>
+    </div>
+    <div class="d-flex mb-2 align-items-center">
+        <text class="me-2">Weapons</text>
+        <button type="button" class="btn btn-success" @onclick="(() => _model.Weapons.Add(new Weapon()))">
+            <span class="oi oi-plus" aria-hidden="true"></span>
+        </button>
+    </div>
+    @foreach (var weapon in _model.Weapons)
+    {
+        <div class="row mb-2">
+            <div class="form-group col-3">
+                @if (_model.Weapons.First() == weapon) 
+                {<label>Name</label>}
+                <InputText @bind-Value="@weapon.Name" class="form-control" />
+                <ValidationMessage For="@(() => weapon.Name)" />
+            </div>
+            <div class="form-group col-3">
+                @if (_model.Weapons.First() == weapon)
+                {<label>Weapon Type</label>}
+                <InputSelect @bind-Value="@weapon.Type" class="form-control">
+                    @foreach (var type in Enum.GetValues<WeaponType>())
+                    { 
+                        <option value="@type">@type.GetStringValue()</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => weapon.Type)" />
+            </div>
+            <div class="form-group col">
+                @if (_model.Weapons.First() == weapon)
+                {<label>Melee</label>}
+                <input type="checkbox" class="btn-check row" id="@weapon.Name" autocomplete="off" @bind="@weapon.Melee">
+                @if(weapon.Melee)
+                {
+                    <label class="btn btn-outline-primary" for="@weapon.Name">True</label> 
+                }
+                else
+                {
+                    <label class="btn btn-outline-primary" for="@weapon.Name">False</label> 
+                }
+                <ValidationMessage For="@(() => weapon.Melee)" />
+            </div>
+            <div class="form-group col-2">
+                @if (_model.Weapons.First() == weapon)
+                {<label>Properties</label>}
+                <RadzenDropDown AllowClear="true" AllowFiltering="true" TValue="IEnumerable<string>"
+                    @bind-Value=@weapon.Properties FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
+                    Multiple="true" Placeholder="Select..." Data=@_weaponProperities class="form-control" Change=@(() => WeaponPropertyChanged(weapon)) />
+                <ValidationMessage For="@(() => weapon.Properties)" />
+            </div>
+            <div class="form-group col">
+                @if (_model.Weapons.First() == weapon)
+                {<label>Damage</label>}
+                <InputText @bind-Value="@weapon.Damage" class="form-control" />
+                <ValidationMessage For="@(() => weapon.Damage)" />
+            </div>
+            <div class="form-group col">
+                @if (_model.Weapons.First() == weapon)
+                {<label>Type</label>}
+                <InputSelect @bind-Value="@weapon.DamageType" class="form-control">
+                    @foreach (var type in Enum.GetValues<DamageType>())
+                    { 
+                        <option value="@type">@type.GetStringValue()</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="@(() => weapon.Type)" />
+            </div>
+            <div class="form-group col mt-auto align-self-end">
+                <button type="button" class="btn btn-danger" @onclick="(() => _model.Weapons.Remove(weapon))">
+                    <span class="oi oi-trash" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+        <div class="d-flex mb-2 align-items-center">
+            @foreach(var prop in weapon.PropertyDescriptions.OrderBy(x => x.Name))
+            {
+                <label class="me-1">@prop.Name:</label>
+                <InputText @bind-Value="@prop.Description" class="form-control me-2" />
+            }
+        </div>
+        <hr />
+    }
+    <div class="row my-2">
+        <div class="form-group col">
+            <label>Points</label>
+            <InputNumber @bind-Value="@_model.ForcePoints" class="form-control" />
+        </div>
+        <div class="form-group col">
+            <label>Max Level</label>
+            <InputNumber @bind-Value="@_model.MaxForcePowerLevel" class="form-control" />
+        </div>
+        <div class="form-group col">
+            <label>Powers Known</label>
+            <InputNumber @bind-Value="@_model.TotalForcePowers" class="form-control" />
+        </div>
+    </div>
+    @for (int i = 0; i <= _model.MaxForcePowerLevel; i++)
+    {
+        <h2>Level @i</h2>
+        <hr class="mt-0" />
+        <div class="row mb-2">
+            <div class="d-flex flex-wrap">
+                @foreach (var power in _forcePowers.Where(x => x.Level == i))
+                {
+                    <button type="button" class="btn m-1" style=@CssStyle(power) @onclick=@(() => UpdateForcePower(power)) disabled=@IsDisabled(power)>
+                        <div class="row px-1 d-flex">
+                            @power.Name
+                            <button type="button" class="btn p-0" style="width: 25px; color: white; font-size:12px" @onclick=@(() => InfoClicked(power))>
+                                <span class="oi oi-comment-square" aria-hidden="true"></span>
+                            </button>
+                        </div>
+                        @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)
+                        {
+                            <div class="row px-1" style="font-size: 10px"><b>Pre-Req: @GetPowerName(power.PrerequisiteId)</b></div>
+                        }
+                    </button>
+                }
+            </div>
+        </div>
+    }
+    <div class="row my-2">
+        <button disabled="@_loading" class="btn btn-primary">
+            @if (_loading)
+            {
+                <span class="spinner-border spinner-border-sm mr-1"></span>
+            }
+            Save
+        </button>
+        <NavLink href="characters" class="btn btn-link">Cancel</NavLink>
+    </div>
+</EditForm>
+
+@code
+{
+    async Task ShowInlineDialog(ForcePowerResponse power)
+    {
+        var result = await DialogService.OpenAsync(power.Name, ds =>
+            @<div class="d-flex flex-column">
+                <text><b>Alignment:</b> @power.Alignment</text>
+                <text><b>Concentration:</b> @power.Concentration</text>
+                <text><b>Hit:</b> @power.HitOption?.GetStringValue()</text>
+                @if (!string.IsNullOrWhiteSpace(power.HitDescription))
+                {
+                    <div><b>Description:</b> @power.HitDescription</div>
+                }
+                <text><b>Casting Time:</b> @power.CastingPeriod.GetStringValue()</text>
+                <text><b>Range:</b> @power.Range.GetStringValue()</text>
+                <text><b>Duration:</b> @power.Duration</text>
+                <br/>
+                <text>@power.Description</text>
+                @if (!string.IsNullOrEmpty(power.Potency))
+                {
+                    <br/>
+                    <div><b>Potency:</b> @power.Potency</div>
+                }
+            </div>);
+    }
+}

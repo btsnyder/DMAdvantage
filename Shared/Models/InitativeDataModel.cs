@@ -26,7 +26,7 @@
         public string? Name => Being?.Name;
         public string? ArmorClass => Being is CharacterResponse character ? character.ArmorClass.ToString() : string.Empty;
         public string? Player => Being is CharacterResponse character ? character.PlayerName : string.Empty;
-        public string? ForcePoints => Being is CharacterResponse character ? character.ForcePoints.ToString() : string.Empty;
+        public string? ForcePoints => Being is CharacterResponse character ? CurrentFP.ToString() : string.Empty;
 
         public void ApplyHP(int value)
         {

@@ -22,7 +22,7 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         protected override async Task OnInitializedAsync()
         {
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+            _forcePowers = await ApiService.GetViews<ForcePowerResponse>() ?? new();
 
             await ReloadEncounter();
             await base.OnInitializedAsync();
@@ -46,8 +46,8 @@ namespace DMAdvantage.Client.Pages.Encounters
             if (_model != null)
             {
                 List<IBeingResponse> beings = new();
-                var characters = await ApiService.GetCharacterViews(_model.Data.Select(x => x.BeingId));
-                var creatures = await ApiService.GetCreatureViews(_model.Data.Select(x => x.BeingId));
+                var characters = await ApiService.GetViews<CharacterResponse>(_model.Data.Select(x => x.BeingId));
+                var creatures = await ApiService.GetViews<CreatureResponse>(_model.Data.Select(x => x.BeingId));
                 beings.AddRange(characters);
                 beings.AddRange(creatures);
 

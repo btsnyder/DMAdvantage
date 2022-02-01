@@ -51,9 +51,19 @@ namespace DMAdvantage.Data
             return GetFromDatabase<T>().FirstOrDefault(c => c.Id == id);
         }
 
+        public Character? GetCharacterByPlayerNameWithoutUser(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return null;
+            return _ctx.Characters.FirstOrDefault(c => c.PlayerName == name);
+        }
+
         public IEnumerable<T> GetEntitiesByIdsWithoutUser<T>(Guid[] ids) where T : BaseEntity
         {
-            return GetFromDatabase<T>().Where(c => ids.Contains(c.Id));
+            if (ids.Any())
+                return GetFromDatabase<T>().Where(c => ids.Contains(c.Id));
+            else
+                return GetFromDatabase<T>();
         }
 
         public void AddEntity(object entity)

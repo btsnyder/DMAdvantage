@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
-    public class EncountersViewController : Controller
+    public class ViewController : Controller
     {
         private readonly IRepository _repository;
         private readonly ILogger<EncountersController> _logger;
         private readonly IMapper _mapper;
 
-        public EncountersViewController(IRepository repository,
+        public ViewController(IRepository repository,
             ILogger<EncountersController> logger,
             IMapper mapper)
         {
@@ -54,6 +54,21 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
+        [HttpGet("characters/player/{name}")]
+        public IActionResult GetCharacterByPlayerName([FromRoute] string name)
+        {
+            try
+            {
+                var result = _repository.GetCharacterByPlayerNameWithoutUser(name);
+                return Ok(_mapper.Map<CharacterResponse>(result));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return character by player name: {ex}");
+                return BadRequest($"Failed to return character by player name");
+            }
+        }
+
         [HttpGet("creatures")]
         public IActionResult GetCreaturesByIds([FromQuery] Guid[] ids)
         {
@@ -61,6 +76,21 @@ namespace DMAdvantage.Server.Controllers
             {
                 var results = _repository.GetEntitiesByIdsWithoutUser<Creature>(ids);
                 return Ok(_mapper.Map<IEnumerable<CreatureResponse>>(results));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return entities: {ex}");
+                return BadRequest($"Failed to return entities");
+            }
+        }
+
+        [HttpGet("forcepowers")]
+        public IActionResult GetForcePowersByIds([FromQuery] Guid[] ids)
+        {
+            try
+            {
+                var results = _repository.GetEntitiesByIdsWithoutUser<ForcePower>(ids);
+                return Ok(_mapper.Map<IEnumerable<ForcePowerResponse>>(results));
             }
             catch (Exception ex)
             {
