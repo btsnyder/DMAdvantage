@@ -1,5 +1,4 @@
-﻿using System;
-namespace DMAdvantage.Shared.Query
+﻿namespace DMAdvantage.Shared.Query
 {
     public class PagedData
     {

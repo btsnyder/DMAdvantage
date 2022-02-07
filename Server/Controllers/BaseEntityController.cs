@@ -31,35 +31,31 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var username = User?.Identity?.Name ?? string.Empty;
+                var username = User.Identity?.Name ?? string.Empty;
 
-                IEnumerable<TEntity> results;
-                if (paging != null)
-                    results = _repository.GetAllEntities(username, paging, searching);
-                else
-                    results = _repository.GetAllEntities(username, searching);
+                var results = paging != null ? _repository.GetAllEntities(username, paging, searching) : _repository.GetAllEntities(username, searching);
 
-                if (results is PagedList<TEntity> pagedResults)
+                if (results is not PagedList<TEntity> pagedResults)
+                    return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
+                
+                var metadata = new PagedData
                 {
-                    var metadata = new PagedData
-                    {
-                        TotalCount = pagedResults.TotalCount,
-                        PageSize = pagedResults.PageSize,
-                        CurrentPage = pagedResults.CurrentPage,
-                        TotalPages = pagedResults.TotalPages,
-                        HasNext = pagedResults.HasNext,
-                        HasPrevious = pagedResults.HasPrevious
-                    };
+                    TotalCount = pagedResults.TotalCount,
+                    PageSize = pagedResults.PageSize,
+                    CurrentPage = pagedResults.CurrentPage,
+                    TotalPages = pagedResults.TotalPages,
+                    HasNext = pagedResults.HasNext,
+                    HasPrevious = pagedResults.HasPrevious
+                };
 
-                    Response.Headers.Add(PagedData.Header, JsonSerializer.Serialize(metadata));
-                }
+                Response.Headers.Add(PagedData.Header, JsonSerializer.Serialize(metadata));
 
                 return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest($"Failed to return entities");
+                return BadRequest("Failed to return entities");
             }
         }
 
@@ -68,7 +64,7 @@ namespace DMAdvantage.Server.Controllers
             try
             {
 
-                var username = User?.Identity?.Name ?? string.Empty;
+                var username = User.Identity?.Name ?? string.Empty;
 
                 var entity = _repository.GetEntityById<TEntity>(id, username);
                 if (entity != null)
@@ -78,7 +74,7 @@ namespace DMAdvantage.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to return entity: {ex}");
-                return BadRequest($"Failed to return entity");
+                return BadRequest("Failed to return entity");
             }
         }
 
@@ -90,7 +86,7 @@ namespace DMAdvantage.Server.Controllers
                 {
                     var newEntity = _mapper.Map<TEntity>(request);
 
-                    var currentUser = await _userManager.FindByNameAsync(User?.Identity?.Name);
+                    var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
                     newEntity.User = currentUser;
 
                     _repository.AddEntity(newEntity);
@@ -117,7 +113,7 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var username = User?.Identity?.Name ?? string.Empty;
+                var username = User.Identity?.Name ?? string.Empty;
 
                 var entityFromRepo = _repository.GetEntityById<TEntity>(id, username);
 
@@ -125,7 +121,7 @@ namespace DMAdvantage.Server.Controllers
                 {
                     var entityToAdd = _mapper.Map<TEntity>(request);
 
-                    var currentUser = await _userManager.FindByNameAsync(User.Identity.Name);
+                    var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
                     entityToAdd.User = currentUser;
 
                     _repository.AddEntity(entityToAdd);
@@ -150,7 +146,7 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var username = User?.Identity?.Name ?? string.Empty;
+                var username = User.Identity?.Name ?? string.Empty;
 
                 var entityFromRepo = _repository.GetEntityById<TEntity>(id, username);
 

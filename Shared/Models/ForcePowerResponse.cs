@@ -1,5 +1,4 @@
-﻿
-namespace DMAdvantage.Shared.Models
+﻿namespace DMAdvantage.Shared.Models
 {
     public class ForcePowerResponse : ForcePowerRequest, IEntityResponse
     {

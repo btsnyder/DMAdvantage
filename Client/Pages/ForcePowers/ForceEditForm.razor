@@ -62,7 +62,7 @@
         </div>
         <div class="form-group col-3">
             <label>Duration</label>
-            <RadzenAutoComplete @bind-Value=@_model.Duration Data=@_durations LoadData=@OnLoadDurationData  Change=@(args => OnDurationChange(args)) Style="width: 100%;" />
+            <RadzenAutoComplete @bind-Value="@_model.Duration" Data="@_durations" LoadData="@OnLoadDurationData"  Change="@OnDurationChange" Style="width: 100%;" />
             <ValidationMessage For="@(() => _model.Duration)" />
         </div>
         <div class="form-group col-1">
@@ -97,10 +97,10 @@
     <div class="row my-2">
         <div class="form-group col-5">
             <label>Prerequisite</label>
-            <RadzenAutoComplete @bind-Value=_selectedPrerequisite Data=@_forcePowers TextProperty="Name" LoadData=@OnLoadData Change=@(args => OnChange(args)) Style="width: 100%"/>
+            <RadzenAutoComplete @bind-Value="_selectedPrerequisite" Data="@_forcePowers" TextProperty="Name" LoadData="@OnLoadData" Change="@OnChange" Style="width: 100%"/>
         </div>
         <div class="d-flex mt-auto mb-2 col-1">
-            <RadzenButton class="mt-auto" Icon="clear" Click=@ClearPrerequisite ButtonStyle="ButtonStyle.Danger"/>
+            <RadzenButton class="mt-auto" Icon="clear" Click="@ClearPrerequisite" ButtonStyle="ButtonStyle.Danger"/>
         </div>
         <div class="form-group col-6">
             <label>Potency</label>

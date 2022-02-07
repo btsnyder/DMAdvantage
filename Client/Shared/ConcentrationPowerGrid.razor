@@ -12,18 +12,28 @@
                         <th>Power</th>
                         <th>Duration</th>
                         <th/>
+                        @if (!FromView)
+                        {
+                            <th/>
+                        }
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var power in ConcentrationPowers)
+                    @foreach (var (name, power) in ConcentrationPowers)
                     {
                         <tr>
-                            <td>@power.Key</td>
-                            <td>@power.Value.Name</td>
-                            <td>@power.Value.Duration</td>
+                            <td>@name</td>
+                            <td>@power.Name</td>
+                            <td>@power.Duration</td>
                             <td width="20px">                                            
-                                <RadzenButton Icon="info" Click=@(() => ShowInlineDialog(power.Value)) Size="ButtonSize.Small" style="background-color: #2155ff !important;"/>
+                                <RadzenButton Icon="info" Click=@(() => ShowInlineDialog(power)) Size="ButtonSize.Small" style="background-color: #2155ff !important;"/>
                             </td>
+                            @if (!FromView)
+                            {
+                                <td width="20px">                                            
+                                    <RadzenButton Icon="delete" Click=@(() => _concentrationPowers.Remove(name)) Size="ButtonSize.Small" style="background-color: red !important;"/>
+                                </td>
+                            }
                         </tr>
                     }
                 </tbody>

@@ -22,7 +22,7 @@ namespace DMAdvantage.UnitTests.Data
             var contextOptions = new DbContextOptionsBuilder<Context>()
               .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
             _mockContext = new Context(contextOptions, null);
-            _mockRepo = new Repository(_mockContext, _mockLogger);
+            _mockRepo = new Repository(_mockContext);
         }
 
         protected void GetAllEntities_Success<T>(T entity) where T : BaseEntity

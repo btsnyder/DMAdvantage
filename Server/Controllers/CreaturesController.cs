@@ -28,7 +28,7 @@ namespace DMAdvantage.Server.Controllers
             return GetAllEntities(paging, searching);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public IActionResult GetCreatureById(Guid id)
         {
             return GetEntityById(id);
@@ -40,13 +40,13 @@ namespace DMAdvantage.Server.Controllers
             return await CreateNewEntity(request);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateCreatureById(Guid id, [FromBody] CreatureRequest request)
         {
             return await UpdateEntityById(id, request);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public IActionResult DeleteCreatureById(Guid id)
         {
             return DeleteEntityById(id);

@@ -22,7 +22,7 @@ namespace DMAdvantage.Server.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("encounter/{id}")]
+        [HttpGet("encounter/{id:guid}")]
         public IActionResult GetEncounterById(Guid id)
         {
             try
@@ -35,7 +35,7 @@ namespace DMAdvantage.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to return encounter: {ex}");
-                return BadRequest($"Failed to return encounter");
+                return BadRequest("Failed to return encounter");
             }
         }
 
@@ -50,7 +50,7 @@ namespace DMAdvantage.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest($"Failed to return entities");
+                return BadRequest("Failed to return entities");
             }
         }
 
@@ -65,7 +65,7 @@ namespace DMAdvantage.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to return character by player name: {ex}");
-                return BadRequest($"Failed to return character by player name");
+                return BadRequest("Failed to return character by player name");
             }
         }
 
@@ -80,7 +80,7 @@ namespace DMAdvantage.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest($"Failed to return entities");
+                return BadRequest("Failed to return entities");
             }
         }
 
@@ -95,7 +95,7 @@ namespace DMAdvantage.Server.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest($"Failed to return entities");
+                return BadRequest("Failed to return entities");
             }
         }
     }

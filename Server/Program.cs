@@ -20,9 +20,7 @@ namespace DMAdvantage.Server
                 return;
             using var scope = scopeFactory.CreateScope();
             var seeder = scope.ServiceProvider.GetService<Seeder>();
-            if (seeder == null)
-                return;
-            seeder.SeedAsync().Wait();
+            seeder?.SeedAsync().Wait();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

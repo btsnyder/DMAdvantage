@@ -44,7 +44,7 @@ namespace DMAdvantage.Server
 
             services.AddTransient<Seeder>();
 
-            services.AddSingleton<IMapper>(sp =>
+            services.AddSingleton<IMapper>(_ =>
             {
                 var config = new MapperConfiguration(cfg =>
                 {

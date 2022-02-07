@@ -27,7 +27,7 @@ namespace DMAdvantage.Server.Controllers
             return GetAllEntities(paging);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public IActionResult GetTechPowerById(Guid id)
         {
             return GetEntityById(id);
@@ -39,13 +39,13 @@ namespace DMAdvantage.Server.Controllers
             return await CreateNewEntity(request);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateTechPowerById(Guid id, [FromBody] TechPowerRequest request)
         {
             return await UpdateEntityById(id, request);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public IActionResult DeleteTechPowerById(Guid id)
         {
             return DeleteEntityById(id);

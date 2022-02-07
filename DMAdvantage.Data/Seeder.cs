@@ -17,13 +17,13 @@ namespace DMAdvantage.Data
 
         public async Task SeedAsync()
         {
-            _ctx.Database.EnsureCreated();
+            await _ctx.Database.EnsureCreatedAsync();
 
             var user = await _userManager.FindByEmailAsync("brandon@email.com");
 
             if (user == null)
             {
-                user = new User()
+                user = new User
                 {
                     FirstName = "Brandon",
                     LastName = "Snyder",
@@ -38,7 +38,7 @@ namespace DMAdvantage.Data
                 }
             }
 
-            _ctx.SaveChanges();
+            await _ctx.SaveChangesAsync();
         }
     }
 }

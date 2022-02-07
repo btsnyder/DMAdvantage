@@ -28,7 +28,7 @@ namespace DMAdvantage.Server.Controllers
             return GetAllEntities(paging, searching);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public IActionResult GetForcePowerById(Guid id)
         {
             return GetEntityById(id);
@@ -40,13 +40,13 @@ namespace DMAdvantage.Server.Controllers
             return await CreateNewEntity(request);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateForcePowerById(Guid id, [FromBody] ForcePowerRequest request)
         {
             return await UpdateEntityById(id, request);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public IActionResult DeleteForcePowerById(Guid id)
         {
             return DeleteEntityById(id);

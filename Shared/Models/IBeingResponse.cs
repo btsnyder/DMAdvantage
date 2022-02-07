@@ -1,6 +1,4 @@
-﻿using DMAdvantage.Shared.Enums;
-
-namespace DMAdvantage.Shared.Models
+﻿namespace DMAdvantage.Shared.Models
 {
     public interface IBeingResponse : IEntityResponse
     {

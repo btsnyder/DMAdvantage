@@ -59,7 +59,7 @@ namespace DMAdvantage.Data
                 v => JsonSerializer.Deserialize<List<T2>>(v, (JsonSerializerOptions?)null) ?? new List<T2>(),
                  new ValueComparer<List<T2>>(
                     (c1, c2) => c1 == null ? c2 == null : c2 != null && c1.SequenceEqual(c2),
-                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+                    c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())),
                     c => c.ToList()));
         }
     }

@@ -40,7 +40,7 @@
 
         private static int CalculateBonus(int value)
         {
-            int bonus = value / 2;
+            var bonus = value / 2;
             return bonus - 5;
         }
     }

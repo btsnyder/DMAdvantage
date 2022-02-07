@@ -12,7 +12,7 @@
             <RadzenButton Text="Refresh" Click=@ReloadEncounter Size="ButtonSize.Small" class="m-1 px-1"/>
         </div>
     </div>
-    <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers />
+    <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers FromView="true"/>
     <div class="row mb-2">
         <div class="col">
             <table class="table table-striped">
@@ -26,18 +26,15 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @if (_initatives != null)
+                    @foreach (var init in _initatives)
                     {
-                        foreach (var init in _initatives)
-                        {
-                            <tr style="@GetRowStyle(init)">
-                                <td width="10%">@init.Initative</td>
-                                <td width="50%">@init.Name</td>
-                                <td width="10%">@init.ArmorClass</td>
-                                <td width="20%" style="color: @init.GetHPColor()"><b>@init.GetHPDisplay()</b></td>
-                                <td width="10%"><b>@init.ForcePoints</b></td>
-                            </tr>
-                        }
+                        <tr style="@GetRowStyle(init)">
+                            <td width="10%">@init.Initative</td>
+                            <td width="50%">@init.Name</td>
+                            <td width="10%">@init.ArmorClass</td>
+                            <td width="20%" style="color: @init.GetHPColor()"><b>@init.GetHPDisplay()</b></td>
+                            <td width="10%"><b>@init.ForcePoints</b></td>
+                        </tr>
                     }
                 </tbody>
             </table>
@@ -247,7 +244,7 @@
                             @if (_currentPlayer?.Being is CharacterResponse characterForce)
                             {
                                 <div class="row mb-2 align-items-center">
-                                    <div class="col"/>
+                                    <div class="col"></div>
                                     <div class="col">
                                         <text>Light</text>
                                     </div>
@@ -292,7 +289,7 @@
                                 FP: <b>@_currentPlayer?.CurrentFP/@_currentPlayer?.Being?.ForcePoints</b>
                             </div>
                         </div>
-                        <div class="row mb-2 align-items-bottom" style="font-size: x-large">
+                        <div class="row mb-2 align-items-end" style="font-size: x-large">
                             <b>Force Powers</b>
                         </div>
                         <ForcePowerGrid Title="At-Will" Powers=@SelectedForcePowers.Where(x => x.Level == 0).ToList() Initative=@_currentPlayer ShowCast=false />
@@ -317,7 +314,7 @@
 {
     async Task ShowInlineDialog(WeaponDescription weapon)
     {
-        var result = await DialogService.OpenAsync(weapon.Name, ds =>
+        await DialogService.OpenAsync(weapon.Name, _ =>
             @<div>
                 <p Style="margin-bottom: 1rem">@StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)]</p>
             </div>);

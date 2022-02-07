@@ -24,9 +24,8 @@
         }
 
         public string? Name => Being?.Name;
-        public string? ArmorClass => Being is CharacterResponse character ? character.ArmorClass.ToString() : string.Empty;
-        public string? Player => Being is CharacterResponse character ? character.PlayerName : string.Empty;
-        public string? ForcePoints => Being is CharacterResponse character ? CurrentFP.ToString() : string.Empty;
+        public string ArmorClass => Being is CharacterResponse character ? character.ArmorClass.ToString() : string.Empty;
+        public string ForcePoints => Being is CharacterResponse ? CurrentFP.ToString() : string.Empty;
 
         public void ApplyHP(int value)
         {
@@ -36,27 +35,24 @@
         public double HPAsDouble
         {
             get => CurrentHP;
-            set
-            {
-                CurrentHP = (int)value;
-            }
+            set => CurrentHP = (int)value;
         }
 
         public string GetHPDisplay()
         {
-            if (Being == null)
-                return string.Empty;
-            if (Being is CharacterResponse)
+            switch (Being)
             {
-                return CurrentHP.ToString();
+                case null:
+                    return string.Empty;
+                case CharacterResponse:
+                    return CurrentHP.ToString();
             }
+
             if (CurrentHP > Being.HitPoints * 0.75)
                 return "Healthy";
             if (CurrentHP > Being.HitPoints * 0.5)
                 return "Wounded";
-            if (CurrentHP > Being.HitPoints * 0.1)
-                return "Bloodied";
-            return "Critical";
+            return CurrentHP > Being.HitPoints * 0.1 ? "Bloodied" : "Critical";
         }
 
         public string GetHPColor()
@@ -67,9 +63,7 @@
                 return "#208427";
             if (CurrentHP > Being.HitPoints * 0.5)
                 return "#EC9A0B";
-            if (CurrentHP > Being.HitPoints * 0.1)
-                return "#FF0049";
-            return "#820629";
+            return CurrentHP > Being.HitPoints * 0.1 ? "#FF0049" : "#820629";
         }
     }
 }

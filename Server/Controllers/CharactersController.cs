@@ -29,7 +29,7 @@ namespace DMAdvantage.Server.Controllers
         }
 
 
-        [HttpGet("{id}")]
+        [HttpGet("{id:guid}")]
         public IActionResult GetCharacterById(Guid id)
         {
             return GetEntityById(id);
@@ -41,13 +41,13 @@ namespace DMAdvantage.Server.Controllers
             return await CreateNewEntity(request);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateCharacterById(Guid id, [FromBody] CharacterRequest request)
         {
             return await UpdateEntityById(id, request);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public IActionResult DeleteCharacterById(Guid id)
         {
             return DeleteEntityById(id);

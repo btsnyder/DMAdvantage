@@ -2,19 +2,16 @@
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace DMAdvantage.Data
 {
     public class Repository : IRepository
     {
         private readonly Context _ctx;
-        private readonly ILogger<Repository> _logger;
 
-        public Repository(Context ctx, ILogger<Repository> logger)
+        public Repository(Context ctx)
         {
             _ctx = ctx;
-            _logger = logger;
         }
 
         public IEnumerable<T> GetAllEntities<T>(string username, ISearchParameters<T>? searching = null) where T : BaseEntity
@@ -34,7 +31,7 @@ namespace DMAdvantage.Data
                 query = searching.AddToQuery(query);
 
             var data = query.ToList().OrderBy(c => c.OrderBy());
-            return PagedList<T>.ToPagedList(data, paging);
+            return PagedList<T>.ToPagedList(data.ToList(), paging);
         }
 
         public T? GetEntityById<T>(Guid id, string username) where T : BaseEntity
@@ -46,9 +43,7 @@ namespace DMAdvantage.Data
 
         public T? GetEntityByIdWithoutUser<T>(Guid id) where T : BaseEntity
         {
-            if (id == Guid.Empty)
-                return null;
-            return GetFromDatabase<T>().FirstOrDefault(c => c.Id == id);
+            return id == Guid.Empty ? null : GetFromDatabase<T>().FirstOrDefault(c => c.Id == id);
         }
 
         public Character? GetCharacterByPlayerNameWithoutUser(string name)
@@ -86,10 +81,7 @@ namespace DMAdvantage.Data
             try
             {
                 DbSet<T> dbSet = _ctx.Set<T>();
-                if (username == null)
-                    return dbSet;
-                else
-                    return dbSet.Where(c => c.User != null && c.User.UserName == username);
+                return username == null ? dbSet : dbSet.Where(c => c.User != null && c.User.UserName == username);
             }
             catch (Exception ex)
             {

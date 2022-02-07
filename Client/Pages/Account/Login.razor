@@ -30,7 +30,7 @@
 </div>
 
 @code {
-    private LoginRequest model = new LoginRequest();
+    private readonly LoginRequest model = new();
     private bool loading;
 
     private async void OnValidSubmit()

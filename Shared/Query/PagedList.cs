@@ -12,7 +12,7 @@ namespace DMAdvantage.Shared.Query
         public bool HasPrevious => CurrentPage > 1;
         public bool HasNext => CurrentPage < TotalPages;
 
-        public PagedList(List<T> items, int totalCount, int pageNumber, int pageSize)
+        public PagedList(IEnumerable<T> items, int totalCount, int pageNumber, int pageSize)
         {
             TotalCount = totalCount;
             CurrentPage = pageNumber;
@@ -22,9 +22,9 @@ namespace DMAdvantage.Shared.Query
             AddRange(items);
         }
 
-        public static PagedList<T> ToPagedList(IEnumerable<T> source, PagingParameters paging)
+        public static PagedList<T> ToPagedList(List<T> source, PagingParameters paging)
         {
-            var count = source.Count();
+            var count = source.Count;
             var items = source.Skip((paging.PageNumber - 1) * paging.PageSize).Take(paging.PageSize).ToList();
             return new PagedList<T>(items, count, paging.PageNumber, paging.PageSize);
         }

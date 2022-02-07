@@ -8,29 +8,25 @@ namespace DMAdvantage.Client.Pages.Characters
 {
     public partial class CharacterView
     {
-        IEnumerable<string> _weaponProperities = Array.Empty<string>();
-        private CharacterRequest? _model = new();
+        private IEnumerable<string> _weaponProperties = Array.Empty<string>();
+        private CharacterResponse? _model = new();
         private bool _loading;
         private List<ForcePowerResponse> _forcePowers = new();
 
-        [Inject]
-        IAlertService AlertService { get; set; }
-        [Inject]
-        IApiService ApiService { get; set; }
-        [Inject]
-        NavigationManager NavigationManager { get; set; }
+        [Inject] private IAlertService AlertService { get; set; }
+        [Inject] private IApiService ApiService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
 
-        [Parameter]
-        public string? PlayerName { get; set; }
+        [Parameter] public string? PlayerName { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            _weaponProperities = Enum.GetNames<WeaponProperty>();
+            _weaponProperties = Enum.GetNames<WeaponProperty>();
             if (PlayerName != null)
             {
                 _model = await ApiService.GetCharacterViewFromPlayerName(PlayerName);
             }
-            _forcePowers = await ApiService.GetViews<ForcePowerResponse>() ?? new();
+            _forcePowers = await ApiService.GetViews<ForcePowerResponse>();
 
             await base.OnInitializedAsync();
         }
@@ -50,7 +46,7 @@ namespace DMAdvantage.Client.Pages.Characters
             }
         }
 
-        void WeaponPropertyChanged(Weapon weapon)
+        private static void WeaponPropertyChanged(Weapon weapon)
         {
             foreach (var prop in weapon.Properties)
             {
@@ -60,22 +56,22 @@ namespace DMAdvantage.Client.Pages.Characters
                     weapon.PropertyDescriptions.Add(new WeaponDescription { Name = prop });
                 }
             }
-            weapon.PropertyDescriptions.RemoveAll(x => weapon.PropertyDescriptions.Select(x => x.Name).Except(weapon.Properties).Contains(x.Name));
+            weapon.PropertyDescriptions.RemoveAll(prop => weapon.PropertyDescriptions.Select(x => x.Name).Except(weapon.Properties).Contains(prop.Name));
         }
 
-        string CssStyle(ForcePowerResponse power)
+        private string CssStyle(IEntityResponse power)
         {
             var style = "fontsize: 14px;color: white;";
-            if (_model.ForcePowerIds.Contains(power.Id))
+            if (_model?.ForcePowerIds.Contains(power.Id) == true)
                 style += "background-color: #3888c2";
             else
                 style += "background-color: #95a3ad";
             return style;
         }
 
-        void UpdateForcePower(ForcePowerResponse power)
+        private void UpdateForcePower(IEntityResponse power)
         {
-            if (_infoClicked)
+            if (_infoClicked || _model == null)
                 return;
             if (_model.ForcePowerIds.Contains(power.Id))
             {
@@ -88,23 +84,24 @@ namespace DMAdvantage.Client.Pages.Characters
         }
 
         private bool _infoClicked;
-        async Task InfoClicked(ForcePowerResponse power)
+
+        private async Task InfoClicked(ForcePowerResponse power)
         {
             _infoClicked = true;
             await ShowInlineDialog(power);
             _infoClicked = false;
         }
 
-        string? GetPowerName(Guid? id)
+        private string? GetPowerName(Guid? id)
         {
             if (id == null || id == Guid.Empty)
                 return null;
             return _forcePowers.First(x => x.Id == id).Name;
         }
 
-        bool IsDisabled(ForcePowerResponse power)
+        private bool IsDisabled(ForcePowerResponse power)
         {
-            if (_model.ForcePowerIds.Contains(power.Id))
+            if (_model!.ForcePowerIds.Contains(power.Id))
                 return false;
             if (_model.ForcePowerIds.Count >= _model.TotalForcePowers)
                 return true;

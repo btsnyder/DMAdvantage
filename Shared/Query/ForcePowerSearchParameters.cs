@@ -28,25 +28,13 @@ namespace DMAdvantage.Shared.Query
 
         public string GetQuery()
         {
-            string query = string.Empty;
+            var query = string.Empty;
             if (!string.IsNullOrWhiteSpace(Search))
                 query += $"{nameof(Search).ToLower()}={Search}";
-            foreach (var level in Levels)
-            {
-                query += $"&{nameof(Levels).ToLower()}={level}";
-            }
-            foreach (var alignment in Alignments)
-            {
-                query += $"&{nameof(Alignments).ToLower()}={alignment}";
-            }
-            foreach (var casting in CastingPeriods)
-            {
-                query += $"&{nameof(CastingPeriods).ToLower()}={casting}";
-            }
-            foreach (var range in Ranges)
-            {
-                query += $"&{nameof(Ranges).ToLower()}={range}";
-            }
+            query = Levels.Aggregate(query, (current, level) => current + $"&{nameof(Levels).ToLower()}={level}");
+            query = Alignments.Aggregate(query, (current, alignment) => current + $"&{nameof(Alignments).ToLower()}={alignment}");
+            query = CastingPeriods.Aggregate(query, (current, casting) => current + $"&{nameof(CastingPeriods).ToLower()}={casting}");
+            query = Ranges.Aggregate(query, (current, range) => current + $"&{nameof(Ranges).ToLower()}={range}");
             query = query.TrimStart('&');
             return query;
         }

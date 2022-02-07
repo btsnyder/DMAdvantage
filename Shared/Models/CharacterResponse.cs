@@ -9,33 +9,29 @@ namespace DMAdvantage.Shared.Models
 
         public int GetProficiencyBonus()
         {
-            if (Level < 5)
-                return 2;
-            if (Level < 9)
-                return 3;
-            if (Level < 13)
-                return 4;
-            if (Level < 17)
-                return 5;
-            return 6;
+            return Level switch
+            {
+                < 5 => 2,
+                < 9 => 3,
+                < 13 => 4,
+                < 17 => 5,
+                _ => 6
+            };
         }
 
         public int SkillBonus(int bonus, bool? proficient)
         {
-            if (proficient == false)
-                return bonus;
-            if (proficient == null)
-                return bonus + GetProficiencyBonus();
-            return bonus + 2 * GetProficiencyBonus();
+            return proficient switch
+            {
+                false => bonus,
+                null => bonus + GetProficiencyBonus(),
+                _ => bonus + 2 * GetProficiencyBonus()
+            };
         }
 
         public int WeaponBonus(bool melee, bool damage = false)
         {
-            int bonus;
-            if (melee)
-                bonus = StrengthBonus;
-            else
-                bonus = DexterityBonus;
+            var bonus = melee ? StrengthBonus : DexterityBonus;
             if (damage)
                 return bonus;
             return bonus + GetProficiencyBonus();

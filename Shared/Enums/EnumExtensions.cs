@@ -10,10 +10,10 @@ namespace DMAdvantage.Shared.Enums
             FieldInfo? fieldInfo = type.GetField(value.ToString());
             if (fieldInfo == null)
                 return value.ToString();
-            EnumStringAttribute[] attribs = fieldInfo.GetCustomAttributes(
+            EnumStringAttribute[] attributes = fieldInfo.GetCustomAttributes(
                     typeof(EnumStringAttribute), false) as EnumStringAttribute[] ??
                     Array.Empty<EnumStringAttribute>();
-            return attribs.Length > 0 ? attribs[0].StringValue : value.ToString();
+            return attributes.Length > 0 ? attributes[0].StringValue : value.ToString();
         }
 
         public static IEnumerable<T> GetEnumValues<T>(IEnumerable<string> values) where T : struct, Enum

@@ -58,14 +58,14 @@ namespace DMAdvantage.Server.Controllers
 
                             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
 
-                            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                             var token = new JwtSecurityToken(
                                 _config["Tokens:Issuer"],
                                 _config["Tokens:Audience"],
                                 claims,
                                 expires: DateTime.UtcNow.AddDays(7),
-                                signingCredentials: creds);
+                                signingCredentials: credentials);
 
                             var userModel = _mapper.Map<LoginResponse>(user);
                             userModel.Token = new JwtSecurityTokenHandler().WriteToken(token);

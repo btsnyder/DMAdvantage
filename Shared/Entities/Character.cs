@@ -1,5 +1,4 @@
-﻿using DMAdvantage.Shared.Enums;
-using DMAdvantage.Shared.Models;
+﻿using DMAdvantage.Shared.Models;
 using System.Text.Json;
 
 namespace DMAdvantage.Shared.Entities
@@ -34,7 +33,7 @@ namespace DMAdvantage.Shared.Entities
         public bool? Performance { get; set; } = false;
         public bool? Persuasion { get; set; } = false;
         public string? WeaponsCache { get; set; }
-        public List<Weapon> Weapons => JsonSerializer.Deserialize<List<Weapon>>(WeaponsCache ?? string.Empty) ?? new();
+        public List<Weapon> Weapons => JsonSerializer.Deserialize<List<Weapon>>(WeaponsCache ?? string.Empty) ?? new List<Weapon>();
 
         public override string OrderBy()
         {
