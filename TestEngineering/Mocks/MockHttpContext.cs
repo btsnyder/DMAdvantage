@@ -8,27 +8,23 @@ namespace TestEngineering.Mocks
 {
     public class MockHttpContext : HttpContext
     {
-        readonly Mock<IFeatureCollection> _mockFeatureCollection;
-        readonly Mock<ConnectionInfo> _mockConnectionInfo;
-        readonly Mock<WebSocketManager> _mockWebSocketManager;
-        readonly Mock<ClaimsPrincipal> _mockClaimsPrincipal;
         public readonly static User CurrentUser = new() { UserName = "testuser@email.com", Email = "testuser@email.com" };
 
         public MockHttpContext()
         {
-            _mockFeatureCollection = new Mock<IFeatureCollection>();
-            Features = _mockFeatureCollection.Object;
+            var mockFeatureCollection = new Mock<IFeatureCollection>();
+            Features = mockFeatureCollection.Object;
             Request = new MockHttpRequest(this);
             Response = new MockHttpResponse(this);
-            _mockConnectionInfo = new Mock<ConnectionInfo>();
-            Connection = _mockConnectionInfo.Object;
-            _mockWebSocketManager = new Mock<WebSocketManager>();
-            WebSockets = _mockWebSocketManager.Object;
-            _mockClaimsPrincipal = new Mock<ClaimsPrincipal>();
+            var mockConnectionInfo = new Mock<ConnectionInfo>();
+            Connection = mockConnectionInfo.Object;
+            var mockWebSocketManager = new Mock<WebSocketManager>();
+            WebSockets = mockWebSocketManager.Object;
+            var mockClaimsPrincipal = new Mock<ClaimsPrincipal>();
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            _mockClaimsPrincipal.Setup(x => x.Identity.Name).Returns(CurrentUser.UserName);
+            mockClaimsPrincipal.Setup(x => x.Identity.Name).Returns(CurrentUser.UserName);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-            User = _mockClaimsPrincipal.Object;
+            User = mockClaimsPrincipal.Object;
         }
 
         public override IFeatureCollection Features { get; }

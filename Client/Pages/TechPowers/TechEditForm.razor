@@ -50,16 +50,6 @@
         </div>
     </div>
     <div class="row my-2">
-        <div class="form-group col-2">
-            <label>Alignment</label>
-            <InputSelect @bind-Value="@_model.Alignment" class="form-control">
-                @foreach (var alignment in Enum.GetValues<ForceAlignment>())
-                { 
-                    <option value="@alignment">@alignment.GetStringValue()</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => _model.HitOption)" />
-        </div>
         <div class="form-group col-3">
             <label>Duration</label>
             <RadzenAutoComplete @bind-Value="@_model.Duration" Data="@_durations" LoadData="@OnLoadDurationData"  Change="@OnDurationChange" Style="width: 100%;" />
@@ -95,17 +85,10 @@
         </div>
     </div>
     <div class="row my-2">
-        <div class="form-group col-5">
-            <label>Prerequisite</label>
-            <RadzenAutoComplete @bind-Value="_selectedPrerequisite" Data="@_forcePowers" TextProperty="Name" LoadData="@OnLoadData" Change="@OnPrerequisiteChange" Style="width: 100%"/>
-        </div>
-        <div class="d-flex mt-auto mb-2 col-1">
-            <RadzenButton class="mt-auto" Icon="clear" Click="@ClearPrerequisite" ButtonStyle="ButtonStyle.Danger"/>
-        </div>
-        <div class="form-group col-6">
+        <div class="form-group col">
             <label>Potency</label>
-            <InputText @bind-Value="@_model.Potency" class="form-control"/>
-            <ValidationMessage For="@(() => _model.Potency)" />
+            <InputText @bind-Value="@_model.Overcharge" class="form-control"/>
+            <ValidationMessage For="@(() => _model.Overcharge)" />
         </div>
     </div>
     <div class="form-group">
@@ -116,6 +99,6 @@
             }
             Save
         </button>
-        <NavLink href="forcepowers" class="btn btn-link">Cancel</NavLink>
+        <NavLink href="techpowers" class="btn btn-link">Cancel</NavLink>
     </div>
 </EditForm>

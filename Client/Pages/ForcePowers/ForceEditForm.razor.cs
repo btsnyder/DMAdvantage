@@ -5,12 +5,6 @@ using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
 using Radzen;
 
-/*
- * Notes for next time:
- * total force powers
- * max force power level
- */
-
 namespace DMAdvantage.Client.Pages.ForcePowers
 {
     public partial class ForceEditForm
@@ -23,25 +17,21 @@ namespace DMAdvantage.Client.Pages.ForcePowers
         private IEnumerable<string> _durations = Array.Empty<string>();
         private List<string> _startingDurations = new();
 
-        [Inject]
-        IAlertService AlertService { get; set; }
-        [Inject]
-        IApiService ApiService { get; set; }
-        [Inject]
-        NavigationManager NavigationManager { get; set; }
+        [Inject] private IAlertService AlertService { get; set; }
+        [Inject] private IApiService ApiService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
 
-        [Parameter]
-        public string? Id { get; set; }
+        [Parameter] public string? Id { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new List<ForcePowerResponse>();
             _startingDurations = _forcePowers.Select(x => x.Duration ?? string.Empty).Distinct().ToList();
 
             if (Id != null)
-                _model = await ApiService.GetEntityById<ForcePowerResponse>(Guid.Parse(Id)) ?? new();
+                _model = await ApiService.GetEntityById<ForcePowerResponse>(Guid.Parse(Id)) ?? new ForcePowerResponse();
             
-            if (_model?.PrerequisiteId != null)
+            if (_model.PrerequisiteId != null)
             {
                 var prereq = await ApiService.GetEntityById<ForcePowerResponse>(_model.PrerequisiteId.Value);
                 _selectedPrerequisite = prereq?.Name;
@@ -75,10 +65,8 @@ namespace DMAdvantage.Client.Pages.ForcePowers
             }
         }
 
-        void OnChange(object value)
+        private void OnPrerequisiteChange(object value)
         {
-            if (_model == null)
-                return;
             var name = (string)value;
             var power = _forcePowers.FirstOrDefault(x => x.Name == name);
             if (power != null)
@@ -87,21 +75,21 @@ namespace DMAdvantage.Client.Pages.ForcePowers
                 _model.PrerequisiteId = null;
         }
 
-        async Task OnLoadData(LoadDataArgs args)
+        private async Task OnLoadData(LoadDataArgs args)
         {
             _search.Search = args.Filter;
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_search) ?? new();
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_search) ?? new List<ForcePowerResponse>();
 
             await InvokeAsync(StateHasChanged);
         }
 
-        void OnDurationChange(object value)
+        private void OnDurationChange(object value)
         {
             var duration = (string)value;
             _model.Duration = duration;
         }
 
-        async Task OnLoadDurationData(LoadDataArgs args)
+        private async Task OnLoadDurationData(LoadDataArgs args)
         {
             var search = args.Filter;
             _model.Duration = search;
@@ -109,7 +97,7 @@ namespace DMAdvantage.Client.Pages.ForcePowers
             await InvokeAsync(StateHasChanged);
         }
 
-        void ClearPrerequisite()
+        private void ClearPrerequisite()
         {
             _selectedPrerequisite = null;
             _model.PrerequisiteId = null;

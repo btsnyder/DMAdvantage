@@ -2,78 +2,74 @@
 @attribute [Authorize]
 @inject IApiService ApiService
 
-<h1>Tech Powers</h1>
-<NavLink href="techpowers/add" class="btn btn-sm btn-success mb-2">Add Tech Power</NavLink>
+<h1>Force Powers</h1>
+<EditForm Model="@this" >
+    <div class="row my-2 py-2">
+        <div class="form-group col">
+            <label>Name</label>
+            <input class="form-control" type="text" @bind:event="oninput" @bind="@_searching.Search" @onchange="@SearchChanged" />
+        </div>
+        <div class="form-group col">
+            <label>Levels</label>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
+                @bind-Value="@_selectedLevels" Data="@_levels" class="form-control" Change="@RefreshTechPowers"/>
+        </div>
+        <div class="form-group col">
+            <label>Casting Period</label>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
+                @bind-Value="@_selectedCastingPeriods" Data="@_castingPeriods" class="form-control" Change="@RefreshTechPowers"/>
+        </div>
+        <div class="form-group col">
+            <label>Range</label>
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
+                @bind-Value="@_selectedPowerRanges" Data="@_powerRanges" class="form-control" Change="@RefreshTechPowers"/>
+        </div>
+    </div>
+</EditForm>
 <table class="table table-striped">
     <thead>
         <tr>
+            <th>Level</th>
             <th>Name</th>
-            <th></th>
-            <th></th>
+            <th>Period</th>
+            <th>Range</th>
+            <th colspan="2">
+                <NavLink href="techpowers/add" class="btn btn-sm btn-success">Add Tech Power</NavLink>
+            </th>
         </tr>
     </thead>
     <tbody>
-        @if (techPowers != null)
+        @if (_loading)
+        { 
+            <tr>
+                <td colspan="7" class="text-center">
+                    <span class="spinner-border spinner-border-lg align-center"></span>
+                </td>
+            </tr>
+        }
+        else if (_techPowers != null)
         {
-            foreach (var power in techPowers)
+            foreach (var power in _techPowers)
             {
                 <tr>
+                    <td>@power.Level</td>
                     <td>@power.Name</td>
+                    <td>@power.CastingPeriod.GetStringValue()</td>
+                    <td>@power.Range.GetStringValue()</td>
                     <td style="white-space: nowrap">
                         <NavLink href="@($"techpowers/edit/{power.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveForcePower(power))">
+                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveTechPower(power))">
                             <span class="oi oi-trash" aria-hidden="true"></span>
                         </button>
                     </td>
                 </tr>
             }
-            <tr>
-                <td colspan="4">
-                    <PagingFooter T=TechPowerResponse @bind-Data=techPowers CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
-                </td>
-            </tr>
-        }
-        @if (loading)
-        { 
-            <tr>
-                <td colspan="4" class="text-center">
-                    <span class="spinner-border spinner-border-lg align-center"></span>
-                </td>
-            </tr>
         }
     </tbody>
 </table>
 
-@code {
-    private bool loading;
-    private PagedList<TechPowerResponse>? techPowers;
-    private PagingParameters paging = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        await RefreshTechPowers();
-    }
-
-    private async Task RemoveForcePower(TechPowerResponse techPower)
-    {
-        if (techPowers == null)
-            return;
-        techPowers.Remove(techPower);
-        await ApiService.RemoveEntity<TechPowerResponse>(techPower.Id);
-    }
-    
-    private async Task RefreshTechPowers()
-    {
-        loading = true;
-        techPowers = await ApiService.GetAllPagedEntities<TechPowerResponse>(paging);
-        loading = false;   
-    }
-
-    private async Task CurrentPageChanged(int page)
-    {
-        paging.PageNumber = page;
-        await RefreshTechPowers();
-    }
-}
+<div class="row">
+    <PagingFooter T="TechPowerResponse" @bind-Data="_techPowers" CurrentPage="@_paging.PageNumber" CurrentPageChanged="@CurrentPageChanged" />
+</div>
