@@ -5,13 +5,11 @@ namespace TestEngineering.Mocks
 {
     public class MockHttpResponse : HttpResponse
     {
-        private readonly Mock<IResponseCookies> _mockResponseCookies;
-
         public MockHttpResponse(HttpContext context)
         {
             HttpContext = context;
-            _mockResponseCookies = new Mock<IResponseCookies>();
-            Cookies = _mockResponseCookies.Object;
+            var mockResponseCookies = new Mock<IResponseCookies>();
+            Cookies = mockResponseCookies.Object;
         }
 
         public override HttpContext HttpContext { get; }
@@ -26,7 +24,7 @@ namespace TestEngineering.Mocks
 
         public override IResponseCookies Cookies { get; }
 
-        public override bool HasStarted { get; }
+        public override bool HasStarted => false;
 
         public override void OnCompleted(Func<object, Task> callback, object state)
         {

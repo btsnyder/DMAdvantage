@@ -4,7 +4,7 @@ namespace TestEngineering.Mocks
 {
     public class MockLogger<T> : ILogger<T>, IDisposable
     {
-        public Queue<MockLog> Logs { get; } = new Queue<MockLog>();
+        public Queue<MockLog> Logs { get; } = new();
 
         public IDisposable BeginScope<TState>(TState state)
         {

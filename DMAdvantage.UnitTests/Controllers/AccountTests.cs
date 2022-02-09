@@ -16,14 +16,15 @@ namespace DMAdvantage.UnitTests.Controllers
 {
     public class AccountTests
     {
-        readonly Dictionary<string, string> _mockConfiguration = new()
+        private readonly Dictionary<string, string> _mockConfiguration = new()
         {
             { "Tokens:Key", "a;sdlkfja; lsdkfj ;alksdfj ;alksdfj; aiefj;lskij;fldsk" },
             { "Tokens:Issuer", "localhost" },
             { "Tokens:Audience", "localhost" }
         };
-        readonly MockLogger<AccountController> _mockLogger;
-        readonly AccountController _mockController;
+
+        private readonly MockLogger<AccountController> _mockLogger;
+        private readonly AccountController _mockController;
 
         public AccountTests()
         {

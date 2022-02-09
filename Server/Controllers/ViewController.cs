@@ -10,11 +10,11 @@ namespace DMAdvantage.Server.Controllers
     public class ViewController : Controller
     {
         private readonly IRepository _repository;
-        private readonly ILogger<EncountersController> _logger;
+        private readonly ILogger<ViewController> _logger;
         private readonly IMapper _mapper;
 
         public ViewController(IRepository repository,
-            ILogger<EncountersController> logger,
+            ILogger<ViewController> logger,
             IMapper mapper)
         {
             _repository = repository;
@@ -30,7 +30,7 @@ namespace DMAdvantage.Server.Controllers
                 var entity = _repository.GetEntityByIdWithoutUser<Encounter>(id);
                 if (entity != null)
                     return Ok(_mapper.Map<EncounterResponse>(entity));
-                else return NotFound();
+                return NotFound();
             }
             catch (Exception ex)
             {

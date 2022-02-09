@@ -6,30 +6,26 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TestEngineering.Mocks;
 
 namespace DMAdvantage.UnitTests.Data
 {
     public class BaseEntityTests
     {
-        private readonly MockLogger<Repository> _mockLogger;
-        private readonly Context _mockContext;
         protected readonly Repository _mockRepo;
 
         public BaseEntityTests()
         {
-            _mockLogger = new MockLogger<Repository>();
             var contextOptions = new DbContextOptionsBuilder<Context>()
               .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
-            _mockContext = new Context(contextOptions, null);
-            _mockRepo = new Repository(_mockContext);
+            var mockContext = new Context(contextOptions, null);
+            _mockRepo = new Repository(mockContext);
         }
 
         protected void GetAllEntities_Success<T>(T entity) where T : BaseEntity
         {
             _mockRepo.AddEntity(entity);
             _mockRepo.SaveAll();
-            var repoEntities = _mockRepo.GetAllEntities<T>(entity.User?.UserName ?? string.Empty);
+            var repoEntities = _mockRepo.GetAllEntities<T>(entity.User?.UserName ?? string.Empty).ToList();
 
             repoEntities.Should().HaveCount(1);
             repoEntities.First().Id.Should().Be(entity.Id);
@@ -51,7 +47,7 @@ namespace DMAdvantage.UnitTests.Data
             var encounterFromRepo = _mockRepo.GetEntityById<T>(entity.Id, entity.User?.UserName ?? string.Empty);
 
             encounterFromRepo.Should().NotBeNull();
-            encounterFromRepo.Id.Should().Be(entity.Id);
+            encounterFromRepo!.Id.Should().Be(entity.Id);
         }
 
         protected void GetEntityByIdFromDifferentUser_Null<T>(T entity) where T : BaseEntity

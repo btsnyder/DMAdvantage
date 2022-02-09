@@ -20,7 +20,7 @@ namespace TestEngineering.Mocks
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, "appsettings.json");
 
-            builder.ConfigureAppConfiguration((context, conf) =>
+            builder.ConfigureAppConfiguration((_, conf) =>
             {
                 conf.AddJsonFile(configPath);
             });

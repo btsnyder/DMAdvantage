@@ -5,13 +5,11 @@ namespace TestEngineering.Mocks
 {
     public class MockHttpRequest : HttpRequest
     {
-        readonly Mock<IRequestCookieCollection> _mockRequestCookieCollection;
-
         public MockHttpRequest(HttpContext context)
         {
             HttpContext = context;
-            _mockRequestCookieCollection = new Mock<IRequestCookieCollection>();
-            Cookies = _mockRequestCookieCollection.Object;
+            var mockRequestCookieCollection = new Mock<IRequestCookieCollection>();
+            Cookies = mockRequestCookieCollection.Object;
         }
 
         public override HttpContext HttpContext { get; }
@@ -28,12 +26,12 @@ namespace TestEngineering.Mocks
 
         public override IHeaderDictionary Headers => new HeaderDictionary();
 
-        public override IRequestCookieCollection Cookies { get; set; }
+        public sealed override IRequestCookieCollection Cookies { get; set; }
         public override long? ContentLength { get; set; }
         public override string? ContentType { get; set; }
         public override Stream Body { get; set; } = new MemoryStream();
 
-        public override bool HasFormContentType => Form != null;
+        public override bool HasFormContentType => true;
 
         public override IFormCollection Form { get; set; } = FormCollection.Empty;
 

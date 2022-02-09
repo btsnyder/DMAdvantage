@@ -1,8 +1,10 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
+using Moq;
 using TestEngineering.Mocks;
 
 namespace TestEngineering
@@ -78,7 +80,7 @@ namespace TestEngineering
                 Charisma = Faker.RandomNumber.Next(),
                 CharismaBonus = Faker.RandomNumber.Next(),
                 ChallengeRating = Faker.RandomNumber.Next(),
-                Actions = RandomList(() => BaseAction()),
+                Actions = RandomList(BaseAction),
                 Vulnerabilities = RandomList(() => RandomEnum<DamageType>().ToString()),
                 Immunities = RandomList(() => RandomEnum<DamageType>().ToString()),
                 Resistances = RandomList(() => RandomEnum<DamageType>().ToString()),
@@ -173,15 +175,11 @@ namespace TestEngineering
             };
         }
 
-        public static List<T> RandomList<T>(Func<T> creation, int max = 5, bool generateMax = false)
+        public static List<T> RandomList<T>(Func<T> creation, int min = 0, int max = 5, bool generateMax = false)
         {
             var list = new List<T>();
-            int count;
-            if (generateMax)
-                count = max;
-            else
-                count = Faker.RandomNumber.Next(0, max);
-            for (int i = 0; i < count; i++)
+            var count = !generateMax ? Faker.RandomNumber.Next(min, max) : max;
+            for (var i = 0; i < count; i++)
             {
                 list.Add(creation.Invoke());
             }
@@ -193,6 +191,44 @@ namespace TestEngineering
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
             return new string(Enumerable.Repeat(chars, size)
                 .Select(s => s[_random.Next(s.Length)]).ToArray());
+        }
+
+        public static InitativeData InitativeData()
+        {
+            return new InitativeData
+            {
+                Initative = Faker.RandomNumber.Next(0, 20),
+                BeingId = Guid.NewGuid(),
+                CurrentHP = Faker.RandomNumber.Next(0, 200),
+                CurrentFP = Faker.RandomNumber.Next(0, 20),
+                CurrentTP = Faker.RandomNumber.Next(0, 20)
+            };
+        }
+
+        public static Encounter Encounter()
+        {
+            var encounter = _mapper.Map<Encounter>(EncounterRequest());
+            encounter.Id = Guid.NewGuid();
+            encounter.User = MockHttpContext.CurrentUser;
+            return encounter;
+        }
+
+        public static EncounterRequest EncounterRequest()
+        {
+            var mockInitativeData = RandomList(InitativeData, 2);
+            var mockConcentration = new Dictionary<string, Guid>();
+            for (var i = 0; i < Faker.RandomNumber.Next(1, mockInitativeData.Count); i++)
+            {
+                mockConcentration[Nonsense()] = Guid.NewGuid();
+            }
+
+            return new EncounterRequest
+            {
+                Name = Nonsense(),
+                CurrentPlayer = mockInitativeData[Faker.RandomNumber.Next(0, mockInitativeData.Count - 1)].BeingId,
+                Data = mockInitativeData,
+                ConcentrationPowers = mockConcentration
+            };
         }
     }
 }

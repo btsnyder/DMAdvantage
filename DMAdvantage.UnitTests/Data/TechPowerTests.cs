@@ -38,11 +38,11 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetTechPowerWithPaging_Success()
         {
-            var techPowers = Generation.RandomList(() => Generation.TechPower(), 50, true);
-            for (int i = 0; i < techPowers.Count; i++)
+            var techPowers = Generation.RandomList(Generation.TechPower, max: 50, generateMax: true);
+            for (var i = 0; i < techPowers.Count; i++)
             {
                 techPowers[i].Level = 0;
-                techPowers[i].Name = $"TechPower - {string.Format("{0:00000}", i)}";
+                techPowers[i].Name = $"TechPower - {i:00000}";
             }
             GetEntitiesWithPaging_Success(techPowers);
         }

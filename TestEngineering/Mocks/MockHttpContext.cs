@@ -8,7 +8,7 @@ namespace TestEngineering.Mocks
 {
     public class MockHttpContext : HttpContext
     {
-        public readonly static User CurrentUser = new() { UserName = "testuser@email.com", Email = "testuser@email.com" };
+        public static readonly User CurrentUser = new() { UserName = "testuser@email.com", Email = "testuser@email.com" };
 
         public MockHttpContext()
         {
@@ -21,9 +21,7 @@ namespace TestEngineering.Mocks
             var mockWebSocketManager = new Mock<WebSocketManager>();
             WebSockets = mockWebSocketManager.Object;
             var mockClaimsPrincipal = new Mock<ClaimsPrincipal>();
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-            mockClaimsPrincipal.Setup(x => x.Identity.Name).Returns(CurrentUser.UserName);
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+            mockClaimsPrincipal.Setup(x => x.Identity!.Name).Returns(CurrentUser.UserName);
             User = mockClaimsPrincipal.Object;
         }
 
@@ -37,7 +35,7 @@ namespace TestEngineering.Mocks
 
         public override WebSocketManager WebSockets { get; }
 
-        public override ClaimsPrincipal User { get; set; }
+        public sealed override ClaimsPrincipal User { get; set; }
         public override IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
         public override IServiceProvider RequestServices { get; set; } = new ServiceProvidersFeature().RequestServices;
         public override CancellationToken RequestAborted { get; set; }

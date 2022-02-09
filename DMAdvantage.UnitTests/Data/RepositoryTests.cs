@@ -8,20 +8,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using TestEngineering;
-using TestEngineering.Mocks;
 using Xunit;
 
 namespace DMAdvantage.UnitTests.Data
 {
     public class RepositoryTests
     {
-        readonly MockLogger<Repository> _mockLogger;
-        readonly Context _mockContext;
-        readonly Repository _mockRepo;
+        private readonly Context _mockContext;
+        private readonly Repository _mockRepo;
 
         public RepositoryTests()
         {
-            _mockLogger = new MockLogger<Repository>();
             var contextOptions = new DbContextOptionsBuilder<Context>()
               .UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
             _mockContext = new Context(contextOptions, null);
@@ -35,8 +32,8 @@ namespace DMAdvantage.UnitTests.Data
             var creature = Generation.Creature();
             var data = new List<InitativeData>
             {
-                new InitativeData { BeingId = character.Id },
-                new InitativeData { BeingId = creature.Id }
+                new() { BeingId = character.Id },
+                new() { BeingId = creature.Id }
             };
             var encounter = new Encounter { DataCache = JsonSerializer.Serialize(data) };
 

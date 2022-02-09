@@ -13,7 +13,10 @@ namespace DMAdvantage.Data
             CreateMap<CharacterRequest, Character>()
                 .ForMember(c => c.Weapons, opt => opt.Ignore())
                 .ForMember(c => c.WeaponsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Weapons, (JsonSerializerOptions?)null)));
-            CreateMap<Character, CharacterResponse>().ReverseMap();
+            CreateMap<Character, CharacterResponse>();
+            CreateMap<CharacterResponse, Character>()
+                .ForMember(c => c.Weapons, opt => opt.Ignore())
+                .ForMember(c => c.WeaponsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Weapons, (JsonSerializerOptions?)null)));
             CreateMap<CharacterResponse, CharacterRequest>();
             CreateMap<Being, Character>();
             CreateMap<Character, BeingModel>();
@@ -23,7 +26,10 @@ namespace DMAdvantage.Data
             CreateMap<CreatureRequest, Creature>()
                 .ForMember(c => c.Actions, opt => opt.Ignore())
                 .ForMember(c => c.ActionsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Actions, (JsonSerializerOptions?)null)));
-            CreateMap<Creature, CreatureResponse>().ReverseMap();
+            CreateMap<Creature, CreatureResponse>();
+            CreateMap<CreatureResponse, Creature>()
+                .ForMember(c => c.Actions, opt => opt.Ignore())
+                .ForMember(c => c.ActionsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Actions, (JsonSerializerOptions?)null)));
             CreateMap<Being, Creature>();
             CreateMap<Creature, BeingModel>();
             CreateMap<Being, CreatureRequest>();
@@ -34,7 +40,12 @@ namespace DMAdvantage.Data
                 .ForMember(c => c.DataCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Data, (JsonSerializerOptions?)null)))
                 .ForMember(c => c.ConcentrationPowers, opt => opt.Ignore())
                 .ForMember(c => c.ConcentrationCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.ConcentrationPowers, (JsonSerializerOptions?)null)));
-            CreateMap<Encounter, EncounterResponse>().ReverseMap();
+            CreateMap<Encounter, EncounterResponse>();
+            CreateMap<EncounterResponse, Encounter>()
+                .ForMember(c => c.Data, opt => opt.Ignore())
+                .ForMember(c => c.DataCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Data, (JsonSerializerOptions?)null)))
+                .ForMember(c => c.ConcentrationPowers, opt => opt.Ignore())
+                .ForMember(c => c.ConcentrationCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.ConcentrationPowers, (JsonSerializerOptions?)null)));
             CreateMap<ForcePower, ForcePowerRequest>().ReverseMap();
             CreateMap<ForcePower, ForcePowerResponse>().ReverseMap();
             CreateMap<TechPower, TechPowerRequest>().ReverseMap();

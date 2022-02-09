@@ -46,11 +46,11 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetForcePowersWithPaging_Success()
         {
-            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 50, true);
-            for (int i = 0; i < forcePowers.Count; i++)
+            var forcePowers = Generation.RandomList(Generation.ForcePower, max: 50, generateMax: true);
+            for (var i = 0; i < forcePowers.Count; i++)
             {
                 forcePowers[i].Level = 0;
-                forcePowers[i].Name = $"ForcePower - {string.Format("{0:00000}", i)}";
+                forcePowers[i].Name = $"ForcePower - {i:00000}";
             }
             GetEntitiesWithPaging_Success(forcePowers);
         }
@@ -58,7 +58,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetForcePowersWithSearchingNull_FullList()
         {
-            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 10, true);
+            var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
 
             foreach (var entity in forcePowers)
             {
@@ -77,7 +77,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetForcePowersWithSearchingName_Success()
         {
-            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 10, true);
+            var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
 
             forcePowers[0].Name = "Found";
             forcePowers[1].Name = "IsFound";
@@ -102,7 +102,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetForcePowersWithSearchingLevel_Success()
         {
-            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 10, true);
+            var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
 
             forcePowers[0].Level = 1;
             forcePowers[1].Level = 1;
@@ -117,14 +117,14 @@ namespace DMAdvantage.UnitTests.Data
             var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
-                Levels = new int[] { 1 }
+                Levels = new[] { 1 }
             };
 
             var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(2);
 
-            searching.Levels = new int[] { 1, 2 };
+            searching.Levels = new[] { 1, 2 };
             pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(3);
@@ -133,13 +133,13 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetForcePowersWithSearchingAlignment_Success()
         {
-            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 10, true);
+            var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
 
             forcePowers[0].Alignment = ForceAlignment.Dark;
             forcePowers[1].Alignment = ForceAlignment.Dark;
             forcePowers[2].Alignment = ForceAlignment.Light;
 
-            for (int i = 3; i < forcePowers.Count; i++)
+            for (var i = 3; i < forcePowers.Count; i++)
             {
                 forcePowers[i].Alignment = ForceAlignment.Universal;
             }
@@ -153,14 +153,14 @@ namespace DMAdvantage.UnitTests.Data
             var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
-                Alignments = new ForceAlignment[] { ForceAlignment.Dark }
+                Alignments = new[] { ForceAlignment.Dark }
             };
 
             var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(2);
 
-            searching.Alignments = new ForceAlignment[] { ForceAlignment.Dark, ForceAlignment.Light };
+            searching.Alignments = new[] { ForceAlignment.Dark, ForceAlignment.Light };
             pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(3);
@@ -169,13 +169,13 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetForcePowersWithSearchingCastingPeriod_Success()
         {
-            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 10, true);
+            var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
 
             forcePowers[0].CastingPeriod = CastingPeriod.EightHours;
             forcePowers[1].CastingPeriod = CastingPeriod.EightHours;
             forcePowers[2].CastingPeriod = CastingPeriod.Action;
 
-            for (int i = 3; i < forcePowers.Count; i++)
+            for (var i = 3; i < forcePowers.Count; i++)
             {
                 forcePowers[i].CastingPeriod = CastingPeriod.BonusAction;
             }
@@ -189,14 +189,14 @@ namespace DMAdvantage.UnitTests.Data
             var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
-                CastingPeriods = new CastingPeriod[] { CastingPeriod.EightHours }
+                CastingPeriods = new[] { CastingPeriod.EightHours }
             };
 
             var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(2);
 
-            searching.CastingPeriods = new CastingPeriod[] { CastingPeriod.EightHours, CastingPeriod.Action };
+            searching.CastingPeriods = new[] { CastingPeriod.EightHours, CastingPeriod.Action };
             pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(3);
@@ -205,13 +205,13 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetForcePowersWithSearchingPowerRange_Success()
         {
-            var forcePowers = Generation.RandomList(() => Generation.ForcePower(), 10, true);
+            var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
 
             forcePowers[0].Range = PowerRange.Self;
             forcePowers[1].Range = PowerRange.Self;
             forcePowers[2].Range = PowerRange.FiveHundredFt;
 
-            for (int i = 3; i < forcePowers.Count; i++)
+            for (var i = 3; i < forcePowers.Count; i++)
             {
                 forcePowers[i].Range = PowerRange.Varies;
             }
@@ -225,14 +225,14 @@ namespace DMAdvantage.UnitTests.Data
             var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
-                Ranges = new PowerRange[] { PowerRange.Self }
+                Ranges = new[] { PowerRange.Self }
             };
 
             var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(2);
 
-            searching.Ranges = new PowerRange[] { PowerRange.Self, PowerRange.FiveHundredFt };
+            searching.Ranges = new[] { PowerRange.Self, PowerRange.FiveHundredFt };
             pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
             pagedEntities.Should().NotBeNull();
             pagedEntities.Should().HaveCount(3);
@@ -243,12 +243,12 @@ namespace DMAdvantage.UnitTests.Data
         {
             var forcePowers = new List<ForcePower>
             {
-                new ForcePower { Name = "found", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
-                new ForcePower { Name = "found", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Varies },
-                new ForcePower { Name = "found", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.BonusAction, Range = PowerRange.Self },
-                new ForcePower { Name = "found", Level = 0, Alignment = ForceAlignment.Light, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
-                new ForcePower { Name = "found", Level = 1, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
-                new ForcePower { Name = "not", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
+                new() { Name = "found", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
+                new() { Name = "found", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Varies },
+                new() { Name = "found", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.BonusAction, Range = PowerRange.Self },
+                new() { Name = "found", Level = 0, Alignment = ForceAlignment.Light, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
+                new() { Name = "found", Level = 1, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
+                new() { Name = "not", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
             };
 
             foreach (var power in forcePowers)
@@ -267,10 +267,10 @@ namespace DMAdvantage.UnitTests.Data
             var searching = new ForcePowerSearchParameters
             {
                 Search = "fou",
-                Levels = new int[] { 0 },
-                Alignments = new ForceAlignment[] { ForceAlignment.Dark },
-                CastingPeriods = new CastingPeriod[] { CastingPeriod.Action },
-                Ranges = new PowerRange[] { PowerRange.Self }
+                Levels = new[] { 0 },
+                Alignments = new[] { ForceAlignment.Dark },
+                CastingPeriods = new[] { CastingPeriod.Action },
+                Ranges = new[] { PowerRange.Self }
             };
 
             var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);

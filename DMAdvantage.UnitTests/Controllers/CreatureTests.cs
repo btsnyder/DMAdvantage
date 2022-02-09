@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using TestEngineering;
 using TestEngineering.Mocks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,24 +12,28 @@ using DMAdvantage.Server.Controllers;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Models;
 using FluentAssertions;
-using DMAdvantage.Shared.Enums;
+using TestEngineering.Enums;
 
 namespace DMAdvantage.UnitTests.Controllers
 {
     public class CreatureTests
     {
-        readonly List<Creature> _mockCreatureData = new()
-        {
-            Generation.Creature()
-        };
-        readonly MockLogger<CreaturesController> _mockLogger;
+        private readonly MockLogger<CreaturesController> _mockLogger;
+        private readonly ControllerUnitTestData<Creature> _testData;
+        private readonly Mapper _mapper;
 
         public CreatureTests()
         {
+            _testData = new ControllerUnitTestData<Creature>(Generation.RandomList(Generation.Creature, generateMax: true));
+
+            var config = new MapperConfiguration(cfg => {
+                cfg.AddProfile<MappingProfile>();
+            });
+            _mapper = new Mapper(config);
             _mockLogger = new MockLogger<CreaturesController>();
         }
 
-        CreaturesController CreateMockCreatureController(IRepository repo)
+        private CreaturesController CreateMockCreatureController(IRepository repo)
         {
             var httpContextMock = new MockHttpContext();
             var config = new MapperConfiguration(cfg => {
@@ -52,246 +54,143 @@ namespace DMAdvantage.UnitTests.Controllers
         [Fact]
         public void Get_AllCreatures_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName, null))
-                .Returns(_mockCreatureData);
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.GetAllEntities(_testData);
+            var creatureController = CreateMockCreatureController(repo);
 
             var result = creatureController.GetAllCreatures();
 
-            var okResult = result.Should().BeOfType<OkObjectResult>();
-            okResult.Subject.Value.Should().NotBeNull();
-            var val = okResult.Subject.Value.Should().BeOfType<List<CreatureResponse>>();
-            val.Subject.Should().HaveCount(1);
-            Validation.CompareData(_mockCreatureData[0], val.Subject[0]);
+            Validation.ValidateResponse(TestAction.Get, result, _testData);
         }
 
         [Fact]
         public void Get_CreatureById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Creature>(_mockCreatureData[0].Id, It.IsAny<string>()))
-                .Returns(_mockCreatureData[0]);
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.GetEntityById(_testData);
+            var creatureController = CreateMockCreatureController(repo);
 
-            var result = creatureController.GetCreatureById(_mockCreatureData[0].Id);
+            var result = creatureController.GetCreatureById(_testData.Entity.Id);
 
-            var okResult = result.Should().BeOfType<OkObjectResult>();
-            okResult.Subject.Value.Should().NotBeNull();
-            var response = okResult.Subject.Value.Should().BeOfType<CreatureResponse>();
-            Validation.CompareData(_mockCreatureData[0], response.Subject);
+            Validation.ValidateResponse(TestAction.Get, result, _testData);
         }
 
         [Fact]
         public async Task Post_CreateNewCreature_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.AddEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockCreatureData.Add((Creature)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
+            var repo = MockRepositories.CreateNewEntity(_testData);
             var newCreature = Generation.CreatureRequest();
-            var originalCount = _mockCreatureData.Count;
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            _testData.Expected = _mapper.Map<Creature>(newCreature);
+            var creatureController = CreateMockCreatureController(repo);
 
             var result = await creatureController.CreateNewCreature(newCreature);
 
-            result.Should().BeOfType<CreatedResult>();
-            _mockCreatureData.Should().HaveCount(originalCount + 1);
-            var addedCreature = _mockCreatureData.Last();
-            Validation.CompareData(newCreature, addedCreature);
+            Validation.ValidateResponse(TestAction.Create, result, _testData);
         }
 
         [Fact]
         public async Task Put_UpdateCreatureById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Creature>(_mockCreatureData[0].Id, It.IsAny<string>()))
-                .Returns(_mockCreatureData[0]);
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var editCreature = new CreatureRequest
-            {
-                Name = Faker.Name.FullName(),
-                HitPoints = _mockCreatureData[0].HitPoints,
-                ArmorClass = Faker.RandomNumber.Next(),
-                Speed = _mockCreatureData[0].Speed,
-                Strength = Faker.RandomNumber.Next(),
-                StrengthBonus = Faker.RandomNumber.Next(),
-                Dexterity = _mockCreatureData[0].Dexterity,
-                DexterityBonus = _mockCreatureData[0].DexterityBonus,
-                Constitution = Faker.RandomNumber.Next(),
-                ConstitutionBonus = Faker.RandomNumber.Next(),
-                Intelligence = _mockCreatureData[0].Intelligence,
-                IntelligenceBonus = _mockCreatureData[0].IntelligenceBonus,
-                Wisdom = Faker.RandomNumber.Next(),
-                WisdomBonus = Faker.RandomNumber.Next(),
-                Charisma = _mockCreatureData[0].Charisma,
-                CharismaBonus = _mockCreatureData[0].CharismaBonus,
-                ChallengeRating = Faker.RandomNumber.Next(),
-                Actions = _mockCreatureData[0].Actions,
-                Vulnerabilities = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
-                Immunities = _mockCreatureData[0].Immunities,
-                Resistances = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
-                ForcePowerIds = Generation.RandomList(() => Guid.NewGuid()),
-                TechPowerIds = _mockCreatureData[0].TechPowerIds
-            };
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.UpdateEntity(_testData);
+            var editCreature = Generation.CreatureRequest();
+            _testData.Expected = _mapper.Map<Creature>(editCreature);
+            var creatureController = CreateMockCreatureController(repo);
 
-            var result = await creatureController.UpdateCreatureById(_mockCreatureData[0].Id, editCreature);
+            var result = await creatureController.UpdateCreatureById(_testData.Entity.Id, editCreature);
 
-            result.Should().BeOfType<NoContentResult>();
-            Validation.CompareData(editCreature, _mockCreatureData[0]);
+            Validation.ValidateResponse(TestAction.Update, result, _testData);
         }
 
         [Fact]
         public async Task Put_NewCreatureById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.AddEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockCreatureData.Add((Creature)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var editCreature = new CreatureRequest
-            {
-                Name = Faker.Name.FullName(),
-                HitPoints = _mockCreatureData[0].HitPoints,
-                ArmorClass = Faker.RandomNumber.Next(),
-                Speed = _mockCreatureData[0].Speed,
-                Strength = Faker.RandomNumber.Next(),
-                StrengthBonus = Faker.RandomNumber.Next(),
-                Dexterity = _mockCreatureData[0].Dexterity,
-                DexterityBonus = _mockCreatureData[0].DexterityBonus,
-                Constitution = Faker.RandomNumber.Next(),
-                ConstitutionBonus = Faker.RandomNumber.Next(),
-                Intelligence = _mockCreatureData[0].Intelligence,
-                IntelligenceBonus = _mockCreatureData[0].IntelligenceBonus,
-                Wisdom = Faker.RandomNumber.Next(),
-                WisdomBonus = Faker.RandomNumber.Next(),
-                Charisma = _mockCreatureData[0].Charisma,
-                CharismaBonus = _mockCreatureData[0].CharismaBonus,
-                ChallengeRating = Faker.RandomNumber.Next(),
-                Actions = _mockCreatureData[0].Actions,
-                Vulnerabilities = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
-                Immunities = _mockCreatureData[0].Immunities,
-                Resistances = Generation.RandomList(() => Generation.RandomEnum<DamageType>().ToString()),
-                ForcePowerIds = Generation.RandomList(() => Guid.NewGuid()),
-                TechPowerIds = _mockCreatureData[0].TechPowerIds
-            };
-            var originalCount = _mockCreatureData.Count;
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.CreateNewEntity(_testData);
+            var editCreature = Generation.CreatureRequest();
+            _testData.Expected = _mapper.Map<Creature>(editCreature);
+            var creatureController = CreateMockCreatureController(repo);
 
             var result = await creatureController.UpdateCreatureById(Guid.NewGuid(), editCreature);
 
-            result.Should().BeOfType<CreatedResult>();
-            _mockCreatureData.Should().HaveCount(originalCount + 1);
-            var addedCreature = _mockCreatureData.Last();
-            Validation.CompareData(editCreature, addedCreature);
+            Validation.ValidateResponse(TestAction.Create, result, _testData);
         }
 
 
         [Fact]
         public void Get_AllCreatures_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName, null))
-                .Throws(new Exception());
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Creature>();
+            var creatureController = CreateMockCreatureController(repo);
 
             var result = creatureController.GetAllCreatures();
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().NotBeEmpty();
         }
 
         [Fact]
         public void Get_CreatureById_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Creature>(It.IsAny<Guid>(), MockHttpContext.CurrentUser.UserName))
-                .Throws(new Exception());
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Creature>();
+            var creatureController = CreateMockCreatureController(repo);
 
-            var result = creatureController.GetCreatureById(_mockCreatureData[0].Id);
+            var result = creatureController.GetCreatureById(_testData.Entity.Id);
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().NotBeEmpty();
         }
 
         [Fact]
         public async Task Post_CreateNewCreature_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.SaveAll()).Returns(false);
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Creature>();
+            var creatureController = CreateMockCreatureController(repo);
 
             var result = await creatureController.CreateNewCreature(new CreatureRequest());
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
         }
 
         [Fact]
         public async Task Put_UpdateCreatureById_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.AddEntity(It.IsAny<object>()))
-               .Callback((object obj) => throw new Exception());
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Creature>();
+            var creatureController = CreateMockCreatureController(repo);
 
-            var result = await creatureController.UpdateCreatureById(_mockCreatureData[0].Id, new CreatureRequest());
+            var result = await creatureController.UpdateCreatureById(_testData.Entity.Id, new CreatureRequest());
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().NotBeEmpty();
         }
 
         [Fact]
         public void Get_AllCreaturesWithWrongUser_ReturnsEmptyList()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(It.IsAny<string>(), null))
-                .Returns(_mockCreatureData);
-            mockRepo.Setup(x => x.GetAllEntities<Creature>(MockHttpContext.CurrentUser.UserName, null))
-                .Returns(new List<Creature>());
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.GetEmptyEntities(_testData);
+            var creatureController = CreateMockCreatureController(repo);
+            _testData.ExpectedList = new List<Creature>();
 
             var result = creatureController.GetAllCreatures();
 
-            var okResult = result.Should().BeOfType<OkObjectResult>();
-            okResult.Subject.Should().NotBeNull();
-            var response = okResult.Subject.Value.Should().BeOfType<List<CreatureResponse>>();
-            response.Subject.Should().BeEmpty();
+            Validation.ValidateResponse(TestAction.Get, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().BeEmpty();
         }
 
         [Fact]
         public void Delete_CreatureById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Creature>(_mockCreatureData[0].Id, It.IsAny<string>()))
-                .Returns(_mockCreatureData[0]);
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            mockRepo.Setup(x => x.RemoveEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockCreatureData.Remove((Creature)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var creature = _mockCreatureData[0];
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
-            var result = creatureController.DeleteCreatureById(creature.Id);
+            var repo = MockRepositories.DeleteEntity(_testData);
+            var creatureController = CreateMockCreatureController(repo);
+            var result = creatureController.DeleteCreatureById(_testData.Entity.Id);
 
-            result.Should().BeOfType<NoContentResult>();
-            _mockCreatureData.Should().NotContain(creature);
+            Validation.ValidateResponse(TestAction.Delete, result, _testData);
         }
 
         [Fact]
         public void Delete_CreatureByInvalidId_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Creature>(_mockCreatureData[0].Id, It.IsAny<string>()))
-                .Returns(_mockCreatureData[0]);
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            mockRepo.Setup(x => x.RemoveEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockCreatureData.Remove((Creature)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var creatureController = CreateMockCreatureController(mockRepo.Object);
+            var repo = MockRepositories.DeleteEntity(_testData);
+            var creatureController = CreateMockCreatureController(repo);
             var result = creatureController.DeleteCreatureById(Guid.NewGuid());
 
-            result.Should().BeOfType<NotFoundResult>();
+            Validation.ValidateResponse(TestAction.Missing, result, _testData);
         }
     }
 }

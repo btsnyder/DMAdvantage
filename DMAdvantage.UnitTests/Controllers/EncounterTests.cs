@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using TestEngineering;
 using TestEngineering.Mocks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,45 +12,35 @@ using DMAdvantage.Server.Controllers;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Models;
 using FluentAssertions;
-using System.Text.Json;
+using TestEngineering.Enums;
 
 namespace DMAdvantage.UnitTests.Controllers
 {
     public class EncounterTests
     {
-        readonly List<Encounter> _mockEncounterData = new()
-        {
-            new Encounter
-            {
-                DataCache = JsonSerializer.Serialize(new List<InitativeData>
-                {
-                    new InitativeData { BeingId = Guid.NewGuid() },
-                    new InitativeData { BeingId = Guid.NewGuid() },
-                    new InitativeData { BeingId = Guid.NewGuid() },
-                    new InitativeData { BeingId = Guid.NewGuid() }
-                }),
-                User = MockHttpContext.CurrentUser
-            }
-        };
-        readonly MockLogger<EncountersController> _mockLogger;
+        private readonly MockLogger<EncountersController> _mockLogger;
+        private readonly ControllerUnitTestData<Encounter> _testData;
+        private readonly Mapper _mapper;
 
         public EncounterTests()
         {
-            _mockLogger = new MockLogger<EncountersController>();
-        }
+            _testData = new ControllerUnitTestData<Encounter>(Generation.RandomList(Generation.Encounter, generateMax: true));
 
-        EncountersController CreateMockEncounterController(IRepository repo)
-        {
-            var httpContextMock = new MockHttpContext();
             var config = new MapperConfiguration(cfg => {
                 cfg.AddProfile<MappingProfile>();
             });
-            var mapper = new Mapper(config);
+            _mapper = new Mapper(config);
+            _mockLogger = new MockLogger<EncountersController>();
+        }
+
+        private EncountersController CreateMockEncounterController(IRepository repo)
+        {
+            var httpContextMock = new MockHttpContext();
 
             var encounterController = new EncountersController(
                 repo,
                 _mockLogger,
-                mapper,
+                _mapper,
                 MockUserManagerFactory.Create());
 
             encounterController.ControllerContext.HttpContext = httpContextMock;
@@ -62,226 +50,145 @@ namespace DMAdvantage.UnitTests.Controllers
         [Fact]
         public void Get_AllEncounters_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName, null))
-                .Returns(_mockEncounterData);
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.GetAllEntities(_testData);
+            var encounterController = CreateMockEncounterController(repo);
 
             var result = encounterController.GetAllEncounters();
 
-            var okResult = result.Should().BeOfType<OkObjectResult>();
-            okResult.Subject.Value.Should().NotBeNull();
-            var response = okResult.Subject.Value.Should().BeOfType<List<EncounterResponse>>();
-            response.Subject.Should().HaveCount(1);
-            Validation.CompareData(_mockEncounterData[0], response.Subject[0]);
+            Validation.ValidateResponse(TestAction.Get, result, _testData);
         }
 
         [Fact]
         public void Get_EncounterById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Encounter>(_mockEncounterData[0].Id, It.IsAny<string>()))
-                .Returns(_mockEncounterData[0]);
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.GetEntityById(_testData);
+            var encounterController = CreateMockEncounterController(repo);
 
-            var result = encounterController.GetEncounterById(_mockEncounterData[0].Id);
+            var result = encounterController.GetEncounterById(_testData.Entity.Id);
 
-            var okResult = result.Should().BeOfType<OkObjectResult>();
-            okResult.Subject.Value.Should().NotBeNull();
-            var response = okResult.Subject.Value.Should().BeOfType<EncounterResponse>();
-            Validation.CompareData(_mockEncounterData[0], response);
+            Validation.ValidateResponse(TestAction.Get, result, _testData);
         }
 
         [Fact]
         public async Task Post_CreateNewEncounter_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.AddEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockEncounterData.Add((Encounter)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var newEncounter = new EncounterRequest
-            {
-                Data = new() 
-                { 
-                    new InitativeData { BeingId = Guid.NewGuid() },
-                    new InitativeData { BeingId = Guid.NewGuid() },
-                    new InitativeData { BeingId = Guid.NewGuid() },
-                    new InitativeData { BeingId = Guid.NewGuid() }
-                }
-            };
-            var originalCount = _mockEncounterData.Count;
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.CreateNewEntity(_testData);
+            var newEncounter = Generation.EncounterRequest();
+            _testData.Expected = _mapper.Map<Encounter>(newEncounter);
+            var encounterController = CreateMockEncounterController(repo);
 
             var result = await encounterController.CreateNewEncounter(newEncounter);
 
-            result.Should().BeOfType<CreatedResult>();
-            _mockEncounterData.Should().HaveCount(originalCount + 1);
-            var addedEncounter = _mockEncounterData.Last();
-            Validation.CompareData(newEncounter, addedEncounter);
+            Validation.ValidateResponse(TestAction.Create, result, _testData);
         }
 
         [Fact]
         public async Task Put_UpdateEncounterById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Encounter>(_mockEncounterData[0].Id, It.IsAny<string>()))
-                .Returns(_mockEncounterData[0]);
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var data = new List<InitativeData>();
-            data.AddRange(_mockEncounterData[0].Data.Take(2));
-            data.AddRange(new List<InitativeData>
-            {
-                new InitativeData { BeingId = Guid.NewGuid() },
-                new InitativeData { BeingId = Guid.NewGuid() }
-            });
+            var repo = MockRepositories.UpdateEntity(_testData);
+            var editEncounter = Generation.EncounterRequest();
+            _testData.Expected = _mapper.Map<Encounter>(editEncounter);
+            var encounterController = CreateMockEncounterController(repo);
 
-            var editEncounter = new EncounterRequest
-            {
-                Data = data
-            };
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var result = await encounterController.UpdateEncounterById(_testData.Entity.Id, editEncounter);
 
-            var result = await encounterController.UpdateEncounterById(_mockEncounterData[0].Id, editEncounter);
-
-            result.Should().BeOfType<NoContentResult>();
-            Validation.CompareData(editEncounter, _mockEncounterData[0]);
+            Validation.ValidateResponse(TestAction.Update, result, _testData);
         }
 
         [Fact]
         public async Task Put_NewEncounterById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.AddEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockEncounterData.Add((Encounter)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var data = new List<InitativeData>();
-            data.AddRange(_mockEncounterData[0].Data.Take(2));
-            data.AddRange(new List<InitativeData>
-            {
-                new InitativeData { BeingId = Guid.NewGuid() },
-                new InitativeData { BeingId = Guid.NewGuid() }
-            });
-            var editEncounter = new EncounterRequest
-            {
-                Data= data
-            };
-            var originalCount = _mockEncounterData.Count;
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.CreateNewEntity(_testData);
+            var editEncounter = Generation.EncounterRequest();
+            _testData.Expected = _mapper.Map<Encounter>(editEncounter);
+            var encounterController = CreateMockEncounterController(repo);
 
             var result = await encounterController.UpdateEncounterById(Guid.NewGuid(), editEncounter);
 
-            result.Should().BeOfType<CreatedResult>();
-            _mockEncounterData.Should().HaveCount(originalCount + 1);
-            var addedEncounter = _mockEncounterData.Last();
-            Validation.CompareData(editEncounter, addedEncounter);
+            Validation.ValidateResponse(TestAction.Create, result, _testData);
         }
 
 
         [Fact]
         public void Get_AllEncounters_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName, null))
-                .Throws(new Exception());
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Encounter>();
+            var encounterController = CreateMockEncounterController(repo);
 
             var result = encounterController.GetAllEncounters();
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().NotBeEmpty();
         }
 
         [Fact]
         public void Get_EncounterById_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Encounter>(It.IsAny<Guid>(), MockHttpContext.CurrentUser.UserName))
-                .Throws(new Exception());
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Encounter>();
+            var encounterController = CreateMockEncounterController(repo);
 
-            var result = encounterController.GetEncounterById(_mockEncounterData[0].Id);
+            var result = encounterController.GetEncounterById(_testData.Entity.Id);
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().NotBeEmpty();
         }
 
         [Fact]
         public async Task Post_CreateNewEncounter_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.SaveAll()).Returns(false);
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Encounter>();
+            var encounterController = CreateMockEncounterController(repo);
 
             var result = await encounterController.CreateNewEncounter(new EncounterRequest());
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
         }
 
         [Fact]
         public async Task Put_UpdateEncounterById_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.AddEntity(It.IsAny<object>()))
-               .Callback((object obj) => throw new Exception());
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.Failure<Encounter>();
+            var encounterController = CreateMockEncounterController(repo);
 
-            var result = await encounterController.UpdateEncounterById(_mockEncounterData[0].Id, new EncounterRequest());
+            var result = await encounterController.UpdateEncounterById(_testData.Entity.Id, new EncounterRequest());
 
-            result.Should().BeOfType<BadRequestObjectResult>();
+            Validation.ValidateResponse(TestAction.Error, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().NotBeEmpty();
         }
 
         [Fact]
         public void Get_AllEncountersWithWrongUser_ReturnsEmptyList()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(It.IsAny<string>(), null))
-                .Returns(_mockEncounterData);
-            mockRepo.Setup(x => x.GetAllEntities<Encounter>(MockHttpContext.CurrentUser.UserName, null))
-                .Returns(new List<Encounter>());
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.GetEmptyEntities(_testData);
+            _testData.ExpectedList = new List<Encounter>();
+            var encounterController = CreateMockEncounterController(repo);
 
             var result = encounterController.GetAllEncounters();
 
-            var okResult = result.Should().BeOfType<OkObjectResult>();
-            okResult.Subject.Value.Should().NotBeNull();
-            var response = okResult.Subject.Value.Should().BeOfType<List<EncounterResponse>>();
-            response.Subject.Should().BeEmpty();
+            Validation.ValidateResponse(TestAction.Get, result, _testData);
             _mockLogger.Logs.Where(x => x.LogLevel == LogLevel.Error).Should().BeEmpty();
         }
 
         [Fact]
         public void Delete_EncounterById_Success()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Encounter>(_mockEncounterData[0].Id, It.IsAny<string>()))
-                .Returns(_mockEncounterData[0]);
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            mockRepo.Setup(x => x.RemoveEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockEncounterData.Remove((Encounter)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var encounter = _mockEncounterData[0];
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
-            var result = encounterController.DeleteEncounterById(encounter.Id);
+            var repo = MockRepositories.DeleteEntity(_testData);
+            var encounterController = CreateMockEncounterController(repo);
 
-            result.Should().BeOfType<NoContentResult>();
-            _mockEncounterData.Should().NotContain(encounter);
+            var result = encounterController.DeleteEncounterById(_testData.Entity.Id);
+
+            Validation.ValidateResponse(TestAction.Delete, result, _testData);
         }
 
         [Fact]
         public void Delete_EncounterByInvalidId_Failure()
         {
-            var mockRepo = new Mock<IRepository>();
-            mockRepo.Setup(x => x.GetEntityById<Encounter>(_mockEncounterData[0].Id, It.IsAny<string>()))
-                .Returns(_mockEncounterData[0]);
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            mockRepo.Setup(x => x.RemoveEntity(It.IsAny<object>()))
-                .Callback((object obj) => _mockEncounterData.Remove((Encounter)obj));
-            mockRepo.Setup(x => x.SaveAll()).Returns(true);
-            var encounterController = CreateMockEncounterController(mockRepo.Object);
+            var repo = MockRepositories.DeleteEntity(_testData);
+            var encounterController = CreateMockEncounterController(repo);
+
             var result = encounterController.DeleteEncounterById(Guid.NewGuid());
 
-            result.Should().BeOfType<NotFoundResult>();
+            Validation.ValidateResponse(TestAction.Missing, result, _testData);
         }
     }
 }

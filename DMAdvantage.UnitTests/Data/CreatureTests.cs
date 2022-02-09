@@ -38,10 +38,10 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetCreatureWithPaging_Success()
         {
-            var creatures = Generation.RandomList(() => Generation.Creature(), 50, true);
-            for (int i = 0; i < creatures.Count; i++)
+            var creatures = Generation.RandomList(Generation.Creature, max: 50, generateMax: true);
+            for (var i = 0; i < creatures.Count; i++)
             {
-                creatures[i].Name = $"Creature - {string.Format("{0:00000}", i)}";
+                creatures[i].Name = $"Creature - {i:00000}";
             }
             GetEntitiesWithPaging_Success(creatures);
         }

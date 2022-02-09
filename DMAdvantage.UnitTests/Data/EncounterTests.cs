@@ -45,7 +45,7 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetEncounterWithPaging_Success()
         {
-            var encounters = Generation.RandomList(() => GenerateEncounter(), 50, true);
+            var encounters = Generation.RandomList(GenerateEncounter, max: 50, generateMax: true);
             encounters = encounters.OrderBy(x => x.Id).ToList();
             GetEntitiesWithPaging_Success(encounters);
         }
@@ -57,8 +57,8 @@ namespace DMAdvantage.UnitTests.Data
                 Id = Guid.NewGuid(),
                 DataCache = JsonSerializer.Serialize(new List<InitativeData> 
                 { 
-                    new InitativeData { BeingId = Guid.NewGuid() },
-                    new InitativeData { BeingId = Guid.NewGuid() }
+                    new() { BeingId = Guid.NewGuid() },
+                    new() { BeingId = Guid.NewGuid() }
                 }),
                 User = MockHttpContext.CurrentUser
             };

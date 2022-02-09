@@ -1,14 +1,27 @@
 ﻿using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using System.Collections;
+using AutoMapper;
+using DMAdvantage.Data;
+using Microsoft.AspNetCore.Mvc;
+using TestEngineering.Enums;
 using TestEngineering.Mocks;
 
 namespace TestEngineering
 {
     public static class Validation
     {
-        public static void CompareData<T1, T2>(T1 expected, T2 actual)
+        private static readonly Mapper _mapper;
+
+        static Validation()
+        {
+            var config = new MapperConfiguration(cfg => {
+                cfg.AddProfile<MappingProfile>();
+            });
+            _mapper = new Mapper(config);
+        }
+
+        public static void CompareData<T>(T? expected, T? actual) where T : BaseEntity
         {
             if (expected == null)
                 throw new ArgumentNullException(nameof(expected));
@@ -28,10 +41,72 @@ namespace TestEngineering
                 else
                     actualValue.Should().Be(expectedValue, $"{prop.Name} is equal");
             }
-            if (expected is BaseEntity expectedEntity && expectedEntity.User != null)
+            if (expected is BaseEntity { User: { } } expectedEntity)
                 expectedEntity.User.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
-            if (actual is BaseEntity actualEntity && actualEntity.User != null)
+            if (actual is BaseEntity { User: { } } actualEntity)
                 actualEntity.User.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
+        }
+
+
+        public static void ValidateResponse<T>(TestAction action, IActionResult result, ControllerUnitTestData<T> testData) where T: BaseEntity
+        {
+            switch (action)
+            {
+                case TestAction.Get:
+                    var okResult = result.Should().BeOfType<OkObjectResult>();
+                    testData.Expected ??= testData.Entity;
+                    ValidateGetResponse(okResult.Subject, testData);
+                    break;
+                case TestAction.Create:
+                    var createdResult = result.Should().BeOfType<CreatedResult>();
+                    var mappedResult = _mapper.Map<T>(createdResult.Subject.Value);
+                    testData.Expected ??= testData.Entity;
+                    testData.RepositoryEntities.Should().Contain(x => x.Id == mappedResult.Id);
+                    CompareData(testData.Expected, mappedResult);
+                    break;
+                case TestAction.Update:
+                    result.Should().BeOfType<NoContentResult>();
+                    testData.Expected.Should().NotBeNull();
+                    testData.Entity.Should().NotBeNull();
+                    testData.Expected!.Id = testData.Entity.Id;
+                    testData.Expected!.User = testData.Entity.User;
+                    CompareData(testData.Expected, testData.Entity);
+                    break;
+                case TestAction.Delete:
+                    result.Should().BeOfType<NoContentResult>();
+                    testData.RepositoryEntities.Should().NotContain(testData.Entity);
+                    break;
+                case TestAction.Missing:
+                    result.Should().BeOfType<NotFoundResult>();
+                    break;
+                case TestAction.Error:
+                    result.Should().BeOfType<BadRequestObjectResult>();
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private static void ValidateGetResponse<T>(OkObjectResult result, ControllerUnitTestData<T> testData) where T : BaseEntity
+        {
+            if (result.Value is IList list)
+            {
+                testData.ExpectedList ??= testData.RepositoryEntities;
+                testData.ExpectedList.Should().HaveCount(list.Count);
+                for (var i = 0; i < list.Count; i++)
+                {
+                    var mappedResult = _mapper.Map<T>(list[i]);
+                    mappedResult.User = testData.ExpectedList[i].User;
+                    CompareData(testData.ExpectedList[i], mappedResult);
+                }
+            }
+            else
+            {
+                testData.Expected.Should().NotBeNull();
+                var mappedResult = _mapper.Map<T>(result.Value);
+                mappedResult.User = testData.Expected!.User;
+                CompareData(testData.Expected, mappedResult);
+            }
         }
     }
 }

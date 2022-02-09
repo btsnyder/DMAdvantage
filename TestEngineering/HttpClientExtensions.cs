@@ -1,6 +1,7 @@
 ﻿using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using TestEngineering.Mocks;
@@ -42,7 +43,7 @@ namespace TestEngineering
             return entities;
         }
 
-        private static string GetPath(Type t)
+        private static string GetPath(MemberInfo t)
         {
             var path = t.Name;
             path = path.Replace("Response", "");
@@ -53,8 +54,7 @@ namespace TestEngineering
 
         public static async Task<CharacterResponse> CreateCharacter(this HttpClient client, CharacterRequest? character = null)
         {
-            if (character == null)
-                character = Generation.CharacterRequest();
+            character ??= Generation.CharacterRequest();
             var response = await client.PostAsync("/api/characters", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<CharacterResponse>();
@@ -63,8 +63,7 @@ namespace TestEngineering
 
         public static async Task<CreatureResponse> CreateCreature(this HttpClient client, CreatureRequest? creature = null)
         {
-            if (creature == null)
-                creature = Generation.CreatureRequest();
+            creature ??= Generation.CreatureRequest();
             var response = await client.PostAsync("/api/creatures", creature);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<CreatureResponse>();
@@ -76,14 +75,14 @@ namespace TestEngineering
             if (encounter == null)
             { 
                 var characters = new List<Guid>();
-                for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+                for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
                 {
                     var character = await client.CreateCharacter();
                     characters.Add(character.Id);
                 }
 
                 var creatures = new List<Guid>();
-                for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+                for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
                 {
                     var creature = await client.CreateCreature();
                     creatures.Add(creature.Id);
@@ -106,8 +105,7 @@ namespace TestEngineering
 
         public static async Task<ForcePowerResponse> CreateForcePower(this HttpClient client, ForcePowerRequest? forcePower = null)
         {
-            if (forcePower == null)
-                forcePower = Generation.ForcePowerRequest();
+            forcePower ??= Generation.ForcePowerRequest();
             var response = await client.PostAsync("/api/forcepowers", forcePower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<ForcePowerResponse>();
@@ -116,8 +114,7 @@ namespace TestEngineering
 
         public static async Task<TechPowerResponse> CreateTechPower(this HttpClient client, TechPowerRequest? techPower = null)
         {
-            if (techPower == null)
-                techPower = Generation.TechPowerRequest();
+            techPower ??= Generation.TechPowerRequest();
             var response = await client.PostAsync("/api/techpowers", techPower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<TechPowerResponse>();
