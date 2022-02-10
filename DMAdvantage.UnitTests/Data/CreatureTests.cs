@@ -1,4 +1,6 @@
-﻿using TestEngineering;
+﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Query;
+using TestEngineering;
 using Xunit;
 
 namespace DMAdvantage.UnitTests.Data
@@ -44,6 +46,19 @@ namespace DMAdvantage.UnitTests.Data
                 creatures[i].Name = $"Creature - {i:00000}";
             }
             GetEntitiesWithPaging_Success(creatures);
+        }
+
+        [Fact]
+        public void GetCreatureWithSearching_Success()
+        {
+            var creatures = Generation.RandomList(Generation.Creature, max: 50, generateMax: true);
+            foreach (var creature in creatures)
+            {
+                if (Faker.Boolean.Random())
+                    creature.Name = "FOUND";
+            }
+            var search = new NamedSearchParameters<Creature> { Search = "FOUND" };
+            GetEntitiesWithSearching_Success(creatures, search, x => x.Name?.ToLower().Contains("found") == true);
         }
     }
 }

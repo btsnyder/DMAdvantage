@@ -7,15 +7,19 @@ using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Linq;
+using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Query;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
-    public class CreatureTests : IClassFixture<MockWebApplicationFactory<Startup>>
+    public class CreatureTests
     {
         private readonly MockWebApplicationFactory<Startup> _factory;
-        public CreatureTests(MockWebApplicationFactory<Startup> factory)
+
+        public CreatureTests()
         {
-            _factory = factory;
+            _factory = new MockWebApplicationFactory<Startup>();
         }
 
         [Fact]
@@ -48,13 +52,12 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var creatures = new List<CreatureResponse>();
 
-            for (int i = 0; i < 25; i++)
+            for (var i = 0; i < 25; i++)
             {
                 var creature = Generation.CreatureRequest();
-                creature.Name = $"{string.Format("{0:00000}", i)} - Creature";
+                creature.Name = $"{i:00000} - Creature";
                 var creatureResponse = await client.CreateCreature(creature);
-                if (creatureResponse != null)
-                    creatures.Add(creatureResponse);
+                creatures.Add(creatureResponse);
             }
 
             var paging = new PagingParameters
@@ -73,6 +76,35 @@ namespace DMAdvantage.IntegrationTests.Controllers
         }
 
         [Fact]
+        public async Task Get_AllCreaturesWithSearching_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var creatures = new List<CreatureResponse>();
+
+            for (var i = 0; i < 25; i++)
+            {
+                var creature = Generation.CreatureRequest();
+                creature.Name = $"{i:00000} - Creature";
+                if (Faker.Boolean.Random())
+                    creature.Name += "Found";
+                var creatureResponse = await client.CreateCreature(creature);
+                creatures.Add(creatureResponse);
+            }
+
+            var search = new NamedSearchParameters<Creature>()
+            {
+                Search = "found"
+            };
+
+            var response = await client.GetAsync($"/api/creatures?search={search.Search}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var creaturesResponse = await response.ParseEntityList<CreatureResponse>();
+
+            creaturesResponse.Should().BeEquivalentTo(creatures.Where(x => x.Name?.ToLower().Contains("found") == true));
+        }
+
+        [Fact]
         public async Task Post_CreateNewCreature_Created()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
@@ -80,7 +112,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var creature = await client.CreateCreature();
 
             var addedCreature = await client.GetEntity<CreatureResponse>(creature.Id);
-            Validation.CompareData(creature, addedCreature);
+            Validation.CompareResponses(creature, addedCreature);
         }
 
         [Fact]
@@ -105,7 +137,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedCreature = await response.ParseEntity<CreatureResponse>();
-            Validation.CompareData(creature, addedCreature);
+            Validation.CompareResponses(creature, addedCreature);
         }
 
         [Fact]
@@ -119,7 +151,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedCreature = await client.GetEntity<CreatureResponse>(creature.Id);
             addedCreature.Should().NotBeNull();
-            Validation.CompareData(creatureEdit, addedCreature);
+            Validation.CompareRequests(creatureEdit, addedCreature);
         }
 
         [Fact]

@@ -2,7 +2,7 @@
 
 namespace DMAdvantage.Shared.Models
 {
-    public class CharacterRequest : BeingModel
+    public class CharacterRequest : BeingModel, IEntityRequest
     {
         public string? PlayerName { get; set; }
         [Required]

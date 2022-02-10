@@ -1,4 +1,5 @@
-﻿using TestEngineering.Mocks;
+﻿using System;
+using TestEngineering.Mocks;
 using System.Net;
 using System.Threading.Tasks;
 using TestEngineering;
@@ -7,16 +8,19 @@ using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
 using System.Collections.Generic;
+using System.Linq;
+using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Query;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
-    public class CharacterTests : IClassFixture<MockWebApplicationFactory<Startup>>
+    public class CharacterTests
     {
         private readonly MockWebApplicationFactory<Startup> _factory;
 
-        public CharacterTests(MockWebApplicationFactory<Startup> factory)
+        public CharacterTests()
         {
-            _factory = factory;
+            _factory = new MockWebApplicationFactory<Startup>();
         }
 
         [Fact]
@@ -40,7 +44,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var characters = await response.ParseEntityList<CharacterResponse>();
             var charactersFromDb = await client.GetAllEntities<CharacterResponse>();
-            characters.Should().HaveCount(charactersFromDb.Count);
+            characters.Should().BeEquivalentTo(charactersFromDb);
         }
 
         [Fact]
@@ -49,13 +53,12 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var characters = new List<CharacterResponse>();
 
-            for (int i = 0; i < 25; i++)
+            for (var i = 0; i < 25; i++)
             {
                 var character = Generation.CharacterRequest();
-                character.Name = $"{string.Format("{0:00000}", i)} - Character";
+                character.Name = $"{i:00000} - Character";
                 var characterResponse = await client.CreateCharacter(character);
-                if (characterResponse != null)
-                    characters.Add(characterResponse);
+                characters.Add(characterResponse);
             }
 
             var paging = new PagingParameters
@@ -74,6 +77,35 @@ namespace DMAdvantage.IntegrationTests.Controllers
         }
 
         [Fact]
+        public async Task Get_AllCharactersWithSearching_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var characters = new List<CharacterResponse>();
+
+            for (var i = 0; i < 25; i++)
+            {
+                var character = Generation.CharacterRequest();
+                character.Name = $"{i:00000} - Character";
+                if (Faker.Boolean.Random())
+                    character.Name += "Found";
+                var characterResponse = await client.CreateCharacter(character);
+                characters.Add(characterResponse);
+            }
+
+            var search = new NamedSearchParameters<Character>()
+            {
+                Search = "found"
+            };
+
+            var response = await client.GetAsync($"/api/characters?search={search.Search}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var charactersResponse = await response.ParseEntityList<CharacterResponse>();
+
+            charactersResponse.Should().BeEquivalentTo(characters.Where(x => x.Name?.ToLower().Contains("found") == true));
+        }
+
+        [Fact]
         public async Task Post_CreateNewCharacter_Created()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
@@ -81,7 +113,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var character = await client.CreateCharacter();
 
             var addedCharacter = await client.GetEntity<CharacterResponse>(character.Id);
-            Validation.CompareData(character, addedCharacter);
+            Validation.CompareResponses(character, addedCharacter);
         }
 
         [Fact]
@@ -105,7 +137,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedCharacter = await response.ParseEntity<CharacterResponse>();
-            Validation.CompareData(character, addedCharacter);
+            Validation.CompareResponses(character, addedCharacter);
         }
 
         [Fact]
@@ -118,8 +150,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.PutAsync($"api/characters/{character.Id}", newCharacter);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedCharacter = await client.GetEntity<CharacterResponse>(character.Id);
-            addedCharacter.Should().NotBeNull();
-            Validation.CompareData(newCharacter, addedCharacter);
+            Validation.CompareRequests(newCharacter, addedCharacter);
         }
 
         [Fact]

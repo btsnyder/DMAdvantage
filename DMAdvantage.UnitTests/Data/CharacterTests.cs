@@ -1,4 +1,6 @@
-﻿using TestEngineering;
+﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Query;
+using TestEngineering;
 using Xunit;
 
 namespace DMAdvantage.UnitTests.Data
@@ -44,6 +46,19 @@ namespace DMAdvantage.UnitTests.Data
                 characters[i].Name = $"Character - {i:00000}";
             }
             GetEntitiesWithPaging_Success(characters);
+        }
+
+        [Fact]
+        public void GetCharacterWithSearching_Success()
+        {
+            var characters = Generation.RandomList(Generation.Character, max: 50, generateMax: true);
+            foreach (var character in characters)
+            {
+                if (Faker.Boolean.Random())
+                    character.Name = "FOUND";
+            }
+            var search = new NamedSearchParameters<Character> { Search = "FOUND" };
+            GetEntitiesWithSearching_Success(characters, search, x => x.Name?.ToLower().Contains("found") == true);
         }
     }
 }

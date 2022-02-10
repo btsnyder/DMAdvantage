@@ -9,16 +9,18 @@ using System.Collections.Generic;
 using System;
 using FluentAssertions;
 using System.Linq;
+using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Query;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
-    public class EncounterTests : IClassFixture<MockWebApplicationFactory<Startup>>
+    public class EncounterTests
     {
         private readonly MockWebApplicationFactory<Startup> _factory;
 
-        public EncounterTests(MockWebApplicationFactory<Startup> factory)
+        public EncounterTests()
         {
-            _factory = factory;
+            _factory = new MockWebApplicationFactory<Startup>();
         }
 
         [Fact]
@@ -50,19 +52,18 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllEncountersWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var encounters = new List<EncounterResponse>();
 
-            for (int i = 0; i < 25; i++)
+            for (var i = 0; i < 25; i++)
             {
                 var characters = new List<Guid>();
-                for (int j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
+                for (var j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
                 {
                     var character = await client.CreateCharacter();
                     characters.Add(character.Id);
                 }
 
                 var creatures = new List<Guid>();
-                for (int j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
+                for (var j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
                 {
                     var creature = await client.CreateCreature();
                     creatures.Add(creature.Id);
@@ -77,9 +78,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                     Data = data,
                 };
 
-                var encounterResponse = await client.CreateEncounter(encounter);
-                if (encounterResponse != null)
-                    encounters.Add(encounterResponse);
+                await client.CreateEncounter(encounter);
             }
 
             var paging = new PagingParameters
@@ -94,6 +93,36 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var encountersResponse = await response.ParseEntityList<EncounterResponse>();
 
             encountersResponse.Should().HaveCount(paging.PageSize);
+        }
+
+        [Fact]
+        public async Task Get_AllCreaturesWithSearching_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+            var encounters = new List<EncounterResponse>();
+
+            for (var i = 0; i < 25; i++)
+            {
+                var encounter = Generation.EncounterRequest();
+                encounter.Name = $"{i:00000} - Encounter";
+                if (Faker.Boolean.Random())
+                    encounter.Name += "Found";
+                var encounterResponse = await client.CreateEncounter(encounter);
+                encounters.Add(encounterResponse);
+            }
+
+            var search = new NamedSearchParameters<Encounter>()
+            {
+                Search = "found"
+            };
+
+            var response = await client.GetAsync($"/api/encounters?search={search.Search}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var encounterResponses = await response.ParseEntityList<EncounterResponse>();
+
+            var expected = encounters.Where(x => x.Name?.ToLower().Contains("found") == true);
+            encounterResponses.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -118,7 +147,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedEncounter = await response.ParseEntity<EncounterResponse>();
-            Validation.CompareData(encounter, addedEncounter);
+            Validation.CompareRequests(encounter, addedEncounter);
         }
 
         [Fact]
@@ -128,14 +157,14 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var encounter = await client.CreateEncounter();
 
             var characters = new List<Guid>();
-            for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+            for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
             {
                 var character = await client.CreateCharacter();
                 characters.Add(character.Id);
             }
 
             var creatures = new List<Guid>();
-            for (int i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+            for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
             {
                 var creature = await client.CreateCreature();
                 creatures.Add(creature.Id);
@@ -153,7 +182,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedEncounter = await client.GetEntity<EncounterResponse>(encounter.Id);
             addedEncounter.Should().NotBeNull();
-            Validation.CompareData(encounterEdit, addedEncounter);
+            Validation.CompareRequests(encounterEdit, addedEncounter);
         }
 
         [Fact]

@@ -12,12 +12,12 @@ using DMAdvantage.Shared.Query;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
-    public class ForcePowerTests : IClassFixture<MockWebApplicationFactory<Startup>>
+    public class ForcePowerTests
     {
         private readonly MockWebApplicationFactory<Startup> _factory;
-        public ForcePowerTests(MockWebApplicationFactory<Startup> factory)
+        public ForcePowerTests()
         {
-            _factory = factory;
+            _factory = new MockWebApplicationFactory<Startup>();
         }
 
         [Fact]
@@ -50,14 +50,13 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var forcePowers = new List<ForcePowerResponse>();
 
-            for (int i = 0; i < 25; i++)
+            for (var i = 0; i < 25; i++)
             {
                 var forcePower = Generation.ForcePowerRequest();
                 forcePower.Level = 0;
-                forcePower.Name = $"{string.Format("{0:00000}", i)} - ForcePower";
+                forcePower.Name = $"{i:00000} - ForcePower";
                 var forcePowerResponse = await client.CreateForcePower(forcePower);
-                if (forcePowerResponse != null)
-                    forcePowers.Add(forcePowerResponse);
+                forcePowers.Add(forcePowerResponse);
             }
 
             var paging = new PagingParameters
@@ -79,34 +78,31 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllForcePowersWithSearching_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var forcePowers = new List<ForcePowerResponse>();
 
-            for (int i = 0; i < 25; i++)
+            for (var i = 0; i < 25; i++)
             {
                 var forcePower = Generation.ForcePowerRequest();
-                if (i < 5)
+                switch (i)
                 {
-                    forcePower.Alignment = ForceAlignment.Dark;
-                    forcePower.Name = "search";
+                    case < 5:
+                        forcePower.Alignment = ForceAlignment.Dark;
+                        forcePower.Name = "search";
+                        break;
+                    case < 15:
+                        forcePower.Name = "not found";
+                        break;
+                    default:
+                        forcePower.Name = "search";
+                        forcePower.Alignment = ForceAlignment.Light;
+                        break;
                 }
-                else if (i < 15)
-                {
-                    forcePower.Name = "not found";
-                }
-                else
-                {
-                    forcePower.Name = "search";
-                    forcePower.Alignment = ForceAlignment.Light;
-                }
-                var forcePowerResponse = await client.CreateForcePower(forcePower);
-                if (forcePowerResponse != null)
-                    forcePowers.Add(forcePowerResponse);
+                await client.CreateForcePower(forcePower);
             }
 
             var searching = new ForcePowerSearchParameters
             {
                 Search = "search",
-                Alignments = new ForceAlignment[] { ForceAlignment.Dark }
+                Alignments = new[] { ForceAlignment.Dark }
             };
 
             var response = await client.GetAsync($"/api/forcepowers?{searching.GetQuery()}");
@@ -115,8 +111,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var forcePowersResponse = await response.ParseEntityList<ForcePowerResponse>();
 
             forcePowersResponse.Should().HaveCount(5);
-            forcePowersResponse.TrueForAll(x => x.Name == "search");
-            forcePowersResponse.TrueForAll(x => x.Alignment == ForceAlignment.Dark);
+            forcePowersResponse.TrueForAll(x => x.Name == "search").Should().Be(true);
+            forcePowersResponse.TrueForAll(x => x.Alignment == ForceAlignment.Dark).Should().Be(true);
         }
 
         [Fact]
@@ -127,7 +123,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var forcePower = await client.CreateForcePower();
 
             var addedForcePower = await client.GetEntity<ForcePowerResponse>(forcePower.Id);
-            Validation.CompareData(forcePower, addedForcePower);
+            Validation.CompareResponses(forcePower, addedForcePower);
         }
 
         [Fact]
@@ -152,7 +148,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedForcePower = await response.ParseEntity<ForcePowerResponse>();
-            Validation.CompareData(forcePower, addedForcePower);
+            Validation.CompareResponses(forcePower, addedForcePower);
         }
 
         [Fact]
@@ -166,7 +162,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedForcePower = await client.GetEntity<ForcePowerResponse>(forcePower.Id);
             addedForcePower.Should().NotBeNull();
-            Validation.CompareData(forcePowerEdit, addedForcePower);
+            Validation.CompareRequests(forcePowerEdit, addedForcePower);
         }
 
         [Fact]

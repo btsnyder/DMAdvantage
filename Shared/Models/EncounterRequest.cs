@@ -1,6 +1,6 @@
 ﻿namespace DMAdvantage.Shared.Models
 {
-    public class EncounterRequest
+    public class EncounterRequest : IEntityRequest
     {
         public string? Name { get; set; }
         public Guid CurrentPlayer { get; set; }

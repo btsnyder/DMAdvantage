@@ -1,6 +1,6 @@
 ﻿namespace DMAdvantage.Shared.Models
 {
-    public class CreatureRequest : BeingModel
+    public class CreatureRequest : BeingModel, IEntityRequest
     {
         public decimal ChallengeRating { get; set; }
         public List<BaseAction> Actions { get; set; } = new();

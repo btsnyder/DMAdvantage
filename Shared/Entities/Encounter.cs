@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace DMAdvantage.Shared.Entities
 {
-    public class Encounter : BaseEntity
+    public class Encounter : BaseEntity, INamedEntity
     {
         public string? Name { get; set; }
         public Guid CurrentPlayer { get; set; }

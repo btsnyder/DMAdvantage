@@ -7,15 +7,17 @@ using DMAdvantage.Shared.Models;
 using DMAdvantage.Server;
 using FluentAssertions;
 using System.Collections.Generic;
+using DMAdvantage.Shared.Enums;
+using DMAdvantage.Shared.Query;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
-    public class TechPowerTests : IClassFixture<MockWebApplicationFactory<Startup>>
+    public class TechPowerTests
     {
         private readonly MockWebApplicationFactory<Startup> _factory;
-        public TechPowerTests(MockWebApplicationFactory<Startup> factory)
+        public TechPowerTests()
         {
-            _factory = factory;
+            _factory = new MockWebApplicationFactory<Startup>();
         }
 
         [Fact]
@@ -42,19 +44,19 @@ namespace DMAdvantage.IntegrationTests.Controllers
             techPowers.Should().HaveCount(techPowersFromDb.Count);
         }
 
+        [Fact]
         public async Task Get_AllTechPowersWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
             var techPowers = new List<TechPowerResponse>();
 
-            for (int i = 0; i < 25; i++)
+            for (var i = 0; i < 25; i++)
             {
                 var techPower = Generation.TechPowerRequest();
                 techPower.Level = 0;
-                techPower.Name = $"{string.Format("{0:00000}", i)} - TechPower";
+                techPower.Name = $"{i:00000} - TechPower";
                 var techPowerResponse = await client.CreateTechPower(techPower);
-                if (techPowerResponse != null)
-                    techPowers.Add(techPowerResponse);
+                techPowers.Add(techPowerResponse);
             }
 
             var paging = new PagingParameters
@@ -73,6 +75,47 @@ namespace DMAdvantage.IntegrationTests.Controllers
         }
 
         [Fact]
+        public async Task Get_AllTechPowersWithSearching_Ok()
+        {
+            var client = await _factory.CreateAuthenticatedClientAsync();
+
+            for (var i = 0; i < 25; i++)
+            {
+                var techPower = Generation.TechPowerRequest();
+                switch (i)
+                {
+                    case < 5:
+                        techPower.CastingPeriod = CastingPeriod.Hour;
+                        techPower.Name = "search";
+                        break;
+                    case < 15:
+                        techPower.Name = "not found";
+                        break;
+                    default:
+                        techPower.Name = "search";
+                        techPower.CastingPeriod = CastingPeriod.EightHours;
+                        break;
+                }
+                await client.CreateTechPower(techPower);
+            }
+
+            var searching = new TechPowerSearchParameters
+            {
+                Search = "search",
+                CastingPeriods = new[] { CastingPeriod.Hour }
+            };
+
+            var response = await client.GetAsync($"/api/techpowers?{searching.GetQuery()}");
+
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var techPowerResponses = await response.ParseEntityList<TechPowerResponse>();
+
+            techPowerResponses.Should().HaveCount(5);
+            techPowerResponses.TrueForAll(x => x.Name == "search").Should().Be(true);
+            techPowerResponses.TrueForAll(x => x.CastingPeriod == CastingPeriod.Hour).Should().Be(true);
+        }
+
+        [Fact]
         public async Task Post_CreateNewTechPower_Created()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
@@ -80,7 +123,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var techPower = await client.CreateTechPower();
 
             var addedTechPower = await client.GetEntity<TechPowerResponse>(techPower.Id);
-            Validation.CompareData(techPower, addedTechPower);
+            Validation.CompareResponses(techPower, addedTechPower);
         }
 
         [Fact]
@@ -105,7 +148,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedTechPower = await response.ParseEntity<TechPowerResponse>();
-            Validation.CompareData(techPower, addedTechPower);
+            Validation.CompareResponses(techPower, addedTechPower);
         }
 
         [Fact]
@@ -119,7 +162,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedTechPower = await client.GetEntity<TechPowerResponse>(techPower.Id);
             addedTechPower.Should().NotBeNull();
-            Validation.CompareData(techPowerEdit, addedTechPower);
+            Validation.CompareRequests(techPowerEdit, addedTechPower);
         }
 
         [Fact]

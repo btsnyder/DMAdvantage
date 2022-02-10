@@ -2,6 +2,7 @@
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -22,9 +23,9 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllEncounters([FromQuery] PagingParameters? paging = null)
+        public IActionResult GetAllEncounters([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Encounter>? searching = null)
         {
-            return GetAllEntities(paging);
+            return GetAllEntities(paging, searching);
         }
 
         [HttpGet("{id:guid}")]

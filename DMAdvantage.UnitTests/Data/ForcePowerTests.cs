@@ -1,8 +1,6 @@
 ﻿using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Enums;
-using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
-using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using TestEngineering;
@@ -59,183 +57,99 @@ namespace DMAdvantage.UnitTests.Data
         public void GetForcePowersWithSearchingNull_FullList()
         {
             var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
-
-            foreach (var entity in forcePowers)
-            {
-                _mockRepo.AddEntity(entity);
-            }
-            _mockRepo.SaveAll();
-
-            var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters();
-            
-            var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().BeEquivalentTo(forcePowers);
+            GetEntitiesWithSearching_Success(forcePowers, searching, _ => true);
         }
 
         [Fact]
         public void GetForcePowersWithSearchingName_Success()
         {
             var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
-
             forcePowers[0].Name = "Found";
             forcePowers[1].Name = "IsFound";
-
-            foreach (var entity in forcePowers)
-            {
-                _mockRepo.AddEntity(entity);
-            }
-            _mockRepo.SaveAll();
-
-            var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
                 Search = "found"
             };
-
-            var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(2);
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.Name?.ToLower().Contains("found") == true);
         }
 
         [Fact]
         public void GetForcePowersWithSearchingLevel_Success()
         {
             var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
-
             forcePowers[0].Level = 1;
             forcePowers[1].Level = 1;
             forcePowers[2].Level = 2;
-
-            foreach (var entity in forcePowers)
-            {
-                _mockRepo.AddEntity(entity);
-            }
-            _mockRepo.SaveAll();
-
-            var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
                 Levels = new[] { 1 }
             };
-
-            var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(2);
-
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.Level == 1);
             searching.Levels = new[] { 1, 2 };
-            pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(3);
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.Level is 1 or 2);
         }
 
         [Fact]
         public void GetForcePowersWithSearchingAlignment_Success()
         {
             var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
-
             forcePowers[0].Alignment = ForceAlignment.Dark;
             forcePowers[1].Alignment = ForceAlignment.Dark;
             forcePowers[2].Alignment = ForceAlignment.Light;
-
             for (var i = 3; i < forcePowers.Count; i++)
             {
                 forcePowers[i].Alignment = ForceAlignment.Universal;
             }
-
-            foreach (var entity in forcePowers)
-            {
-                _mockRepo.AddEntity(entity);
-            }
-            _mockRepo.SaveAll();
-
-            var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
                 Alignments = new[] { ForceAlignment.Dark }
             };
-
-            var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(2);
-
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.Alignment == ForceAlignment.Dark);
             searching.Alignments = new[] { ForceAlignment.Dark, ForceAlignment.Light };
-            pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(3);
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.Alignment is ForceAlignment.Dark or ForceAlignment.Light);
         }
 
         [Fact]
         public void GetForcePowersWithSearchingCastingPeriod_Success()
         {
             var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
-
             forcePowers[0].CastingPeriod = CastingPeriod.EightHours;
             forcePowers[1].CastingPeriod = CastingPeriod.EightHours;
             forcePowers[2].CastingPeriod = CastingPeriod.Action;
-
             for (var i = 3; i < forcePowers.Count; i++)
             {
                 forcePowers[i].CastingPeriod = CastingPeriod.BonusAction;
             }
-
-            foreach (var entity in forcePowers)
-            {
-                _mockRepo.AddEntity(entity);
-            }
-            _mockRepo.SaveAll();
-
-            var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
                 CastingPeriods = new[] { CastingPeriod.EightHours }
             };
 
-            var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(2);
-
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.CastingPeriod == CastingPeriod.EightHours);
             searching.CastingPeriods = new[] { CastingPeriod.EightHours, CastingPeriod.Action };
-            pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(3);
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.CastingPeriod is CastingPeriod.EightHours or CastingPeriod.Action);
         }
 
         [Fact]
         public void GetForcePowersWithSearchingPowerRange_Success()
         {
             var forcePowers = Generation.RandomList(Generation.ForcePower, max: 10, generateMax: true);
-
             forcePowers[0].Range = PowerRange.Self;
             forcePowers[1].Range = PowerRange.Self;
             forcePowers[2].Range = PowerRange.FiveHundredFt;
-
             for (var i = 3; i < forcePowers.Count; i++)
             {
                 forcePowers[i].Range = PowerRange.Varies;
             }
-
-            foreach (var entity in forcePowers)
-            {
-                _mockRepo.AddEntity(entity);
-            }
-            _mockRepo.SaveAll();
-
-            var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
                 Ranges = new[] { PowerRange.Self }
             };
 
-            var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(2);
-
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.Range == PowerRange.Self);
             searching.Ranges = new[] { PowerRange.Self, PowerRange.FiveHundredFt };
-            pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(3);
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => x.Range is PowerRange.Self or PowerRange.FiveHundredFt);
         }
 
         [Fact]
@@ -250,20 +164,11 @@ namespace DMAdvantage.UnitTests.Data
                 new() { Name = "found", Level = 1, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
                 new() { Name = "not", Level = 0, Alignment = ForceAlignment.Dark, CastingPeriod = CastingPeriod.Action, Range = PowerRange.Self },
             };
-
             foreach (var power in forcePowers)
             {
                 power.Id = Guid.NewGuid();
                 power.User = MockHttpContext.CurrentUser;
             }
-
-            foreach (var entity in forcePowers)
-            {
-                _mockRepo.AddEntity(entity);
-            }
-            _mockRepo.SaveAll();
-
-            var paging = new PagingParameters();
             var searching = new ForcePowerSearchParameters
             {
                 Search = "fou",
@@ -273,9 +178,12 @@ namespace DMAdvantage.UnitTests.Data
                 Ranges = new[] { PowerRange.Self }
             };
 
-            var pagedEntities = _mockRepo.GetAllEntities(forcePowers[0].User?.UserName ?? string.Empty, paging, searching);
-            pagedEntities.Should().NotBeNull();
-            pagedEntities.Should().HaveCount(1);
+            GetEntitiesWithSearching_Success(forcePowers, searching, x => 
+                x.Name?.ToLower().Contains("fou") == true &&
+                x.Level == 0 &&
+                x.Alignment == ForceAlignment.Dark &&
+                x.CastingPeriod == CastingPeriod.Action &&
+                x.Range == PowerRange.Self);
         }
     }
 }

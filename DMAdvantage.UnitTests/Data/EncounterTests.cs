@@ -1,11 +1,6 @@
 ﻿using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
+using DMAdvantage.Shared.Query;
 using TestEngineering;
-using TestEngineering.Mocks;
 using Xunit;
 
 namespace DMAdvantage.UnitTests.Data
@@ -15,53 +10,55 @@ namespace DMAdvantage.UnitTests.Data
         [Fact]
         public void GetAllEncounters_Success()
         {
-            GetAllEntities_Success(GenerateEncounter());
+            GetAllEntities_Success(Generation.Encounter());
         }
 
         [Fact]
         public void GetAllEncountersFromDifferentUser_EmptyList()
         {
-            GetAllEntitiesFromDifferentUser_EmptyList(GenerateEncounter());
+            GetAllEntitiesFromDifferentUser_EmptyList(Generation.Encounter());
         }
 
         [Fact]
         public void GetEncounterById_Success()
         {
-            GetEntityById_Success(GenerateEncounter());
+            GetEntityById_Success(Generation.Encounter());
         }
 
         [Fact]
         public void GetEncounterByIdFromDifferentUser_Null()
         {
-            GetEntityByIdFromDifferentUser_Null(GenerateEncounter());
+            GetEntityByIdFromDifferentUser_Null(Generation.Encounter());
         }
 
         [Fact]
         public void GetEncounterByBadId_Null()
         {
-            GetEntityByBadId_Null(GenerateEncounter());
+            GetEntityByBadId_Null(Generation.Encounter());
         }
 
         [Fact]
         public void GetEncounterWithPaging_Success()
         {
-            var encounters = Generation.RandomList(GenerateEncounter, max: 50, generateMax: true);
-            encounters = encounters.OrderBy(x => x.Id).ToList();
+            var encounters = Generation.RandomList(Generation.Encounter, max: 50, generateMax: true);
+            for (var i = 0; i < encounters.Count; i++)
+            {
+                encounters[i].Name = $"Encounter - {i:00000}";
+            }
             GetEntitiesWithPaging_Success(encounters);
         }
 
-        private static Encounter GenerateEncounter()
+        [Fact]
+        public void GetEncounterWithSearching_Success()
         {
-            return new Encounter
+            var encounters = Generation.RandomList(Generation.Encounter, max: 50, generateMax: true);
+            foreach (var encounter in encounters)
             {
-                Id = Guid.NewGuid(),
-                DataCache = JsonSerializer.Serialize(new List<InitativeData> 
-                { 
-                    new() { BeingId = Guid.NewGuid() },
-                    new() { BeingId = Guid.NewGuid() }
-                }),
-                User = MockHttpContext.CurrentUser
-            };
+                if (Faker.Boolean.Random())
+                    encounter.Name = "FOUND";
+            }
+            var search = new NamedSearchParameters<Encounter> { Search = "FOUND" };
+            GetEntitiesWithSearching_Success(encounters, search, x => x.Name?.ToLower().Contains("found") == true);
         }
     }
 }

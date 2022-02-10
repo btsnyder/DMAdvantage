@@ -13,7 +13,12 @@ namespace TestEngineering.Mocks
     public class MockWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> 
         where TStartup : class
     {
-        public readonly string DatabaseId = Guid.NewGuid().ToString();
+        public MockWebApplicationFactory()
+        {
+            
+        }
+
+        public string DatabaseId = Guid.NewGuid().ToString();
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {

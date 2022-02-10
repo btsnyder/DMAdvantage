@@ -17,7 +17,6 @@ namespace DMAdvantage.Data
             CreateMap<CharacterResponse, Character>()
                 .ForMember(c => c.Weapons, opt => opt.Ignore())
                 .ForMember(c => c.WeaponsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Weapons, (JsonSerializerOptions?)null)));
-            CreateMap<CharacterResponse, CharacterRequest>();
             CreateMap<Being, Character>();
             CreateMap<Character, BeingModel>();
             CreateMap<Being, CharacterRequest>();

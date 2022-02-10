@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DMAdvantage.Shared.Query;
 
 namespace DMAdvantage.UnitTests.Data
 {
@@ -86,6 +87,28 @@ namespace DMAdvantage.UnitTests.Data
             pagedEntities.First().Id.Should().Be(entities[5].Id);
             pagedEntities.Should().HaveCount(paging.PageSize);
             pagedEntities.TotalCount.Should().Be(entities.Count);
+        }
+
+        protected void GetEntitiesWithSearching_Success<T>(List<T> entities, ISearchParameters<T> search, Func<T, bool> whereClause) where T : BaseEntity
+        {
+            if (_mockRepo.GetEntityByIdWithoutUser<T>(entities.First().Id) == null)
+            {
+                foreach (var entity in entities)
+                {
+                    _mockRepo.AddEntity(entity);
+                }
+                _mockRepo.SaveAll();
+            }
+            
+
+            var paging = new PagingParameters
+            {
+                PageSize = 100,
+                PageNumber = 1
+            };
+
+            var searchedEntities = _mockRepo.GetAllEntities<T>(entities[0].User!.UserName, paging, search);
+            searchedEntities.Should().BeEquivalentTo(entities.Where(whereClause));
         }
     }
 }

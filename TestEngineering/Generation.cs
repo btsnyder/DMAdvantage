@@ -46,9 +46,74 @@ namespace TestEngineering
                 PlayerName = Faker.Name.FullName(),
                 Level = Faker.RandomNumber.Next(),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-                TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
+                ForcePoints = Faker.RandomNumber.Next(),
+                TotalForcePowers = Faker.RandomNumber.Next(),
+                MaxForcePowerLevel= Faker.RandomNumber.Next(),
+                TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                TechPoints = Faker.RandomNumber.Next(),
+                Class = Nonsense(),
+                StrengthSave = NullableBoolean(),
+                DexteritySave = NullableBoolean(),
+                ConstitutionSave = NullableBoolean(),
+                IntelligenceSave = NullableBoolean(),
+                WisdomSave = NullableBoolean(),
+                CharismaSave = NullableBoolean(),
+                Athletics = NullableBoolean(),
+                Acrobatics = NullableBoolean(),
+                SleightOfHand = NullableBoolean(),
+                Stealth = NullableBoolean(),
+                Investigation = NullableBoolean(),
+                Lore = NullableBoolean(),
+                Nature = NullableBoolean(),
+                Piloting = NullableBoolean(),
+                Technology = NullableBoolean(),
+                AnimalHandling = NullableBoolean(),
+                Insight = NullableBoolean(),
+                Medicine = NullableBoolean(),
+                Perception = NullableBoolean(),
+                Survival = NullableBoolean(),
+                Deception = NullableBoolean(),
+                Intimidation = NullableBoolean(),
+                Performance = NullableBoolean(),
+                Persuasion = NullableBoolean(),
+                Weapons = RandomList(Weapon)
             };
             return characterRequest;
+        }
+
+        public static Weapon Weapon()
+        {
+            return new Weapon
+            {
+                Name = Nonsense(),
+                Type = RandomEnum<WeaponType>(),
+                Melee = Faker.Boolean.Random(),
+                Description = Nonsense(),
+                Damage = Nonsense(),
+                DamageType = RandomEnum<DamageType>(),
+                Properties = RandomList(() => Nonsense()).ToArray(),
+                PropertyDescriptions = RandomList(WeaponDescription)
+            };
+        }
+
+        public static WeaponDescription WeaponDescription()
+        {
+            return new WeaponDescription
+            {
+                Description = Nonsense(),
+                Name = Nonsense()
+            };
+        }
+
+        public static bool? NullableBoolean()
+        {
+            var i = Faker.RandomNumber.Next(0, 2);
+            return i switch
+            {
+                0 => null,
+                1 => true,
+                _ => false,
+            };
         }
 
         public static Character Character()
@@ -85,7 +150,11 @@ namespace TestEngineering
                 Immunities = RandomList(() => RandomEnum<DamageType>().ToString()),
                 Resistances = RandomList(() => RandomEnum<DamageType>().ToString()),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-                TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() }
+                ForcePoints = Faker.RandomNumber.Next(),
+                TotalForcePowers = Faker.RandomNumber.Next(),
+                MaxForcePowerLevel = Faker.RandomNumber.Next(),
+                TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
+                TechPoints = Faker.RandomNumber.Next()
             };
             return creatureRequest;
         }
@@ -114,7 +183,8 @@ namespace TestEngineering
                 HitOption = Faker.Boolean.Random() ? RandomEnum<HitOption>() : null,
                 HitDescription = Nonsense(50),
                 Alignment = RandomEnum<ForceAlignment>(),
-                Potency = Nonsense()
+                Potency = Nonsense(),
+                PrerequisiteId = Guid.NewGuid()
             };
 
             return forcePowerRequest;

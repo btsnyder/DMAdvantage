@@ -2,7 +2,7 @@
 
 namespace DMAdvantage.Shared.Models
 {
-    public class ForcePowerRequest : PowerModel
+    public class ForcePowerRequest : PowerModel, IEntityRequest
     {
         public ForceAlignment Alignment { get; set; }
         public string? Potency { get; set; }

@@ -3,6 +3,7 @@ using FluentAssertions;
 using System.Collections;
 using AutoMapper;
 using DMAdvantage.Data;
+using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 using TestEngineering.Enums;
 using TestEngineering.Mocks;
@@ -21,7 +22,25 @@ namespace TestEngineering
             _mapper = new Mapper(config);
         }
 
-        public static void CompareData<T>(T? expected, T? actual) where T : BaseEntity
+        public static void CompareRequests<T>(T? expected, T? actual) where T : IEntityRequest
+        {
+            CompareData(expected, actual);
+        }
+
+        public static void CompareResponses<T>(T? expected, T? actual) where T : IEntityResponse
+        {
+            CompareData(expected, actual);
+        }
+
+        public static void CompareEntities<T>(T? expected, T? actual) where T : BaseEntity
+        {
+            CompareData(expected, actual);
+            expected!.User?.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
+            actual!.User?.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
+        }
+
+
+        private static void CompareData<T>(T? expected, T? actual)
         {
             if (expected == null)
                 throw new ArgumentNullException(nameof(expected));
@@ -41,10 +60,6 @@ namespace TestEngineering
                 else
                     actualValue.Should().Be(expectedValue, $"{prop.Name} is equal");
             }
-            if (expected is BaseEntity { User: { } } expectedEntity)
-                expectedEntity.User.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
-            if (actual is BaseEntity { User: { } } actualEntity)
-                actualEntity.User.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
         }
 
 
