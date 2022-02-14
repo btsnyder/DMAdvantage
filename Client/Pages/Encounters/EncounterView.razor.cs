@@ -1,6 +1,7 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 
 namespace DMAdvantage.Client.Pages.Encounters
 {
@@ -13,27 +14,41 @@ namespace DMAdvantage.Client.Pages.Encounters
         private List<ForcePowerResponse> _forcePowers;
         private IList<ForcePowerResponse> SelectedForcePowers { get; set; } = new List<ForcePowerResponse>();
         private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
+        public bool _autoLoad;
+        public Timer _timer;
 
         [Inject] private IApiService ApiService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
         [Parameter] public string Id { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             _forcePowers = await ApiService.GetViews<ForcePowerResponse>();
 
+            NavigationManager.LocationChanged += NavigationManager_LocationChanged;
+
             await ReloadEncounter();
             await base.OnInitializedAsync();
         }
 
+        private void NavigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
+        {
+            _timer.Dispose();
+            NavigationManager.LocationChanged -= NavigationManager_LocationChanged;
+        }
+
         protected override void OnAfterRender(bool firstRender)
         {
-            //if (firstRender)
-            //{
-            //    var timer = new Timer(new TimerCallback(async _ =>
-            //    {
-            //        await ReloadEncounter();
-            //    }), null, 3000, 3000);
-            //}
+            if (firstRender)
+            {
+                _timer = new Timer(async _ =>
+                {
+                    if (_autoLoad)
+                    {
+                        await ReloadEncounter();
+                    }
+                }, null, 3000, 3000);
+            }
         }
 
         private async Task ReloadEncounter()

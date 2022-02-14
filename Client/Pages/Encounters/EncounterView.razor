@@ -8,8 +8,9 @@
         <div class="col">
             <h1>@_model.Name</h1>
         </div>
-        <div class="col">
-            <RadzenButton Text="Refresh" Click=@ReloadEncounter Size="ButtonSize.Small" class="m-1 px-1"/>
+        <div class="col d-flex align-items-end">
+            <text>Auto Load:</text>
+            <RadzenSwitch @bind-Value="@_autoLoad"/>
         </div>
     </div>
     <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers FromView="true"/>

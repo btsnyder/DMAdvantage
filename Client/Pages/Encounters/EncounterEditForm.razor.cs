@@ -4,6 +4,7 @@ using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Routing;
 using Radzen;
 using Radzen.Blazor;
 
@@ -26,6 +27,8 @@ namespace DMAdvantage.Client.Pages.Encounters
         private int _healthEdit;
         private bool _initativeEditing;
         private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
+        private bool _autoSave = false;
+        private Timer _timer;
 
         private EncounterRequest _model = new();
 
@@ -41,6 +44,8 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         protected override async Task OnInitializedAsync()
         {
+            NavigationManager.LocationChanged += NavigationManager_LocationChanged;
+
             if (Id != null)
             {
                 _model = await ApiService.GetEntityById<EncounterResponse>(Guid.Parse(Id)) ?? new();
@@ -80,6 +85,36 @@ namespace DMAdvantage.Client.Pages.Encounters
             }
 
             await base.OnInitializedAsync();
+        }
+
+        protected override void OnAfterRender(bool firstRender)
+        {
+            if (firstRender)
+            {
+                _timer = new Timer(async _ =>
+                {
+                    if (Id == null || !_autoSave)
+                        return;
+                    _model.Data.Clear();
+                    foreach (var init in _initatives)
+                    {
+                        _model.Data.Add(init);
+                    }
+                    _model.CurrentPlayer = _currentPlayer?.BeingId ?? Guid.Empty;
+                    _model.ConcentrationPowers.Clear();
+                    foreach (var (name, power) in _concentrationPowers)
+                    {
+                        _model.ConcentrationPowers.Add(name, power.Id);
+                    }
+                    await ApiService.UpdateEntity(Guid.Parse(Id ?? string.Empty), _model);
+                }, null, 3000, 3000);
+            }
+        }
+
+        private void NavigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
+        {
+            _timer.Dispose();
+            NavigationManager.LocationChanged -= NavigationManager_LocationChanged;
         }
 
         private async void OnValidSubmit()

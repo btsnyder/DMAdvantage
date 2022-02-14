@@ -9,6 +9,10 @@
             <InputText @bind-Value="@_model.Name" class="form-control" />
             <ValidationMessage For="@(() => _model.Name)" />
         </div>
+        <div class="col d-flex align-items-end">
+            <text>Auto Save:</text>
+            <RadzenSwitch @bind-Value="@_autoSave"/>
+        </div>
     </div>
     <div class="row my-2">
         <div class="col">
