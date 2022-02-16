@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using System.Linq.Expressions;
 using System.Text.Json;
+using DMAdvantage.Shared.Enums;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DMAdvantage.Data
 {
@@ -36,6 +38,18 @@ namespace DMAdvantage.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            var converter = new EnumToStringConverter<DamageType>();
+
+            modelBuilder.Entity<Creature>()
+                .Property(e => e.Vulnerabilities)
+                .HasConversion(
+                    v => string.Join(",", v.Select(e => e.ToString("D")).ToArray()),
+                    v => v.Split(new[] { ',' })
+                        .Select(e => Enum.Parse(typeof(DamageType), e))
+                        .Cast<DamageType>()
+                        .ToList()
+            );
 
             modelBuilder.Ignore<BaseAction>();
             modelBuilder.Ignore<InitativeData>();

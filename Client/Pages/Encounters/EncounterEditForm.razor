@@ -1,5 +1,5 @@
 ﻿@using DMAdvantage.Shared
-@inject DialogService DialogService
+@inject Radzen.DialogService DialogService
 
 <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator />
@@ -144,7 +144,7 @@
             <div class="row mb-2">
                 <div class="col">
                     <RadzenDataGrid @ref="_initativeGrid" Data="@_initatives" TItem="InitativeDataModel" @bind-Value="@SelectedInitatives"
-                        EditMode="DataGridEditMode.Multiple" RowSelect=OnRowSelect>
+                        EditMode="Radzen.DataGridEditMode.Multiple" RowSelect=OnRowSelect>
                         <Columns>
                             <RadzenDataGridColumn TItem="InitativeDataModel" Width="10%">
                                 <Template Context="initative">
@@ -537,6 +537,6 @@
                 b.CloseElement();
             };
             return content;
-        }, new DialogOptions() { ShowTitle = false, Style = "min-height:auto;min-width:auto;width:auto" });
+        }, new Radzen.DialogOptions() { ShowTitle = false, Style = "min-height:auto;min-width:auto;width:auto" });
     }
 }

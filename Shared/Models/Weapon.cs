@@ -10,7 +10,28 @@ namespace DMAdvantage.Shared.Models
         public string? Description { get; set; }
         public string? Damage { get; set; }
         public DamageType DamageType { get; set; }
-        public IEnumerable<string> Properties { get; set; } = Array.Empty<string>();
+
+        private IEnumerable<string> _properties = Array.Empty<string>();
+        public IEnumerable<string> Properties
+        {
+            get => _properties;
+            set
+            {
+                _properties = value;
+
+                foreach (var prop in value)
+                {
+                    var description = PropertyDescriptions.FirstOrDefault(x => x.Name == prop);
+                    if (description == null)
+                    {
+                        PropertyDescriptions.Add(new WeaponDescription { Name = prop });
+                    }
+                }
+
+                var removed = PropertyDescriptions.Select(d => d.Name).Except(value);
+                PropertyDescriptions.RemoveAll(x => removed.Contains(x.Name));
+            }
+        } 
         public List<WeaponDescription> PropertyDescriptions { get; set;} = new();
     }
 

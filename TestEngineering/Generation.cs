@@ -146,7 +146,7 @@ namespace TestEngineering
                 CharismaBonus = Faker.RandomNumber.Next(),
                 ChallengeRating = Faker.RandomNumber.Next(),
                 Actions = RandomList(BaseAction),
-                Vulnerabilities = RandomList(() => RandomEnum<DamageType>().ToString()),
+                Vulnerabilities = RandomList(RandomEnum<DamageType>),
                 Immunities = RandomList(() => RandomEnum<DamageType>().ToString()),
                 Resistances = RandomList(() => RandomEnum<DamageType>().ToString()),
                 ForcePowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },

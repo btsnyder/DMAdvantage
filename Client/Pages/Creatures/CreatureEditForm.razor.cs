@@ -9,6 +9,7 @@ namespace DMAdvantage.Client.Pages.Creatures
     public partial class CreatureEditForm
     {
         IEnumerable<string> _damageTypes = Array.Empty<string>();
+        IEnumerable<DamageType> _damageTypeEnums = Array.Empty<DamageType>();
         private CreatureRequest _model = new();
         private bool _loading;
 
@@ -25,6 +26,7 @@ namespace DMAdvantage.Client.Pages.Creatures
         protected override async Task OnInitializedAsync()
         {
             _damageTypes = Enum.GetNames<DamageType>();
+            _damageTypeEnums = Enum.GetValues<DamageType>();
             if (Id != null)
             {
                 _model = await ApiService.GetEntityById<CreatureResponse>(Guid.Parse(Id)) ?? new();

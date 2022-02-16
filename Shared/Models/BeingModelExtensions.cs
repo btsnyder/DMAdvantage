@@ -2,40 +2,46 @@
 {
     public static class BeingModelExtensions
     {
-        public static void StrengthChanged(this BeingModel being, int value)
+        public static void StrengthChanged(this BeingModel being, string value)
         {
-            being.Strength = value;
-            being.StrengthBonus = CalculateBonus(value);
+            if (!int.TryParse(value, out var str)) return;
+            being.Strength = str;
+            being.StrengthBonus = CalculateBonus(str);
         }
 
-        public static void DexterityChanged(this BeingModel being, int value)
+        public static void DexterityChanged(this BeingModel being, string value)
         {
-            being.Dexterity = value;
-            being.DexterityBonus = CalculateBonus(value);
+            if (!int.TryParse(value, out var dex)) return;
+            being.Dexterity = dex;
+            being.DexterityBonus = CalculateBonus(dex);
         }
 
-        public static void ConstitutionChanged(this BeingModel being, int value)
+        public static void ConstitutionChanged(this BeingModel being, string value)
         {
-            being.Constitution = value;
-            being.ConstitutionBonus = CalculateBonus(value);
+            if (!int.TryParse(value, out var con)) return;
+            being.Constitution = con;
+            being.ConstitutionBonus = CalculateBonus(con);
         }
 
-        public static void IntelligenceChanged(this BeingModel being, int value)
+        public static void IntelligenceChanged(this BeingModel being, string value)
         {
-            being.Intelligence = value;
-            being.IntelligenceBonus = CalculateBonus(value);
+            if (!int.TryParse(value, out var intelligence)) return;
+            being.Intelligence = intelligence;
+            being.IntelligenceBonus = CalculateBonus(intelligence);
         }
 
-        public static void WisdomChanged(this BeingModel being, int value)
+        public static void WisdomChanged(this BeingModel being, string value)
         {
-            being.Wisdom = value;
-            being.WisdomBonus = CalculateBonus(value);
+            if (!int.TryParse(value, out var wis)) return;
+            being.Wisdom = wis;
+            being.WisdomBonus = CalculateBonus(wis);
         }
 
-        public static void CharismaChanged(this BeingModel being, int value)
+        public static void CharismaChanged(this BeingModel being, string value)
         {
-            being.Charisma = value;
-            being.CharismaBonus = CalculateBonus(value);
+            if (!int.TryParse(value, out var cha)) return;
+            being.Charisma = cha;
+            being.CharismaBonus = CalculateBonus(cha);
         }
 
         private static int CalculateBonus(int value)

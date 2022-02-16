@@ -27,10 +27,10 @@
             <ValidationMessage For="@(() => _model.Speed)" />
         </div>
     </div>
-    <div class="row my-2">
+    @*<div class="row my-2">
         <div class="form-group col">
             <label>Strength</label>
-            <InputNumber Value="@_model.Strength" ValueChanged="@( (int i) => _model.StrengthChanged(i) )" ValueExpression="() => _model.Strength" class="form-control" />
+            <InputNumber Value="@_model.Strength" ValueChanged="@( (int i) => _model.StrengthChanged(i.ToString()) )" ValueExpression="() => _model.Strength" class="form-control" />
             <ValidationMessage For="@(() => _model.Strength)" />
         </div>
         <div class="form-group col">
@@ -58,7 +58,7 @@
             <InputNumber Value="@_model.Charisma" ValueChanged="@( (int i) => _model.CharismaChanged(i) )" ValueExpression="() => _model.Charisma" class="form-control" />
             <ValidationMessage For="@(() => _model.Charisma)" />
         </div>
-    </div>
+    </div>*@
     <div class="row my-2">
         <div class="form-group col">
             <InputNumber @bind-Value="@_model.StrengthBonus" class="form-control" />
@@ -149,9 +149,9 @@
     <div class="row my-2">
         <div class="form-group col">
             <label>Vulnerabilities</label>
-            <RadzenDropDown AllowClear="true" AllowFiltering="true" TValue="IEnumerable<string>"
+            <RadzenDropDown AllowClear="true" AllowFiltering="true" TValue="IEnumerable<DamageType>"
                 @bind-Value=@_model.Vulnerabilities FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" 
-                Multiple="true" Placeholder="Select..." Data=@_damageTypes class="form-control" />
+                Multiple="true" Placeholder="Select..." Data=@_damageTypeEnums class="form-control" />
         </div>
         <div class="form-group col">
             <label>Immunities</label>

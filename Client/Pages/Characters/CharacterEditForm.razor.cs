@@ -3,34 +3,32 @@ using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace DMAdvantage.Client.Pages.Characters
 {
     public partial class CharacterEditForm
     {
-        IEnumerable<string> _weaponProperities = Array.Empty<string>();
+        private IEnumerable<string> _weaponProperties = Array.Empty<string>();
         private CharacterRequest _model = new();
         private bool _loading;
         private List<ForcePowerResponse> _forcePowers = new();
 
-        [Inject]
-        IAlertService AlertService { get; set; }
-        [Inject]
-        IApiService ApiService { get; set; }
-        [Inject]
-        NavigationManager NavigationManager { get; set; }
+        [Inject] private IAlertService AlertService { get; set; }
+        [Inject] private IApiService ApiService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
 
         [Parameter]
         public string? Id { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            _weaponProperities = Enum.GetNames<WeaponProperty>();
+            _weaponProperties = Enum.GetNames<WeaponProperty>();
             if (Id != null)
             {
-                _model = await ApiService.GetEntityById<CharacterResponse>(Guid.Parse(Id)) ?? new();
+                _model = await ApiService.GetEntityById<CharacterResponse>(Guid.Parse(Id)) ?? new CharacterResponse();
             }
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new List<ForcePowerResponse>();
 
             await base.OnInitializedAsync();
         }
@@ -60,33 +58,18 @@ namespace DMAdvantage.Client.Pages.Characters
             }
         }
 
-        void WeaponPropertyChanged(Weapon weapon)
+        private Color ForceColor(ForcePowerResponse power)
         {
-            foreach (var prop in weapon.Properties)
-            {
-                var description = weapon.PropertyDescriptions.FirstOrDefault(x => x.Name == prop);
-                if (description == null)
-                {
-                    weapon.PropertyDescriptions.Add(new WeaponDescription { Name = prop });
-                }
-            }
-            weapon.PropertyDescriptions.RemoveAll(x => weapon.PropertyDescriptions.Select(x => x.Name).Except(weapon.Properties).Contains(x.Name));
+            return _model.ForcePowerIds.Contains(power.Id) ? Color.Primary : Color.Default;
         }
 
-        string CssStyle(ForcePowerResponse power)
+        private string ForceInfoColor(ForcePowerResponse power)
         {
-            var style = "fontsize: 14px;color: white;";
-            if (_model.ForcePowerIds.Contains(power.Id))
-                style += "background-color: #3888c2";
-            else
-                style += "background-color: #95a3ad";
-            return style;
+            return _model.ForcePowerIds.Contains(power.Id) ? Colors.Shades.White : Colors.Shades.Black;
         }
 
-        void UpdateForcePower(ForcePowerResponse power)
+        private void UpdateForcePower(ForcePowerResponse power)
         {
-            if (_infoClicked)
-                return;
             if (_model.ForcePowerIds.Contains(power.Id))
             {
                 _model.ForcePowerIds.Remove(power.Id);
@@ -97,22 +80,14 @@ namespace DMAdvantage.Client.Pages.Characters
             }
         }
 
-        private bool _infoClicked;
-        async Task InfoClicked(ForcePowerResponse power)
-        {
-            _infoClicked = true;
-            await ShowInlineDialog(power);
-            _infoClicked = false;
-        }
-
-        string? GetPowerName(Guid? id)
+        private string? GetPowerName(Guid? id)
         {
             if (id == null || id == Guid.Empty)
                 return null;
             return _forcePowers.First(x => x.Id == id).Name;
         }
 
-        bool IsDisabled(ForcePowerResponse power)
+        private bool IsDisabled(ForcePowerResponse power)
         {
             if (_model.ForcePowerIds.Contains(power.Id))
                 return false;

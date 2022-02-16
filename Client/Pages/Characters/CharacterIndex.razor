@@ -1,10 +1,50 @@
 ﻿@page "/characters"
 @attribute [Authorize]
 @inject IApiService ApiService
+@inject NavigationManager NavigationManager
 
-<h1>Characters</h1>
-<NavLink href="characters/add" class="btn btn-sm btn-success mb-2">Add Character</NavLink>
-<table class="table table-striped">
+<div Class="d-flex align-items-center mb-5">
+    <MudText Class="fw-bold" Typo="Typo.h3">Characters</MudText> 
+    <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("characters/add"))"/>
+</div>
+@if (!loading)
+{
+    <MudTable Items="@characters" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info"
+        Outlined="true" Dense="true" Striped="true">
+        <ColGroup>
+            <col />
+            <col />
+            <col style="width: 150px;"/>
+        </ColGroup>
+        <HeaderContent>
+            <MudTh Class="bg-dark text-white">Name</MudTh>
+            <MudTh Class="bg-dark text-white">Player</MudTh>
+            <MudTh Class="bg-dark text-white"/>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Player">@context.PlayerName</MudTd>
+            <MudTd>
+                <div class="d-flex justify-content-end">
+                    <MudIconButton Icon="@Icons.Filled.RemoveRedEye" OnClick="@(() => NavigationManager.NavigateTo($"characters/view/{context.PlayerName}"))" Variant="Variant.Filled" Color="Color.Dark" Class="mx-1"/>
+                    <MudIconButton Icon="@Icons.Filled.Edit" OnClick="() => EditCharacter(context.Id)" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
+                    <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveCharacter(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+                </div>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
+else
+{
+    <div class="d-flex justify-center">
+        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+    </div>
+}
+
+@*<table class="table table-striped">
     <thead>
         <tr>
             <th>Name</th>
@@ -46,11 +86,11 @@
             </tr>
         }
     </tbody>
-</table>
+</table>*@
 
 @code {
     private bool loading;
-    private PagedList<CharacterResponse>? characters;
+    private List<CharacterResponse>? characters;
     private PagingParameters paging = new();
 
     protected override async Task OnInitializedAsync()
@@ -69,8 +109,13 @@
     private async Task RefreshCharacters()
     {
         loading = true;
-        characters = await ApiService.GetAllPagedEntities<CharacterResponse>(paging);
+        characters = await ApiService.GetAllEntities<CharacterResponse>();
         loading = false;   
+    }
+
+    private void EditCharacter(Guid id)
+    {
+        NavigationManager.NavigateTo($"characters/edit/{id}");   
     }
 
     private async Task CurrentPageChanged(int page)

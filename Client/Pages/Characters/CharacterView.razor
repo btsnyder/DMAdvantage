@@ -1,188 +1,163 @@
 ﻿@page "/characters/view/{PlayerName}"
-@inject DialogService DialogService
+@inject IDialogService DialogService
 
 @if (_model != null)
 {
-    <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
-        <DataAnnotationsValidator />
-        <div class="row my-2">
-            <div class="col fw-bold text-danger" style="font-size: x-large">
-                @_model.Name
-            </div>
-        </div>
-        <div class="row my-2">
-             <div class="col">
-                Player: <b>@_model.PlayerName</b>
-            </div>
-            <div class="col">
-                Class: <b>@_model.Class</b>
-            </div>
-        </div>
-        <div class="row my-2">
-            <div class="col">
-                Lvl: <b>@_model.Level</b>
-            </div>
-            <div class="col">
-                HP: <b>@_model.HitPoints</b>
-            </div>
-            <div class="col">
-                AC: <b>@_model.ArmorClass</b>
-            </div>
-            <div class="col">
-                Spd: <b>@_model.Speed</b>
-            </div>
-        </div>
-        <RadzenCard class="p-2 my-2">
-            <div class="d-flex justify-content-around align-items-center my-2">
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Color="Color.Error" Typo="Typo.h5" Class="fw-bolder">@_model.Name</MudText>
+        </MudItem>
+
+        <MudItem xs="6">
+            <MudText>Player: <b>@_model.PlayerName</b></MudText>
+        </MudItem>
+        <MudItem xs="6">
+            <MudText>Class: <b>@_model.Class</b></MudText>
+        </MudItem>
+
+        <MudItem xs="3">
+            <MudText>Lvl: <b>@_model.Level</b></MudText>
+        </MudItem>
+        <MudItem xs="3">
+            <MudText>HP: <b>@_model.HitPoints</b></MudText>
+        </MudItem>
+        <MudItem xs="3">
+            <MudText>AC: <b>@_model.ArmorClass</b></MudText>
+        </MudItem>
+        <MudItem xs="3">
+            <MudText>Spd: <b>@_model.Speed</b></MudText>
+        </MudItem>
+    </MudGrid>
+    <MudPaper Class="py-2 my-5" Elevation="3">
+        <div class="d-flex justify-content-around align-items-center">
                 <div class="d-flex flex-column align-items-center">
-                    <text class="text-danger fw-bold" style="font-size: large"><b>STR</b></text>
-                    <text class="fw-bold" style="font-size: x-large">@_model.StrengthBonus.PrintInt()</text>
-                    <text style="font-size: small">(@_model.Strength)</text>
+                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">STR</MudText>
+                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.StrengthBonus.PrintInt()</MudText>
+                    <MudText Typo="Typo.caption">(@_model.Strength)</MudText>
                 </div>
                 <div class="d-flex flex-column align-items-center">
-                    <text class="text-danger fw-bold" style="font-size: large"><b>DEX</b></text>
-                    <text class="fw-bold" style="font-size: x-large">@_model.DexterityBonus.PrintInt()</text>
-                    <text style="font-size: small">(@_model.Dexterity)</text>
+                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">DEX</MudText>
+                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.DexterityBonus.PrintInt()</MudText>
+                    <MudText Typo="Typo.caption">(@_model.Dexterity)</MudText>
                 </div>
                 <div class="d-flex flex-column align-items-center">
-                    <text class="text-danger fw-bold" style="font-size: large"><b>CON</b></text>
-                    <text class="fw-bold" style="font-size: x-large">@_model.ConstitutionBonus.PrintInt()</text>
-                    <text style="font-size: small">(@_model.Constitution)</text>
+                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">CON</MudText>
+                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.ConstitutionBonus.PrintInt()</MudText>
+                    <MudText Typo="Typo.caption">(@_model.Constitution)</MudText>
                 </div>
             </div>
             <div class="d-flex justify-content-around align-items-center my-2">
                 <div class="d-flex flex-column align-items-center">
-                    <text class="text-danger fw-bold" style="font-size: large"><b>INT</b></text>
-                    <text class="fw-bold" style="font-size: x-large">@_model.IntelligenceBonus.PrintInt()</text>
-                    <text style="font-size: small">(@_model.Intelligence)</text>
+                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">INT</MudText>
+                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.IntelligenceBonus.PrintInt()</MudText>
+                    <MudText Typo="Typo.caption">(@_model.Intelligence)</MudText>
                 </div>
                 <div class="d-flex flex-column align-items-center">
-                    <text class="text-danger fw-bold" style="font-size: large"><b>WIS</b></text>
-                    <text class="fw-bold" style="font-size: x-large">@_model.WisdomBonus.PrintInt()</text>
-                    <text style="font-size: small">(@_model.Wisdom)</text>
+                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">WIS</MudText>
+                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.WisdomBonus.PrintInt()</MudText>
+                    <MudText Typo="Typo.caption">(@_model.Wisdom)</MudText>
                 </div>
                 <div class="d-flex flex-column align-items-center">
-                    <text class="text-danger fw-bold" style="font-size: large"><b>CHA</b></text>
-                    <text class="fw-bold" style="font-size: x-large">@_model.CharismaBonus.PrintInt()</text>
-                    <text style="font-size: small">(@_model.Charisma)</text>
+                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">CHA</MudText>
+                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.CharismaBonus.PrintInt()</MudText>
+                    <MudText Typo="Typo.caption">(@_model.Charisma)</MudText>
                 </div>
             </div>
-        </RadzenCard>
-        <RadzenCard class="my-2">
-            <h2>Weapons</h2>
-            <div class="row d-flex align-items-center">
-                <text class="col-6 fw-bold">Name</text>
-                <text class="col-3 fw-bold">Hit</text>
-                <text class="col-3 fw-bold">Dam</text>
-            </div>
-            <hr/>
-            @foreach (var weapon in _model.Weapons)
-            {
-                <div class="row">
-                    <div class="col-6">
-                        @weapon.Name
-                    </div>
-                    <div class="col-3">
-                        @_model.WeaponBonus(weapon.Melee).PrintInt()
-                    </div>
-                    <div class="col-3">
-                        @weapon.Damage@_model.WeaponBonus(weapon.Melee, true).PrintInt()
-                    </div>
-                </div>
-            }
-        </RadzenCard>
-        <RadzenCard class="my-2">
-            <h2>Force Powers</h2>
-            <div class="row mb-2 align-items-center">
-                <div class="col"></div>
-                <div class="col">
-                    <text>Modifier</text>
-                </div>
-                <div class="col">
-                    <text>Save DC</text>
-                </div>
-            </div>
-            <div class="row mb-2 align-items-center">
-                <div class="col">
-                    <text>Light</text>
-                </div>
-                <div class="col">
-                    <text><b>@_model.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></text>
-                </div>
-                <div class="col">
-                    <text><b>@_model.ForceSavingThrow(ForceAlignment.Light).PrintInt()</b></text>
-                </div>
-            </div>
-            <div class="row mb-2 align-items-center">
-                <div class="col">
-                    <text>Universal</text>
-                </div>
-                <div class="col">
-                    <text><b>@_model.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
-                </div>
-                <div class="col">
-                    <text><b>@_model.ForceSavingThrow(ForceAlignment.Universal).PrintInt()</b></text>
-                </div>
-            </div>
-            <div class="row mb-2 align-items-center">
-                <div class="col">
-                    <text>Dark</text>
-                </div>
-                <div class="col">
-                    <text><b>@_model.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
-                </div>
-                <div class="col">
-                    <text><b>@_model.ForceSavingThrow(ForceAlignment.Dark).PrintInt()</b></text>
-                </div>
-            </div>
-            @for (var i = 0; i <= _model.MaxForcePowerLevel; i++)
-            {
-                <h3>Level @i</h3>
-                <hr class="mt-0" />
-                <div class="row mb-2">
-                    <div class="d-flex flex-wrap">
-                        @foreach (var power in _forcePowers.Where(x => x.Level == i && _model.ForcePowerIds.Contains(x.Id)))
-                        {
-                            <button type="button" class="btn m-1" style=@CssStyle(power) @onclick=@(() => InfoClicked(power))>
-                                <div class="row px-1 d-flex">
-                                    @power.Name
-                                </div>
+    </MudPaper>
+    <MudText Class="fw-bold" Typo="Typo.h6">Weapons</MudText>
+    <MudTable Items="_model.Weapons" Breakpoint="Breakpoint.None" Dense="true">
+        <ColGroup>
+            <col style="width: 50%;"/>
+            <col style="width: 25%;"/>
+            <col style="width: 25%;"/>
+        </ColGroup>
+        <HeaderContent>
+            <MudTh Class="bg-danger text-white">Name</MudTh>
+            <MudTh Class="bg-danger text-white">Hit</MudTh>
+            <MudTh Class="bg-danger text-white">Dam</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Hit">@_model.WeaponBonus(context.Melee).PrintInt()</MudTd>
+            <MudTd DataLabel="Dam">@context.Damage@_model.WeaponBonus(context.Melee, true).PrintInt()</MudTd>
+        </RowTemplate>
+    </MudTable>
+    <MudText Class="fw-bold mt-5" Typo="Typo.h6">Force Powers</MudText>
+    <div class="row mb-2 align-items-center">
+        <div class="col"></div>
+        <div class="col">
+            <text>Modifier</text>
+        </div>
+        <div class="col">
+            <text>Save DC</text>
+        </div>
+    </div>
+    <div class="row mb-2 align-items-center justify-center">
+        <div class="col">
+            <text>Light</text>
+        </div>
+        <div class="col">
+            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></text>
+        </div>
+        <div class="col">
+            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Light).PrintInt()</b></text>
+        </div>
+    </div>
+    <div class="row mb-2 align-items-center justify-center">
+        <div class="col">
+            <text>Universal</text>
+        </div>
+        <div class="col">
+            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
+        </div>
+        <div class="col">
+            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Universal).PrintInt()</b></text>
+        </div>
+    </div>
+    <div class="row mb-2 align-items-center justify-center">
+        <div class="col">
+            <text>Dark</text>
+        </div>
+        <div class="col">
+            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
+        </div>
+        <div class="col">
+            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Dark).PrintInt()</b></text>
+        </div>
+    </div>
+    @for (var i = 0; i <= _model.MaxForcePowerLevel; i++)
+    {
+        <h3 class="mt-3">Level @i</h3>
+        <hr class="mt-0" />
+        <div class="row mb-2">
+            <div class="d-flex flex-wrap">
+                @foreach (var power in _forcePowers.Where(x => x.Level == i && _model.ForcePowerIds.Contains(x.Id)))
+                {
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" Class="px-2 py-1 ma-2" OnClick="@(() => ShowInfo(power))" Disabled="@IsDisabled(power)">
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex pb-0 justify-space-between">
+                                <MudText Class="pa-0">@power.Name</MudText>
+                            </MudItem>
+                            <MudItem xs="12" Class="d-flex pt-0">
                                 @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)
                                 {
-                                    <div class="row px-1" style="font-size: 10px"><b>Pre-Req: @GetPowerName(power.PrerequisiteId)</b></div>
+                                    <MudText Class="pa-0" style="font-size: 10px">Pre-Req: @GetPowerName(power.PrerequisiteId)</MudText>
                                 }
-                            </button>
-                        }
-                    </div>
-                </div>
-            }
-        </RadzenCard>
-    </EditForm>
+                            </MudItem>
+                        </MudGrid>
+                    </MudButton>
+                }
+            </div>
+        </div>
+    }
 }
 
 @code
 {
-    async Task ShowInlineDialog(ForcePowerRequest power)
+    void ShowInfo(ForcePowerResponse power)
     {
-        await DialogService.OpenAsync(power.Name, _ =>
-            @<div class="d-flex flex-column">
-                <text><b>Alignment:</b> @power.Alignment</text>
-                <text><b>Concentration:</b> @power.Concentration</text>
-                <text><b>Hit:</b> @power.HitOption?.GetStringValue()</text>
-                @if (!string.IsNullOrWhiteSpace(power.HitDescription))
-                {
-                    <div><b>Description:</b> @power.HitDescription</div>
-                }
-                <text><b>Casting Time:</b> @power.CastingPeriod.GetStringValue()</text>
-                <text><b>Range:</b> @power.Range.GetStringValue()</text>
-                <text><b>Duration:</b> @power.Duration</text>
-                <br/>
-                <text>@power.Description</text>
-                @if (!string.IsNullOrEmpty(power.Potency))
-                {
-                    <br/>
-                    <div><b>Potency:</b> @power.Potency</div>
-                }
-            </div>);
+        var options = new MudBlazor.DialogOptions { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters {{"ForcePower", power}};
+        DialogService.Show<ForceInfoDialog>(power.Name, parameters, options);
     }
 }

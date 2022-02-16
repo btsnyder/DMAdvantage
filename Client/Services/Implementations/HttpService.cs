@@ -1,9 +1,6 @@
 ﻿using DMAdvantage.Client.Helpers;
-using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
-using System.Net;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
@@ -63,7 +60,7 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task<T?> Put<T>(string uri, object value)
         {
-            var request = CreateRequest(HttpMethod.Put, uri, value);
+            var request = CreateRequest(new HttpMethod("PATCH"), uri, value);
             return await ProcessRequest<T>(request);
         }
 
@@ -76,6 +73,7 @@ namespace DMAdvantage.Client.Services.Implementations
         public async Task<T?> Delete<T>(string uri)
         {
             var request = CreateRequest(HttpMethod.Delete, uri);
+            
             return await ProcessRequest<T>(request);
         }
 

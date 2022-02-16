@@ -2,11 +2,13 @@
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
 
-<RadzenDialog />
+<MudThemeProvider/>
+<MudDialogProvider/>
+<MudSnackbarProvider/>
 
 @if (AccountService.GetLoggedIn())
 {
-     <RadzenMenu Class="navbar-expand bg-dark" >
+     @*<RadzenMenu Class="navbar-expand bg-dark" >
         <RadzenMenuItem Text="Home" Path="/" Icon="home" Class="nav-main-link"/>
         <RadzenMenuItem Text="Data" Icon="topic" Class="nav-main-link">
             <RadzenMenuItem Text="Characters" Path="characters" Icon="person" Class="nav-main-link nav-sub-main-link bg-secondary"/>
@@ -16,10 +18,32 @@
         </RadzenMenuItem>
         <RadzenMenuItem Text="Encounters" Path="encounters" Icon="close_fullscreen" Class="nav-main-link"/>
         <RadzenMenuItem Text="Logout" Path="account/logout" Icon="logout" Class="nav-main-link"/>
-    </RadzenMenu>
+    </RadzenMenu>*@
 }
-
+@*
 <div class="app-container @(AccountService.GetLoggedIn() ? "bg-light" : "")">
     <Alert />
     @Body
-</div>
+</div>*@
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />
+        <MudText Typo="Typo.h5" class="ml-3">DM Advantage</MudText> 
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen" Variant="DrawerVariant.Temporary">
+        <MyNavMenu/>
+    </MudDrawer>
+    <MudMainContent Class="ma-4">
+        @Body
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    bool _drawerOpen;
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}
