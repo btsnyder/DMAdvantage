@@ -27,10 +27,13 @@
 </div>*@
 
 <MudLayout>
-    <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />
-        <MudText Typo="Typo.h5" class="ml-3">DM Advantage</MudText> 
-    </MudAppBar>
+    @if (AccountService.GetLoggedIn())
+    {
+        <MudAppBar Elevation="1">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />
+            <MudText Typo="Typo.h5" class="ml-3">DM Advantage</MudText> 
+        </MudAppBar>
+    }
     <MudDrawer @bind-Open="@_drawerOpen" Variant="DrawerVariant.Temporary">
         <MyNavMenu/>
     </MudDrawer>
