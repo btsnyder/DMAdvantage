@@ -1,6 +1,7 @@
 using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Services.Implementations;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor;
 using MudBlazor.Services;
 using Radzen;
 
@@ -19,8 +20,12 @@ namespace DMAdvantage.Client
                 .AddScoped<IAlertService, AlertService>()
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
-                .AddMudServices()
-                .AddScoped(sp => new HttpClient {BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)});
+                .AddMudServices(config =>
+                {
+                    config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
+                    config.SnackbarConfiguration.VisibleStateDuration = 3000;
+                })
+                .AddScoped(_ => new HttpClient {BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)});
 
             var host = builder.Build();
 

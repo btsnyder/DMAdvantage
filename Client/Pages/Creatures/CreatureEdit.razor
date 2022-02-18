@@ -2,10 +2,9 @@
 @attribute [Authorize]
 
 <h1>Edit Creature</h1>
-<CreatureEditForm Id=@Id/>
+<CreatureEditForm Id="@Id"/>
 
 @code
 {
-    [Parameter]
-    public string Id { get; set; }
+    [Parameter] public string Id { get; set; }
 }
