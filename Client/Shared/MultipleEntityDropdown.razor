@@ -1,10 +1,8 @@
 ﻿@typeparam TEntity
 
-<RadzenDropDown AllowClear="true" AllowFiltering="true" TValue="IEnumerable<string>"
-                FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                @bind-Value=@SelectedNames Multiple="true" Placeholder="Select..." 
-                Data=@_names class="form-control" Change=@(args => OnChange())/>
-@foreach (var level in _nameDisplay)
+<MudAutocomplete ResetValueOnEmptyText="true" CoerceText="true" T="string" SearchFunc="@Search"
+                Value=@_value ValueChanged="@Selected" Label="@Label" Dense="true"/>
+@foreach (var entity in _selectedEntities)
 {
-    @level <br />
+    <MudChip Color="Color.Primary" OnClose="EntityRemoved" Text="@entity.Display"/>
 }

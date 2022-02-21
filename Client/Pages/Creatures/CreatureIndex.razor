@@ -1,67 +1,60 @@
 ﻿@page "/creatures"
 @attribute [Authorize]
 @inject IApiService ApiService
+@inject NavigationManager NavigationManager
 
-<h1>Creatures</h1>
-<NavLink href="creatures/add" class="btn btn-sm btn-success mb-2">Add Creature</NavLink>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Challenge</th>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (creatures != null)
-        {
-            foreach (var creature in creatures)
-            {
-                <tr>
-                    <td>@creature.Name</td>
-                    <td>@creature.ChallengeRating</td>
-                    <td style="white-space: nowrap">
-                        <NavLink href="@($"creatures/edit/{creature.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveCreature(creature))">
-                            <span class="oi oi-trash" aria-hidden="true"></span>
-                        </button>
-                    </td>
-                </tr>
-            }
-        }
-        <tr>
-            <td colspan="4">
-                <PagingFooter T=CreatureResponse @bind-Data=creatures CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
-            </td>
-        </tr>
-        @if (loading)
-        { 
-            <tr>
-                <td colspan="4" class="text-center">
-                    <span class="spinner-border spinner-border-lg align-center"></span>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div Class="d-flex align-items-center mb-5">
+    <MudText Class="fw-bold" Typo="Typo.h3">Creatures</MudText> 
+    <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("creatures/add"))"/>
+</div>
+@if (!loading)
+{
+    <MudTable Items="@creatures" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info"
+              Outlined="true" Dense="true" Striped="true">
+        <ColGroup>
+            <col />
+            <col />
+            <col style="width: 150px;"/>
+        </ColGroup>
+        <HeaderContent>
+            <MudTh Class="bg-dark text-white">Name</MudTh>
+            <MudTh Class="bg-dark text-white">Challenge</MudTh>
+            <MudTh Class="bg-dark text-white"/>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Player">@context.ChallengeRating</MudTd>
+            <MudTd>
+                <div class="d-flex justify-content-end">
+                    <MudIconButton Icon="@Icons.Filled.Edit" OnClick="() => EditCreature(context.Id)" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
+                    <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveCharacter(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+                </div>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
+else
+{
+    <div class="d-flex justify-center">
+        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+    </div>
+}
 
 @code {
     private bool loading;
-    private PagedList<CreatureResponse>? creatures;
-    private PagingParameters paging = new();
+    private List<CreatureResponse>? creatures;
 
     protected override async Task OnInitializedAsync()
     {
-        await RefreshCreatures();
+        await RefreshCreatures();   
     }
 
-    private async Task RemoveCreature(CreatureResponse creature)
+    private async Task RemoveCharacter(CreatureResponse creature)
     {
-        if (creatures == null)
-            return; 
+        if (creatures == null) return;
         creatures.Remove(creature);
         await ApiService.RemoveEntity<CreatureResponse>(creature.Id);
     }
@@ -69,13 +62,12 @@
     private async Task RefreshCreatures()
     {
         loading = true;
-        creatures = await ApiService.GetAllPagedEntities<CreatureResponse>(paging);
+        creatures = await ApiService.GetAllEntities<CreatureResponse>();
         loading = false;   
     }
 
-    private async Task CurrentPageChanged(int page)
+    private void EditCreature(Guid id)
     {
-        paging.PageNumber = page;
-        await RefreshCreatures();
+        NavigationManager.NavigateTo($"creatures/edit/{id}");   
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace DMAdvantage.Client.Shared
 {
@@ -9,30 +10,13 @@ namespace DMAdvantage.Client.Shared
         private List<TEntity> _data;
         private IEnumerable<string> _names;
         private readonly List<string> _nameDisplay = new();
+        private readonly List<TEntity> _selectedEntities = new();
+        private string _value;
 
-        private IEnumerable<string> _selectedNames = Array.Empty<string>();
-        [Parameter]
-        public IEnumerable<string> SelectedNames
-        {
-            get => _selectedNames;
-            set
-            {
-                if (_selectedNames == value) return;
-
-                _selectedNames = value;
-                SelectedNamesChanged.InvokeAsync(value);
-            }
-        }
-
-        [Parameter]
-        public EventCallback<IEnumerable<string>> SelectedNamesChanged { get; set; }
-
-        [Inject]
-        IApiService ApiService { get; set; }
+        [Inject] private IApiService ApiService { get; set; }
 
         private List<Guid> _selectedIds = new();
-        [Parameter]
-        public List<Guid> SelectedIds
+        [Parameter] public List<Guid> SelectedIds
         {
             get => _selectedIds;
             set
@@ -43,8 +27,21 @@ namespace DMAdvantage.Client.Shared
                 SelectedIdsChanged.InvokeAsync(value);
             }
         }
-        [Parameter]
-        public EventCallback<List<Guid>> SelectedIdsChanged { get; set; }
+        [Parameter] public EventCallback<List<Guid>> SelectedIdsChanged { get; set; }
+
+        private string _label;
+        [Parameter] public string Label
+        {
+            get => _label;
+            set
+            {
+                if (_label == value) return;
+
+                _label = value;
+                LabelChanged.InvokeAsync(value);
+            }
+        }
+        [Parameter] public EventCallback<string> LabelChanged { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -52,38 +49,36 @@ namespace DMAdvantage.Client.Shared
             _names = _data.Select(x => x.Display).ToList();
 
             if (SelectedIds.Count != 0)
-                SelectedNames = _data.Where(x => SelectedIds.Contains(x.Id)).Select(x => x.Display);
+                _selectedEntities.AddRange(_data.Where(x => SelectedIds.Contains(x.Id)));
 
             await base.OnInitializedAsync();
         }
 
-        void OnChange()
+        private async Task<IEnumerable<string>> Search(string value)
         {
-            SelectedIds = _data.Where(x => SelectedNames.Contains(x.Display)).Select(x => x.Id).ToList();
-            if (typeof(TEntity) == typeof(ForcePowerResponse) || typeof(TEntity) == typeof(TechPowerResponse))
-                UpdateSelectedDisplay();
+            if (string.IsNullOrWhiteSpace(value)) return Array.Empty<string>();
+            await Task.Yield();
+            return _data
+                .Where(x => x.Display.ToLower().Contains(value.ToLower()) && !_selectedEntities.Contains(x))
+                .Select(x => x.Display);
         }
 
-        private void UpdateSelectedDisplay()
+        private void Selected(string val)
         {
-            _nameDisplay.Clear();
-            for (int i = 0; i < 10; i++)
-            {
-                AddLevelDisplay(i);
-            }
+            if (string.IsNullOrWhiteSpace(val)) return;
+            var selectedEntity = _data.FirstOrDefault(x => x.Display == val);
+            if (selectedEntity == null) return;
+            _selectedEntities.Add(selectedEntity);
+            SelectedIds.Add(selectedEntity.Id);
+            _value = "";
         }
 
-        private void AddLevelDisplay(int level)
+        private void EntityRemoved(MudChip chip)
         {
-            var powers = SelectedNames.Where(x => x.StartsWith(level.ToString())).Select(x => x[4..]);
-            if (powers.Any())
-            {
-                var prefix = $"Lvl {level}";
-                if (level == 0)
-                    prefix = "At-will";
-                _nameDisplay.Add($"{prefix}: {string.Join(',', powers)}");
-            }
-            
+            var entityToRemove = _selectedEntities.FirstOrDefault(x => x.Display == chip.Text);
+            if (entityToRemove == null) return;
+            _selectedEntities.Remove(entityToRemove);
+            SelectedIds.Remove(SelectedIds.FirstOrDefault(x => x == entityToRemove.Id));
         }
     }
 }

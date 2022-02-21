@@ -1,0 +1,51 @@
+﻿<MudItem xs="12" Class="d-flex justify-content-end align-items-center">
+    <MudButton Disabled="@Loading" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await SubmitClicked())">
+        @if (Loading)
+        {
+            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+            <MudText Class="ms-2">Processing</MudText>
+        }
+        else
+        {
+            <MudText>Save</MudText>
+        }
+    </MudButton>
+    <MudLink Class="ml-3" Href="@CancelRef">Cancel</MudLink>
+</MudItem>
+
+@code {
+    private bool _loading;
+    [Parameter] public bool Loading
+    {
+        get => _loading;
+        set
+        {
+            if (_loading == value) return;
+
+            _loading = value;
+            LoadingChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter] public EventCallback<bool> LoadingChanged { get; set; }
+
+    private string _cancelRef;
+    [Parameter] public string CancelRef
+    {
+        get => _cancelRef;
+        set
+        {
+            if (_cancelRef == value) return;
+
+            _cancelRef = value;
+            CancelRefChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter] public EventCallback<string> CancelRefChanged { get; set; }
+
+    async Task SubmitClicked()
+    {
+        await OnClick.InvokeAsync();
+    }
+        
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+}
