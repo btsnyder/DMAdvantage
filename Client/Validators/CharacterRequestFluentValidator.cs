@@ -4,11 +4,11 @@ using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class CreatureRequestFluentValidator : AbstractValidator<CreatureRequest>
+    public class CharacterRequestFluentValidator : AbstractValidator<CharacterRequest>
     {
         public ISnackbar? Snackbar { get; set; }
 
-        public CreatureRequestFluentValidator()
+        public CharacterRequestFluentValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.HitPoints).InclusiveBetween(0, 500);
@@ -29,11 +29,12 @@ namespace DMAdvantage.Client.Validators
             RuleFor(x => x.ForcePoints).InclusiveBetween(0, 50);
             RuleFor(x => x.TotalForcePowers).InclusiveBetween(0, 50);
             RuleFor(x => x.MaxForcePowerLevel).InclusiveBetween(0, 10);
+            RuleFor(x => x.Level).InclusiveBetween(1, 20);
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<CreatureRequest>.CreateWithOptions((CreatureRequest)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<CharacterRequest>.CreateWithOptions((CharacterRequest)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             var errors = result.Errors.Select(e => e.ErrorMessage).ToList();

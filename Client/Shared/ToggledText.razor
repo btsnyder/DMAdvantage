@@ -1,0 +1,25 @@
+﻿@inherits MudComponentBase
+
+<MudFab Class="my-auto" Color="ToggledColor()" OnClick="() => Value = !Value" Label="@Text" DisableElevation="true"/>
+
+@code {
+    private bool _value;
+    [Parameter] public bool Value
+    {
+        get => _value;
+        set
+        {
+            if (_value == value) return;
+
+            _value = value;
+            ValueChanged.InvokeAsync(value);
+        }
+    }
+    [Parameter] public EventCallback<bool> ValueChanged { get; set; }
+    [Parameter] public string Text { get; set; }
+
+    private Color ToggledColor()
+    {
+        return Value ? Color.Primary : Color.Default;
+    }
+}

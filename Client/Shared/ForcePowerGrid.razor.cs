@@ -6,14 +6,9 @@ namespace DMAdvantage.Client.Shared
 {
     public partial class ForcePowerGrid
     {
-        [Parameter]
-        public string Title { get; set; }
-        [Parameter]
-        public List<ForcePowerResponse> Powers { get; set; }
-        [Parameter]
-        public InitativeDataModel? Initative { get; set; }
-        [Parameter]
-        public bool ShowCast { get; set; } = true;
+        [Parameter] public string Title { get; set; }
+        [Parameter] public List<ForcePowerResponse> Powers { get; set; }
+        [Parameter] public bool ShowCast { get; set; } = true;
 
         private ForcePowerResponse? _selectedForcePower;
 
@@ -32,7 +27,6 @@ namespace DMAdvantage.Client.Shared
             await Click.InvokeAsync(power);
         }
         
-        [Parameter]
-        public EventCallback<ForcePowerResponse> Click { get; set; }
+        [Parameter] public EventCallback<ForcePowerResponse> Click { get; set; }
     }
 }

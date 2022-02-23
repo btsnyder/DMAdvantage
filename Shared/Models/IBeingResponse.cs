@@ -1,4 +1,6 @@
-﻿namespace DMAdvantage.Shared.Models
+﻿using DMAdvantage.Shared.Enums;
+
+namespace DMAdvantage.Shared.Models
 {
     public interface IBeingResponse : IEntityResponse
     {
@@ -22,5 +24,8 @@
         public int ForcePoints { get; set; }
         public List<Guid> TechPowerIds { get; set; }
         public int TechPoints { get; set; }
+        public int GetProficiencyBonus();
+        public int ForceAttackModifier(ForceAlignment alignment);
+        public int ForceSavingThrow(ForceAlignment alignment);
     }
 }

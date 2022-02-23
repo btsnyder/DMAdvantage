@@ -1,5 +1,4 @@
-﻿@using ButtonType = MudBlazor.ButtonType
-@inject IDialogService DialogService
+﻿@inject IDialogService DialogService
 
 <MudForm Model="@_model" @ref="@_form">
     <MudGrid Class="mb-5">
@@ -101,14 +100,7 @@
                         <MudSelectItem Value="@type">@type.GetStringValue()</MudSelectItem>
                     }
                 </MudSelect>
-                @if (weapon.Melee)
-                {
-                    <MudButton Class="mx-2 my-auto" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => weapon.Melee = !weapon.Melee">Melee</MudButton>
-                }
-                else
-                {
-                    <MudButton Class="mx-2 my-auto" Variant="Variant.Filled" OnClick="() => weapon.Melee = !weapon.Melee">Melee</MudButton>
-                }
+                <ToggledText @bind-Value="weapon.Melee" Text="Melee" />
                 <MudSelect Class="m-2" T="string" MultiSelection="true" @bind-SelectedValues="weapon.Properties" Label="Properties">
                     @foreach (var prop in _weaponProperties)
                     {
@@ -170,20 +162,7 @@
                 </MudButton>
             }
         }
-        <MudItem xs="12" Class="d-flex justify-content-end align-items-center">
-            <MudButton Disabled="@_loading" Color="Color.Primary" Variant="Variant.Filled" OnClick="@(async () => await OnSubmit())">
-                @if (_loading)
-                {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                    <MudText Class="ms-2">Processing</MudText>
-                }
-                else
-                {
-                    <MudText>Save</MudText>
-                }
-            </MudButton>
-            <MudLink Class="ml-3" Href="characters">Cancel</MudLink>
-        </MudItem>
+        <Submit @bind-Loading="@_loading" CancelRef="characters" OnClick="OnSubmit"/>
     </MudGrid>
 </MudForm>
 

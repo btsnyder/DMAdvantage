@@ -1,12 +1,8 @@
-﻿using DMAdvantage.Client.Models;
-using DMAdvantage.Client.Services;
-using DMAdvantage.Shared.Entities;
+﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Models;
-using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
-using Radzen;
-using Radzen.Blazor;
+using MudBlazor;
 
 namespace DMAdvantage.Client.Pages.Encounters
 {
@@ -14,33 +10,31 @@ namespace DMAdvantage.Client.Pages.Encounters
     {
         private bool _loading;
         private List<InitativeDataModel> _initatives = new();
-        private RadzenDataGrid<InitativeDataModel> _initativeGrid;
-        private IList<InitativeDataModel> SelectedInitatives { get; set; }
-        private InitativeDataModel? SelectedInitative => SelectedInitatives?.FirstOrDefault();
+        private InitativeDataModel? _selectedInitative;
+        private CharacterResponse? _selectedInitativeCharacter => _selectedInitative?.Being as CharacterResponse;
+        private CreatureResponse? _selectedInitativeCreature => _selectedInitative?.Being as CreatureResponse;
+
         private InitativeDataModel? _currentPlayer;
         IList<ForcePowerResponse> SelectedForcePowers { get; set; } = new List<ForcePowerResponse>();
         private List<CharacterResponse> _characters;
         private List<CreatureResponse> _creatures;
         private List<ForcePowerResponse> _forcePowers;
-        private CharacterResponse _selectedCharacter;
-        private CreatureResponse _selectedCreature;
+        private CharacterResponse? _selectedCharacter;
+        private CreatureResponse? _selectedCreature;
         private int _healthEdit;
         private bool _initativeEditing;
         private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
         private bool _autoSave = false;
         private Timer _timer;
+        private MudForm _form;
 
         private EncounterRequest _model = new();
 
-        [Parameter]
-        public string? Id { get; set; }
+        [Parameter] public string? Id { get; set; }
 
-        [Inject]
-        IAlertService AlertService { get; set; }
-        [Inject]
-        IApiService ApiService { get; set; }
-        [Inject]
-        NavigationManager NavigationManager { get; set; }
+        [Inject] private IApiService ApiService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
+        [Inject] private ISnackbar Snackbar { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -66,14 +60,14 @@ namespace DMAdvantage.Client.Pages.Encounters
                 _initatives = new(sorted);
             }
 
-            SelectedInitatives = new List<InitativeDataModel>() { _initatives[0] };
+            _selectedInitative = _initatives.FirstOrDefault();
 
             _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
             _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
             _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
 
-            if (SelectedInitative != null)
-                OnRowSelect(SelectedInitative);
+            if (_selectedInitative?.Being != null)
+                SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
 
             _currentPlayer = _initatives.FirstOrDefault(x => x.BeingId == _model.CurrentPlayer);
 
@@ -136,20 +130,18 @@ namespace DMAdvantage.Client.Pages.Encounters
                 if (Id == null)
                 {
                     await ApiService.AddEntity(_model);
-                    AlertService.Alert(AlertType.Success, "Character added successfully", keepAfterRouteChange: true);
+                    Snackbar.Add("Encounter added successfully", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                     NavigationManager.NavigateTo("encounters");
                 }
                 else
                 {
                     await ApiService.UpdateEntity(Guid.Parse(Id ?? string.Empty), _model);
-                    AlertService.Alert(AlertType.Success, "Update successful", keepAfterRouteChange: true);
+                    Snackbar.Add("Update Successful", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                 }
             }
             catch (Exception ex)
             {
-                AlertService.Alert(AlertType.Error, ex.Message);
-                _loading = false;
-                StateHasChanged();
+                Snackbar.Add($"Error submitting change: {ex}", Severity.Error);
             }
             finally
             {
@@ -158,97 +150,67 @@ namespace DMAdvantage.Client.Pages.Encounters
             }
         }
 
-        void ApplyHealth()
+        private void ApplyHealth()
         {
-            SelectedInitative?.ApplyHP(_healthEdit);
+            _selectedInitative?.ApplyHP(_healthEdit);
             _healthEdit = 0;
         }
 
-        void ApplyDamage()
+        private void ApplyDamage()
         {
-            SelectedInitative?.ApplyHP(-1 * _healthEdit);
+            _selectedInitative?.ApplyHP(-1 * _healthEdit);
             _healthEdit = 0;
         }
 
-        void OnCharacterChange(object value)
+        private Task<IEnumerable<CharacterResponse>> CharacterSearch(string value)
         {
-            var name = (string)value;
-            var character = _characters.FirstOrDefault(x => x.Name == name);
-            if (character != null)
-                _selectedCharacter = character;
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<CharacterResponse>>(Array.Empty<CharacterResponse>());
+            return Task.FromResult(_characters
+                .Where(x => x.Display.ToLower().Contains(value.ToLower()) && x != _selectedCharacter));
         }
 
-
-        void OnCreatureChange(object value)
+        private Task<IEnumerable<CreatureResponse>> CreatureSearch(string value)
         {
-            var name = (string)value;
-            var creature = _creatures.FirstOrDefault(x => x.Name == name);
-            if (creature != null)
-                _selectedCreature = creature;
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<CreatureResponse>>(Array.Empty<CreatureResponse>());
+            return Task.FromResult(_creatures
+                .Where(x => x.Display.ToLower().Contains(value.ToLower()) && x != _selectedCreature));
+        }
+        
+        private void InitativeRowClickEvent(TableRowClickEventArgs<InitativeDataModel> e)
+        {
+            _selectedInitative = e.Item;
+            if (_selectedInitative?.Being != null)
+                SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
         }
 
-        void OnRowSelect(InitativeDataModel data)
+        private void OnAddCharacter()
         {
-            if (data.Being != null)
-            {
-                SelectedForcePowers = _forcePowers.Where(x => data.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
-            }
-        }
-
-        async Task OnLoadCharacterData(LoadDataArgs args)
-        {
-            var characterSearch = new NamedSearchParameters<Character> { Search = args.Filter };
-            _characters = await ApiService.GetAllEntities<CharacterResponse>(characterSearch) ?? new();
-
-            await InvokeAsync(StateHasChanged);
-        }
-
-        async Task OnLoadCreatureData(LoadDataArgs args)
-        {
-            var creatureSearch = new NamedSearchParameters<Creature> { Search = args.Filter };
-            _creatures = await ApiService.GetAllEntities<CreatureResponse>(creatureSearch) ?? new();
-
-            await InvokeAsync(StateHasChanged);
-        }
-
-        async Task OnAddCharacter()
-        {
+            if (_selectedCharacter == null) return;
             var data = new InitativeDataModel(_selectedCharacter);
             _initatives.Insert(0, data);
-            await _initativeGrid.InsertRow(data);
-            await _initativeGrid.UpdateRow(data);
         }
 
-        async Task OnAddCreature()
+        private void OnAddCreature()
         {
+            if (_selectedCreature == null) return;
             var data = new InitativeDataModel(_selectedCreature);
             _initatives.Insert(0, data);
-            await _initativeGrid.InsertRow(data);
-            await _initativeGrid.UpdateRow(data);
         }
 
-        async Task InitativeEditStart()
+        private void InitativeEditStart()
         {
             _initativeEditing = true;
-            foreach (var row in _initatives)
-            {
-                await _initativeGrid.EditRow(row);
-            }
         }
 
-        async Task InitativeEditDone()
+        private void InitativeEditDone()
         {
             _initativeEditing = false;
-            foreach (var row in _initatives)
-            {
-                await _initativeGrid.UpdateRow(row);
-            }
             var sorted = new List<InitativeDataModel>(_initatives);
-            sorted.Sort(delegate (InitativeDataModel data1, InitativeDataModel data2) { return data2.Initative.CompareTo(data1.Initative); });
-            _initatives = new(sorted); 
+            sorted.Sort((data1, data2) => data2.Initative.CompareTo(data1.Initative));
+            _initatives = new List<InitativeDataModel>(sorted);
         }
 
-        void InitativeNext()
+        private void InitativeNext()
         {
             int index;
             if (_currentPlayer == null || _initatives.Last() == _currentPlayer)
@@ -258,7 +220,7 @@ namespace DMAdvantage.Client.Pages.Encounters
             _currentPlayer = _initatives[++index];
         }
 
-        void InitativePrevious()
+        private void InitativePrevious()
         {
             int index;
             if (_currentPlayer == null || _initatives.First() == _currentPlayer)
@@ -268,30 +230,22 @@ namespace DMAdvantage.Client.Pages.Encounters
             _currentPlayer = _initatives[--index];
         }
 
-        async Task ForcePowerClicked(ForcePowerResponse? power)
+        private void ForcePowerClicked(ForcePowerResponse? power)
         {
-            if (SelectedInitative == null || power == null || power.Level < 1)
+            if (_selectedInitative == null || power == null || power.Level < 1)
                 return;
-            if (SelectedInitative.CurrentFP < power.Level + 1)
+            if (_selectedInitative.CurrentFP < power.Level + 1)
             {
-                #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                InvokeAsync(async () =>
-                {
-                    await Task.Delay(1500);
-                    DialogService.Close();
-                });
-                #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-
-                await BusyDialog($"Not enough force points!");
+                Snackbar.Add("Not enough force points!", Severity.Error);
             }
             else
             {
-                SelectedInitative.CurrentFP -= power.Level + 1;
-                if (power.Concentration)
-                {
-                    _concentrationPowers.Add(SelectedInitative.Name ?? $"Player {_initatives.IndexOf(SelectedInitative)}", power);
-                }
-                StateHasChanged();
+               _selectedInitative.CurrentFP -= power.Level + 1;
+               if (power.Concentration)
+               {
+                   _concentrationPowers.Add(_selectedInitative.Name ?? $"Player {_initatives.IndexOf(_selectedInitative)}", power);
+               }
+               StateHasChanged();
             }
         }
     }

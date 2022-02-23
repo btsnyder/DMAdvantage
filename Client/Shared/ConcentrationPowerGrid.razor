@@ -1,70 +1,45 @@
-﻿@inject Radzen.DialogService DialogService
+﻿@inject IDialogService DialogService
 
-<div class="row mb-2">
+<MudItem xs="12">
     @if (ConcentrationPowers.Count > 0)
     {
-        <RadzenCard>
-            <h2>Concentration Powers</h2>
-            <table class="table table-striped">
-                <thead>
-                    <tr style="background-color: #D1CFCE">
-                        <th>Player</th>
-                        <th>Power</th>
-                        <th>Duration</th>
-                        <th/>
-                        @if (!FromView)
-                        {
-                            <th/>
-                        }
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var (name, power) in ConcentrationPowers)
-                    {
-                        <tr>
-                            <td>@name</td>
-                            <td>@power.Name</td>
-                            <td>@power.Duration</td>
-                            <td width="20px">                                            
-                                <RadzenButton Icon="info" Click=@(() => ShowInlineDialog(power)) Size="ButtonSize.Small" style="background-color: #2155ff !important;"/>
-                            </td>
-                            @if (!FromView)
-                            {
-                                <td width="20px">                                            
-                                    <RadzenButton Icon="delete" Click=@(() => _concentrationPowers.Remove(name)) Size="ButtonSize.Small" style="background-color: red !important;"/>
-                                </td>
-                            }
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </RadzenCard>
+        <h2 class="px-3">Concentration Powers</h2>
+        <MudTable Items="ConcentrationPowers" Breakpoint="Breakpoint.None" Dense="true" Elevation="3">
+            <ColGroup>
+                <col />
+                <col />
+                <col />
+                <col style="width: 150px;" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh Class="mud-theme-dark text-white">Player</MudTh>
+                <MudTh Class="mud-theme-dark text-white">Power</MudTh>
+                <MudTh Class="mud-theme-dark text-white">Duration</MudTh>
+                <MudTh Class="mud-theme-dark text-white"/>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Player">@context.Key</MudTd>
+                <MudTd DataLabel="Power">@context.Value.Name</MudTd>
+                <MudTd DataLabel="Duration">@context.Value.Duration</MudTd>
+                <MudTd>
+                    <div class="d-flex justify-content-end">
+                        <MudIconButton Icon="@Icons.Filled.Info" OnClick="() => ShowInfo(context.Value)" 
+                            Variant="Variant.Filled" Color="Color.Info" Class="mx-1" />
+                        <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => ConcentrationPowers.Remove(context.Key)" 
+                            Variant="Variant.Filled" Color="Color.Error" Class="mx-1" />
+                    </div>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
     }
-</div>
+</MudItem>
 
 @code
 {
-    async Task ShowInlineDialog(ForcePowerResponse power)
+    void ShowInfo(ForcePowerResponse power)
     {
-        var result = await DialogService.OpenAsync(power.Name, ds =>
-            @<div class="d-flex flex-column">
-                <text><b>Alignment:</b> @power.Alignment</text>
-                <text><b>Concentration:</b> @power.Concentration</text>
-                <text><b>Hit:</b> @power.HitOption?.GetStringValue()</text>
-                @if (!string.IsNullOrWhiteSpace(power.HitDescription))
-                {
-                    <div><b>Description:</b> @power.HitDescription</div>
-                }
-                <text><b>Casting Time:</b> @power.CastingPeriod.GetStringValue()</text>
-                <text><b>Range:</b> @power.Range.GetStringValue()</text>
-                <text><b>Duration:</b> @power.Duration</text>
-                <br/>
-                <text>@power.Description</text>
-                @if (!string.IsNullOrEmpty(power.Potency))
-                {
-                    <br/>
-                    <div><b>Potency:</b> @power.Potency</div>
-                }
-            </div>);
+        var options = new MudBlazor.DialogOptions { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters {{"ForcePower", power}};
+        DialogService.Show<ForceInfoDialog>(power.Name, parameters, options);
     }
 }

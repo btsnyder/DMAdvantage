@@ -1,13 +1,11 @@
-﻿using DMAdvantage.Shared.Enums;
-
-namespace DMAdvantage.Shared.Models
+﻿namespace DMAdvantage.Shared.Models
 {
     public class CharacterResponse : CharacterRequest, IBeingResponse
     {
         public Guid Id { get; set; }
         public string Display => Name ?? string.Empty;
 
-        public int GetProficiencyBonus()
+        new public int GetProficiencyBonus()
         {
             return Level switch
             {
@@ -35,23 +33,6 @@ namespace DMAdvantage.Shared.Models
             if (damage)
                 return bonus;
             return bonus + GetProficiencyBonus();
-        }
-
-
-        public int ForceAttackModifier(ForceAlignment alignment)
-        {
-            return alignment switch
-            {
-                ForceAlignment.Light => WisdomBonus + GetProficiencyBonus(),
-                ForceAlignment.Dark => CharismaBonus + GetProficiencyBonus(),
-                ForceAlignment.Universal => Math.Max(WisdomBonus, CharismaBonus) + GetProficiencyBonus(),
-                _ => 0,
-            };
-        }
-
-        public int ForceSavingThrow(ForceAlignment alignment)
-        {
-            return 8 + ForceAttackModifier(alignment);
         }
     }
 }

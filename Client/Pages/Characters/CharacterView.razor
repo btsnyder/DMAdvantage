@@ -108,7 +108,7 @@
             <text>Universal</text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.StrengthBonus.PrintInt()</b></text>
         </div>
         <div class="col">
             <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Universal).PrintInt()</b></text>
@@ -122,7 +122,7 @@
             <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Dark).PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.DexterityBonus.PrintInt()</b></text>
         </div>
     </div>
     @for (var i = 0; i <= _model.MaxForcePowerLevel; i++)

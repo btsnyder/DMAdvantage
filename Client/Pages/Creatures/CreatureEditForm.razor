@@ -1,57 +1,57 @@
 ﻿<MudForm Model="@_model" @ref="@_form">
     <MudGrid Class="mb-5">
         <MudItem xs="4">
-            <MudTextField @bind-Value="@_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name"/>
+            <MudTextField @bind-Value="@_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="@_model.ChallengeRating" Label="Challenge" Variant="Variant.Outlined" For="() => _model.ChallengeRating"/>
+            <MudNumericField @bind-Value="@_model.ChallengeRating" Label="Challenge" Variant="Variant.Outlined" For="() => _model.ChallengeRating" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="@_model.HitPoints" Label="Hit Points" Variant="Variant.Outlined" For="() => _model.HitPoints"/>
+            <MudNumericField @bind-Value="@_model.HitPoints" Label="Hit Points" Variant="Variant.Outlined" For="() => _model.HitPoints" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="@_model.ArmorClass" Label="Armor Class" Variant="Variant.Outlined" For="() => _model.ArmorClass"/>
+            <MudNumericField @bind-Value="@_model.ArmorClass" Label="Armor Class" Variant="Variant.Outlined" For="() => _model.ArmorClass" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="@_model.Speed" Label="Speed" Variant="Variant.Outlined" For="() => _model.Speed"/>
-        </MudItem>
-
-        <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.Strength" TextChanged="_model.StrengthChanged" Label="Strength" Variant="Variant.Outlined" For="() => _model.Strength"/>
-        </MudItem>
-        <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.Dexterity" TextChanged="_model.DexterityChanged" Label="Dexterity" Variant="Variant.Outlined" For="() => _model.Dexterity"/>
-        </MudItem>
-        <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.Constitution" TextChanged="_model.ConstitutionChanged" Label="Constitution" Variant="Variant.Outlined" For="() => _model.Constitution" />
-        </MudItem>
-        <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.Intelligence" TextChanged="_model.IntelligenceChanged" Label="Intelligence" Variant="Variant.Outlined" For="() => _model.Intelligence"/>
-        </MudItem>
-        <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.Wisdom" TextChanged="_model.WisdomChanged" Label="Wisdom" Variant="Variant.Outlined" For="() => _model.Wisdom"/>
-        </MudItem>
-        <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.Charisma" TextChanged="_model.CharismaChanged" Label="Charisma" Variant="Variant.Outlined" For="() => _model.Charisma"/>
+            <MudNumericField @bind-Value="@_model.Speed" Label="Speed" Variant="Variant.Outlined" For="() => _model.Speed" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
 
         <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.StrengthBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.StrengthBonus"/>
+            <MudNumericField @bind-Value="_model.Strength" TextChanged="_model.StrengthChanged" Label="Strength" Variant="Variant.Outlined" For="() => _model.Strength" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.DexterityBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.DexterityBonus"/>
+            <MudNumericField @bind-Value="_model.Dexterity" TextChanged="_model.DexterityChanged" Label="Dexterity" Variant="Variant.Outlined" For="() => _model.Dexterity" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.ConstitutionBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.ConstitutionBonus"/>
+            <MudNumericField @bind-Value="_model.Constitution" TextChanged="_model.ConstitutionChanged" Label="Constitution" Variant="Variant.Outlined" For="() => _model.Constitution" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.IntelligenceBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.IntelligenceBonus"/>
+            <MudNumericField @bind-Value="_model.Intelligence" TextChanged="_model.IntelligenceChanged" Label="Intelligence" Variant="Variant.Outlined" For="() => _model.Intelligence" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.WisdomBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.WisdomBonus"/>
+            <MudNumericField @bind-Value="_model.Wisdom" TextChanged="_model.WisdomChanged" Label="Wisdom" Variant="Variant.Outlined" For="() => _model.Wisdom" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="_model.CharismaBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.CharismaBonus"/>
+            <MudNumericField @bind-Value="_model.Charisma" TextChanged="_model.CharismaChanged" Label="Charisma" Variant="Variant.Outlined" For="() => _model.Charisma" Validation="@(_creatureValidator.ValidateValue)"/>
+        </MudItem>
+
+        <MudItem xs="2">
+            <MudNumericField @bind-Value="_model.StrengthBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.StrengthBonus" Validation="@(_creatureValidator.ValidateValue)"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudNumericField @bind-Value="_model.DexterityBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.DexterityBonus" Validation="@(_creatureValidator.ValidateValue)"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudNumericField @bind-Value="_model.ConstitutionBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.ConstitutionBonus" Validation="@(_creatureValidator.ValidateValue)"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudNumericField @bind-Value="_model.IntelligenceBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.IntelligenceBonus" Validation="@(_creatureValidator.ValidateValue)"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudNumericField @bind-Value="_model.WisdomBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.WisdomBonus" Validation="@(_creatureValidator.ValidateValue)"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudNumericField @bind-Value="_model.CharismaBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.CharismaBonus" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
 
         <MudItem xs="12" Class="d-flex align-items-center">
@@ -111,13 +111,13 @@
             <MultipleEntityDropdown TEntity="ForcePowerResponse" @bind-SelectedIds="_model.ForcePowerIds" Label="Force Powers"/>
         </MudItem>
         <MudItem xs="1">
-            <MudNumericField @bind-Value="@_model.ForcePoints" Label="FP"/>
+            <MudNumericField @bind-Value="@_model.ForcePoints" Label="FP" For="() => _model.ForcePoints" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="5">
             <MultipleEntityDropdown TEntity="TechPowerResponse" @bind-SelectedIds="_model.TechPowerIds" Label="Tech Powers"/>
         </MudItem>
         <MudItem xs="1">
-            <MudNumericField @bind-Value="@_model.TechPoints" Label="TP"/>
+            <MudNumericField @bind-Value="@_model.TechPoints" Label="TP" For="() => _model.TechPoints" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
 
         <Submit @bind-Loading="@_loading" CancelRef="creatures" OnClick="OnSubmit"/>

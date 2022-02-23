@@ -1,28 +1,28 @@
 ﻿@if (Powers.Count > 0)
 {
-    <div class="mb-2">
+    <MudItem xs="12">
         <div class="d-flex flex-column">
             <text style="font-size: large"><b>@Title</b></text>
             <hr style="margin-top: -3px"/>
         </div>
         @foreach (var power in Powers)
         {
-            <RadzenCard class="p-2">
+            <MudPaper Class="pa-2" Elevation="0" Outlined="true">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1 text-danger">
                         <b>@power.Name</b>
                     </div>
                     @if (ShowCast)
                     {
-                        <RadzenButton Text="CAST" Click=@(() => ForceClicked(power)) ButtonStyle="ButtonStyle.Danger" class="me-2"/>
+                        <MudButton Variant="Variant.Filled" OnClick="@(() => ForceClicked(power))" Color="Color.Error" Class="me-2">CAST</MudButton>
                     }
                     @if (power == _selectedForcePower)
                     {
-                        <RadzenButton Icon="expand_less" Click=@(() => HideForcePower()) ButtonStyle="ButtonStyle.Light"/>
+                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Filled.ExpandLess" OnClick="@(() => HideForcePower())" />
                     }
                     else
                     {
-                        <RadzenButton Icon="expand_more" Click=@(() => ShowForcePower(power)) ButtonStyle="ButtonStyle.Light"/>
+                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Filled.ExpandMore" OnClick="@(() => ShowForcePower(power))" />
                     }
                 </div>
                 @if (power == _selectedForcePower)
@@ -47,7 +47,7 @@
                         }
                     </div>
                 }
-            </RadzenCard>
+            </MudPaper>
         }
-    </div>
+    </MudItem>
 }

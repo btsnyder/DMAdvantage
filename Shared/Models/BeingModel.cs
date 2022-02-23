@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DMAdvantage.Shared.Enums;
 
 namespace DMAdvantage.Shared.Models
 {
@@ -42,5 +43,21 @@ namespace DMAdvantage.Shared.Models
         public int MaxForcePowerLevel { get; set; }
         public List<Guid> TechPowerIds { get; set; } = new();
         public int TechPoints { get; set; }
+        public int GetProficiencyBonus() => 0;
+        public int ForceAttackModifier(ForceAlignment alignment)
+        {
+            return alignment switch
+            {
+                ForceAlignment.Light => WisdomBonus + GetProficiencyBonus(),
+                ForceAlignment.Dark => CharismaBonus + GetProficiencyBonus(),
+                ForceAlignment.Universal => Math.Max(WisdomBonus, CharismaBonus) + GetProficiencyBonus(),
+                _ => 0,
+            };
+        }
+
+        public int ForceSavingThrow(ForceAlignment alignment)
+        {
+            return 8 + ForceAttackModifier(alignment);
+        }
     }
 }
