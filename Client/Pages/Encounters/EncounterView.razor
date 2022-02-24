@@ -1,323 +1,234 @@
 ﻿@page "/encounters/view/{Id}"
-@using DMAdvantage.Shared
-@inject Radzen.DialogService DialogService
 
 @if (_model != null)
 {
-    <div class="row my-2">
-        <div class="col">
-            <h1>@_model.Name</h1>
-        </div>
-        <div class="col d-flex align-items-end">
-            <text>Auto Load:</text>
-            <RadzenSwitch @bind-Value="@_autoLoad"/>
-        </div>
-    </div>
-    <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers FromView="true"/>
-    <div class="row mb-2">
-        <div class="col">
-            <table class="table table-striped">
-                <thead>
-                    <tr style="background-color: #D1CFCE">
-                        <th>Init</th>
-                        <th>Name</th>
-                        <th>AC</th>
-                        <th>HP</th>
-                        <th>FP</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var init in _initatives)
-                    {
-                        <tr style="@GetRowStyle(init)">
-                            <td width="10%">@init.Initative</td>
-                            <td width="50%">@init.Name</td>
-                            <td width="10%">@init.ArmorClass</td>
-                            <td width="20%" style="color: @init.GetHPColor()"><b>@init.GetHPDisplay()</b></td>
-                            <td width="10%"><b>@init.ForcePoints</b></td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="col">
+    <MudGrid>
+        <MudItem xs="6">
+            <MudText Typo="Typo.h5" Class="fw-bold">@_model.Name</MudText>
+        </MudItem>
+        <MudItem xs="6" Class="d-flex justify-content-end">
+            <ToggledText @bind-Value="_autoLoad" Text="Auto Load" />
+        </MudItem>
+        
+        <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers FromView="true"/>
+
+        <MudItem xs="6">
+            <MudTable Items="_initatives" T="InitativeDataModel" Breakpoint="Breakpoint.None" Elevation="3">
+                <ColGroup>
+                    <col style="width: 15%"/>
+                    <col style="width: 46%"/>
+                    <col style="width: 11%"/>
+                    <col style="width: 11%"/>
+                    <col style="width: 11%"/>
+                    <col style="width: 11%"/>
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh Class="mud-theme-dark text-white">Init</MudTh>
+                    <MudTh Class="mud-theme-dark text-white">Name</MudTh>
+                    <MudTh Class="mud-theme-dark text-white">AC</MudTh>
+                    <MudTh Class="mud-theme-dark text-white">HP</MudTh>
+                    <MudTh Class="mud-theme-dark text-white">FP</MudTh>
+                    <MudTh Class="mud-theme-dark text-white">TP</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Init" Class="@GetRowClass(context)">@context.Initative</MudTd>
+                    <MudTd DataLabel="Name" Class="@GetRowClass(context)">@context.Name</MudTd>
+                    <MudTd DataLabel="AC" Class="@GetRowClass(context)">@context.ArmorClass</MudTd>
+                    <MudTd DataLabel="HP" Style=@($"color: {context.GetHPColor()}; background: {HealthBackground(context)}")>@context.GetHPDisplay()</MudTd>
+                    <MudTd DataLabel="FP" Class="@GetRowClass(context)">@context.ForcePoints</MudTd>
+                    <MudTd DataLabel="TP" Class="@GetRowClass(context)">@context.TechPoints</MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudItem>
+
+        <MudItem xs="6">
             @if (_currentPlayer?.Being is CharacterResponse character)
             {
-                <RadzenTabs TabPosition="TabPosition.Top" RenderMode="TabRenderMode.Client" style="margin-bottom: 10px">
-                    <Tabs>
-                        <RadzenTabsItem Text="Basic">
-                            <div class="row mb-2">
-                                <div class="col">Name: @_currentPlayer?.Name</div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col">
-                                    Player: @character.PlayerName
-                                </div>
-                                <div class="col">
-                                    Class: @character.Class
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col">
-                                    AC: <b>@_currentPlayer?.Being?.ArmorClass</b>
-                                </div>
-                                <div class="col">
-                                    Initiative: <b>@_currentPlayer?.Being?.DexterityBonus.PrintInt()</b>
-                                </div>
-                                <div class="col">
-                                    Proficiency: <b>@character.GetProficiencyBonus().PrintInt()</b>
-                                </div>
-                                <div class="col">
-                                    Speed: @_currentPlayer?.Being?.Speed
-                                </div>
-                            </div>
-                            <div class="d-flex mb-2 align-items-center">
-                                <div class="me-2">
-                                    HP:
-                                </div>
-                                @if (_currentPlayer?.Being != null)
-                                {
-                                    <RadzenProgressBar @bind-Value=@_currentPlayer.HPAsDouble Max=@_currentPlayer.Being.HitPoints ShowValue="false" class="me-2" style="width: 200px;"/>
-                                }
-                                <div class="me-4">
-                                    @_currentPlayer?.CurrentHP/@_currentPlayer?.Being?.HitPoints
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    STR: @_currentPlayer?.Being?.Strength
-                                </div>
-                                <div class="col">
-                                    DEX: @_currentPlayer?.Being?.Dexterity
-                                </div>
-                                <div class="col">
-                                    CON: @_currentPlayer?.Being?.Constitution
-                                </div>
-                                <div class="col">
-                                    INT: @_currentPlayer?.Being?.Intelligence
-                                </div>
-                                <div class="col">
-                                    WIS: @_currentPlayer?.Being?.Wisdom
-                                </div>
-                                <div class="col">
-                                    CHA: @_currentPlayer?.Being?.Charisma
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col">
-                                    (<b>@_currentPlayer?.Being?.StrengthBonus.PrintInt()</b>)
-                                </div>
-                                <div class="col">
-                                    (<b>@_currentPlayer?.Being?.DexterityBonus.PrintInt()</b>)
-                                </div>
-                                <div class="col">
-                                    (<b>@_currentPlayer?.Being?.ConstitutionBonus.PrintInt()</b>)
-                                </div>
-                                <div class="col">
-                                    (<b>@_currentPlayer?.Being?.IntelligenceBonus.PrintInt()</b>)
-                                </div>
-                                <div class="col">
-                                    (<b>@_currentPlayer?.Being?.WisdomBonus.PrintInt()</b>)
-                                </div>
-                                <div class="col">
-                                    (<b>@_currentPlayer?.Being?.CharismaBonus.PrintInt()</b>)
-                                </div>
-                            </div>
-                            @if (_currentPlayer?.Being is CharacterResponse skillChar)
-                            {
-                                <div class="row">
-                                    <div class="col">
-                                        Save: <b>@skillChar.SkillBonus(skillChar.StrengthBonus, skillChar.StrengthSave).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Save: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.DexteritySave).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Save: <b>@skillChar.SkillBonus(skillChar.ConstitutionBonus, skillChar.ConstitutionSave).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Save: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.IntelligenceSave).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Save: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.WisdomSave).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Save: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.CharismaSave).PrintInt()</b>
-                                    </div>
-                                </div>
-                                <hr />
-                                <div class="row">
-                                    <div class="col">
-                                        Acrobatics: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.Acrobatics).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Investigation: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Investigation).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Persuasion: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Persuasion).PrintInt()</b>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        Animal Handling: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.AnimalHandling).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Lore: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Lore).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Piloting: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Piloting).PrintInt()</b>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        Athletics: <b>@skillChar.SkillBonus(skillChar.StrengthBonus, skillChar.Athletics).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Medicine: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Medicine).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Sleight Of Hand: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.SleightOfHand).PrintInt()</b>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        Deception: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Deception).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Nature: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Nature).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Stealth: <b>@skillChar.SkillBonus(skillChar.DexterityBonus, skillChar.Stealth).PrintInt()</b>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        Insight: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Insight).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Perception: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Perception).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Survival: <b>@skillChar.SkillBonus(skillChar.WisdomBonus, skillChar.Survival).PrintInt()</b>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col">
-                                        Intimidation: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Intimidation).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Performance: <b>@skillChar.SkillBonus(skillChar.CharismaBonus, skillChar.Performance).PrintInt()</b>
-                                    </div>
-                                    <div class="col">
-                                        Technology: <b>@skillChar.SkillBonus(skillChar.IntelligenceBonus, skillChar.Technology).PrintInt()</b>
-                                    </div>
-                                </div>
-                            }
-                        </RadzenTabsItem>
-                        <RadzenTabsItem Text="Actions">
-                            @foreach (var weapon in character.Weapons)
-                            {
-                                <RadzenCard class="p-2">
-                                    <div class="row">
-                                        <div class="col-4">
-                                            @weapon.Name
-                                        </div>
-                                        <div class="col-2">
-                                            @character.WeaponBonus(weapon.Melee).PrintInt()
-                                        </div>
-                                        <div class="col-2">
-                                            @weapon.Damage@character.WeaponBonus(weapon.Melee, true).PrintInt()
-                                        </div>
-                                        <div class="col-4">
-                                            @weapon.DamageType
-                                        </div>
-                                    </div>
-                                    <div class="d-flex flex-wrap">
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                    <MudTabPanel Text="Basic">  
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText>Name: <b>@character.Name</b></MudText>
+                            </MudItem>
+
+                            <MudItem xs="6">
+                                <MudText>Player: <b>@character.PlayerName</b></MudText>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudText>Class: <b>@character.Class</b></MudText>
+                            </MudItem>
+
+                            <MudItem xs="3">
+                                <MudText>AC: <b>@character.ArmorClass</b></MudText>
+                            </MudItem>
+                            <MudItem xs="3">
+                                <MudText>Initative: <b>@character.DexterityBonus.PrintInt()</b></MudText>
+                            </MudItem>
+                            <MudItem xs="3">
+                                <MudText>Proficiency: <b>@character?.GetProficiencyBonus().PrintInt()</b></MudText>
+                            </MudItem>
+                            <MudItem xs="3">
+                                <MudText>Speed: <b>@character.Speed</b></MudText>
+                            </MudItem>
+
+                            <MudItem xs="12" Class="d-flex align-items-center">
+                                <MudText>HP:</MudText>
+                                <MudProgressLinear Class="mx-2" Color="Color.Info" @bind-Value="@_currentPlayer.HPAsDouble" Size="Size.Large" Max="@character.HitPoints" />
+                                <MudText Class="mx-2">@_currentPlayer.CurrentHP/@character.HitPoints</MudText>
+                            </MudItem>
+
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">STR: @character.Strength</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">CON: @character.Constitution</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">DEX: @character.Dexterity</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">INT: @character.Intelligence</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">WIS: @character.Wisdom</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">CHA: @character.Charisma</MudItem>
+
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@character.StrengthBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@character.DexterityBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@character.ConstitutionBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@character.IntelligenceBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@character.WisdomBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@character.CharismaBonus.PrintInt()</b>)</MudItem>
+                            
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">
+                                Save: <b>@character.SkillBonus(character.StrengthBonus, character.StrengthSave).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                Save: <b>@character.SkillBonus(character.DexterityBonus, character.DexteritySave).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                Save: <b>@character.SkillBonus(character.ConstitutionBonus, character.ConstitutionSave).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                Save: <b>@character.SkillBonus(character.IntelligenceBonus, character.IntelligenceSave).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                Save: <b>@character.SkillBonus(character.WisdomBonus, character.WisdomSave).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                Save: <b>@character.SkillBonus(character.CharismaBonus, character.CharismaSave).PrintInt()</b>
+                            </MudItem>
+
+                            <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                Acrobatics: <b>@character.SkillBonus(character.DexterityBonus, character.Acrobatics).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                Investigation: <b>@character.SkillBonus(character.IntelligenceBonus, character.Investigation).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                Persuasion: <b>@character.SkillBonus(character.CharismaBonus, character.Persuasion).PrintInt()</b>
+                            </MudItem>
+
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Animal Handling: <b>@character.SkillBonus(character.WisdomBonus, character.AnimalHandling).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Lore: <b>@character.SkillBonus(character.IntelligenceBonus, character.Lore).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Piloting: <b>@character.SkillBonus(character.IntelligenceBonus, character.Piloting).PrintInt()</b>
+                            </MudItem>
+
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Athletics: <b>@character.SkillBonus(character.StrengthBonus, character.Athletics).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Medicine: <b>@character.SkillBonus(character.WisdomBonus, character.Medicine).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Sleight Of Hand: <b>@character.SkillBonus(character.DexterityBonus, character.SleightOfHand).PrintInt()</b>
+                            </MudItem>
+
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Deception: <b>@character.SkillBonus(character.CharismaBonus, character.Deception).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Nature: <b>@character.SkillBonus(character.IntelligenceBonus, character.Nature).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Stealth: <b>@character.SkillBonus(character.DexterityBonus, character.Stealth).PrintInt()</b>
+                            </MudItem>
+
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Insight: <b>@character.SkillBonus(character.WisdomBonus, character.Insight).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Perception: <b>@character.SkillBonus(character.WisdomBonus, character.Perception).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Survival: <b>@character.SkillBonus(character.WisdomBonus, character.Survival).PrintInt()</b>
+                            </MudItem>
+
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Intimidation: <b>@character.SkillBonus(character.CharismaBonus, character.Intimidation).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Performance: <b>@character.SkillBonus(character.CharismaBonus, character.Performance).PrintInt()</b>
+                            </MudItem>
+                            <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                Technology: <b>@character.SkillBonus(character.IntelligenceBonus, character.Technology).PrintInt()</b>
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Actions">  
+                        @foreach (var weapon in character.Weapons)
+                        {
+                            <MudPaper Class="my-4 pa-4" Elevation="3">
+                                <MudGrid>
+                                    <MudItem xs="4">@weapon.Name</MudItem>
+                                    <MudItem xs="2">@character.WeaponBonus(weapon.Melee).PrintInt()</MudItem>
+                                    <MudItem xs="2">@weapon.Damage@character.WeaponBonus(weapon.Melee, true).PrintInt()</MudItem>
+                                    <MudItem xs="4">@weapon.DamageType</MudItem>
+
+                                    <MudItem xs="12" Class="d-flex flex-wrap">
                                         @foreach (var prop in weapon.PropertyDescriptions)
                                         {
-                                            <RadzenButton Text="@prop.ToString()" Click=@(() => ShowInlineDialog(prop)) Size="ButtonSize.Small" class="m-1 px-1"/>
+                                            <MudButton Class="mx-2" Variant="Variant.Outlined" Color="Color.Primary" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name</MudButton>
                                         }
-                                    </div>
-                                </RadzenCard>
-                            }
-                        </RadzenTabsItem>
-                        <RadzenTabsItem Text="ForcePowers">
-                            @if (_currentPlayer?.Being is CharacterResponse characterForce)
-                            {
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col"></div>
-                                    <div class="col">
-                                        <text>Light</text>
-                                    </div>
-                                    <div class="col">
-                                        <text>Universal</text>
-                                    </div>
-                                    <div class="col">
-                                        <text>Dark</text>
-                                    </div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col">
-                                        <text>Modifier</text>
-                                    </div>
-                                    <div class="col">
-                                        <text><b>@characterForce.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></text>
-                                    </div>
-                                    <div class="col">
-                                        <text><b>@characterForce.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
-                                    </div>
-                                    <div class="col">
-                                        <text><b>@characterForce.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
-                                    </div>
-                                </div>
-                                <div class="row mb-2 align-items-center">
-                                    <div class="col">
-                                        <text>Save DC</text>
-                                    </div>
-                                    <div class="col">
-                                        <text><b>@characterForce.ForceSavingThrow(ForceAlignment.Light)</b></text>
-                                    </div>
-                                    <div class="col">
-                                        <text><b>@characterForce.ForceSavingThrow(ForceAlignment.Universal)</b></text>
-                                    </div>
-                                    <div class="col">
-                                        <text><b>@characterForce.ForceSavingThrow(ForceAlignment.Dark)</b></text>
-                                    </div>
-                                </div>
-                            }
-                            <div class="d-flex mb-2 align-items-center">
-                            <div class="me-5">
-                                FP: <b>@_currentPlayer?.CurrentFP/@_currentPlayer?.Being?.ForcePoints</b>
-                            </div>
-                        </div>
-                        <div class="row mb-2 align-items-end" style="font-size: x-large">
-                            <b>Force Powers</b>
-                        </div>
-                        <ForcePowerGrid Title="At-Will" Powers=@SelectedForcePowers.Where(x => x.Level == 0).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 1" Powers=@SelectedForcePowers.Where(x => x.Level == 1).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 2" Powers=@SelectedForcePowers.Where(x => x.Level == 2).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 3" Powers=@SelectedForcePowers.Where(x => x.Level == 3).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 4" Powers=@SelectedForcePowers.Where(x => x.Level == 4).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 5" Powers=@SelectedForcePowers.Where(x => x.Level == 5).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 6" Powers=@SelectedForcePowers.Where(x => x.Level == 6).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 7" Powers=@SelectedForcePowers.Where(x => x.Level == 7).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 8" Powers=@SelectedForcePowers.Where(x => x.Level == 8).ToList() Initative=@_currentPlayer ShowCast=false />
-                        <ForcePowerGrid Title="Level 9" Powers=@SelectedForcePowers.Where(x => x.Level == 9).ToList() Initative=@_currentPlayer ShowCast=false />
-                    </RadzenTabsItem>
-                </Tabs>
-            </RadzenTabs>
-        }
-        </div>
-    </div>
-}
+                                    </MudItem>
+                                </MudGrid>
+                            </MudPaper>
+                        }
+                    </MudTabPanel>
+                    <MudTabPanel Text="ForcePowers">
+                        <MudGrid>
+                            <MudItem xs="3"/>
+                            <MudItem xs="3" Class="d-flex justify-center">Light</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center">Universal</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center">Dark</MudItem>
 
-@code
-{
-    async Task ShowInlineDialog(WeaponDescription weapon)
-    {
-        await DialogService.OpenAsync(weapon.Name, _ =>
-            @<div>
-                <p Style="margin-bottom: 1rem">@StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)]</p>
-            </div>);
-    }
+                            <MudItem xs="3" Class="d-flex justify-center">Modifier</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@character.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@character.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@character.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></MudItem>
+
+                            <MudItem xs="3" Class="d-flex justify-center">Save DC</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@character.ForceSavingThrow(ForceAlignment.Light)</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@character.ForceSavingThrow(ForceAlignment.Universal)</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@character.ForceSavingThrow(ForceAlignment.Dark)</b></MudItem>
+
+                            <MudItem xs="12" Class="d-flex align-items-center">
+                                <MudText Class="me-5">FP: <b>@_currentPlayer?.CurrentFP/@character.ForcePoints</b></MudText>
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h6" Class="fw-bold">Force Powers</MudText>
+                            </MudItem>
+                            <ForcePowerGrid Title="At-Will" Powers="@SelectedForcePowers.Where(x => x.Level == 0).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 1" Powers="@SelectedForcePowers.Where(x => x.Level == 1).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 2" Powers="@SelectedForcePowers.Where(x => x.Level == 2).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 3" Powers="@SelectedForcePowers.Where(x => x.Level == 3).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 4" Powers="@SelectedForcePowers.Where(x => x.Level == 4).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 5" Powers="@SelectedForcePowers.Where(x => x.Level == 5).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 6" Powers="@SelectedForcePowers.Where(x => x.Level == 6).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 7" Powers="@SelectedForcePowers.Where(x => x.Level == 7).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 8" Powers="@SelectedForcePowers.Where(x => x.Level == 8).ToList()" ShowCast="false" />
+                            <ForcePowerGrid Title="Level 9" Powers="@SelectedForcePowers.Where(x => x.Level == 9).ToList()" ShowCast="false" />
+                        </MudGrid>
+                    </MudTabPanel>
+                </MudTabs>
+            }
+        </MudItem>
+    </MudGrid>
 }

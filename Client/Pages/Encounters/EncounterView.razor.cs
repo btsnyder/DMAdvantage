@@ -1,7 +1,10 @@
 ﻿using DMAdvantage.Client.Services;
+using DMAdvantage.Shared;
+using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
+using MudBlazor;
 
 namespace DMAdvantage.Client.Pages.Encounters
 {
@@ -16,9 +19,12 @@ namespace DMAdvantage.Client.Pages.Encounters
         private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
         public bool _autoLoad;
         public Timer _timer;
+        private readonly MudTheme _theme = new();
+
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
+        [Inject] private IDialogService DialogService { get; set;}
         [Parameter] public string Id { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -68,6 +74,7 @@ namespace DMAdvantage.Client.Pages.Encounters
                 {
                     _initatives.Add(new InitativeDataModel(being, _model.Data.First(x => x.BeingId == being.Id)));
                 }
+
                 var sorted = new List<InitativeDataModel>(_initatives);
                 sorted.Sort((data1, data2) => data2.Initative.CompareTo(data1.Initative));
                 _initatives = new List<InitativeDataModel>(sorted);
@@ -75,7 +82,8 @@ namespace DMAdvantage.Client.Pages.Encounters
                 _currentPlayer = _initatives.FirstOrDefault(x => x.BeingId == _model.CurrentPlayer);
                 if (_currentPlayer?.Being != null)
                 {
-                    SelectedForcePowers = _forcePowers.Where(x => _currentPlayer.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
+                    SelectedForcePowers = _forcePowers.Where(x => _currentPlayer.Being.ForcePowerIds.Contains(x.Id))
+                        .OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
                 }
 
                 _concentrationPowers.Clear();
@@ -90,9 +98,20 @@ namespace DMAdvantage.Client.Pages.Encounters
             StateHasChanged();
         }
 
-        private string GetRowStyle(InitativeDataModel data)
+        private string GetRowClass(InitativeDataModel data)
         {
-            return data == _currentPlayer ? "background-color: #C3DEF0" : string.Empty;
+            return data == _currentPlayer ? "indigo lighten-4" : string.Empty;
+        }
+
+        private string HealthBackground(InitativeDataModel data)
+        {
+            return data == _currentPlayer ? Colors.Indigo.Lighten4 : string.Empty;
+        }
+
+        private void ShowWeaponProperty(WeaponDescription weapon)
+        {
+            var description = StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)];
+            DialogService.ShowMessageBox(weapon.Name, description);
         }
     }
 }

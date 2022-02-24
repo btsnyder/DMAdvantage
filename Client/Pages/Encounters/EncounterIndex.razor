@@ -1,55 +1,50 @@
 ﻿@page "/encounters"
 @attribute [Authorize]
 @inject IApiService ApiService
+@inject NavigationManager NavigationManager
 
-<h1>Encounters</h1>
-<NavLink href="encounters/add" class="btn btn-sm btn-success mb-2">Add Encounter</NavLink>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (encounters != null)
-        {
-            foreach (var encounter in encounters)
-            {
-                <tr>
-                    <td>@encounter.Name</td>
-                    <td style="white-space: nowrap">
-                        <NavLink href="@($"encounters/edit/{encounter.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveEncounter(encounter))">
-                            <span class="oi oi-trash" aria-hidden="true"></span>
-                        </button>
-                    </td>
-                </tr>
-            }
-            <tr>
-                <td colspan="4">
-                    <PagingFooter T=EncounterResponse @bind-Data=encounters CurrentPage=@paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
-                </td>
-            </tr>
-        }
-        @if (loading)
-        { 
-            <tr>
-                <td colspan="4" class="text-center">
-                    <span class="spinner-border spinner-border-lg align-center"></span>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div Class="d-flex align-items-center mb-5">
+    <MudText Class="fw-bold" Typo="Typo.h3">Encounters</MudText> 
+    <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("encounters/add"))"/>
+</div>
+@if (!loading)
+{
+    <MudTable Items="@encounters" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info"
+              Outlined="true" Dense="true" Striped="true">
+        <ColGroup>
+            <col />
+            <col />
+            <col style="width: 150px;"/>
+        </ColGroup>
+        <HeaderContent>
+            <MudTh Class="bg-dark text-white">Name</MudTh>
+            <MudTh Class="bg-dark text-white">Id</MudTh>
+            <MudTh Class="bg-dark text-white"/>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Name">@context.Name</MudTd>
+            <MudTd DataLabel="Name">@context.Id</MudTd>
+            <MudTd Class="d-flex justify-content-end">
+                <MudIconButton Icon="@Icons.Filled.RemoveRedEye" OnClick="@(() => NavigationManager.NavigateTo($"encounters/view/{context.Id}"))" Variant="Variant.Filled" Color="Color.Dark" Class="mx-1"/>
+                <MudIconButton Icon="@Icons.Filled.Edit" OnClick="@(() => NavigationManager.NavigateTo($"encounters/edit/{context.Id}"))" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
+                <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveEncounter(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
+else
+{
+    <div class="d-flex justify-center">
+        <MudProgressCircular Color="Color.Primary" Style="height:70px;width:70px;" Indeterminate="true" />
+    </div>
+}
 
 @code {
     private bool loading;
-    private PagedList<EncounterResponse>? encounters;
-    private PagingParameters paging = new();
+    private List<EncounterResponse>? encounters;
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,8 +53,7 @@
 
     private async Task RemoveEncounter(EncounterResponse encounter)
     {
-        if (encounters == null)
-            return;
+        if (encounters == null) return;
         encounters.Remove(encounter);
         await ApiService.RemoveEntity<EncounterResponse>(encounter.Id);
     }
@@ -67,13 +61,7 @@
     private async Task RefreshEncounters()
     {
         loading = true;
-        encounters = await ApiService.GetAllPagedEntities<EncounterResponse>(paging);
+        encounters = await ApiService.GetAllEntities<EncounterResponse>();
         loading = false;   
-    }
-
-    private async Task CurrentPageChanged(int page)
-    {
-        paging.PageNumber = page;
-        await RefreshEncounters();
     }
 }
