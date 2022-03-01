@@ -1,82 +1,83 @@
 ﻿@page "/forcepowers"
 @attribute [Authorize]
-@inject IApiService ApiService
 
-<h1>Force Powers</h1>
-<EditForm Model="@this" >
-    <div class="row my-2 py-2">
-        <div class="form-group col">
-            <label>Name</label>
-            <input class="form-control" type="text" @bind:event="oninput" @bind="@_searching.Search" @onchange=@((ChangeEventArgs e) => SearchChanged(e)) />
-        </div>
-        <div class="form-group col">
-            <label>Levels</label>
-            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
-                @bind-Value=@_selectedLevels Data=@_levels class="form-control" Change=@(args => RefreshForcePowers())/>
-        </div>
-        <div class="form-group col">
-            <label>Alignment</label>
-            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
-                @bind-Value=@_selectedAlignments Data=@_alignments class="form-control" Change=@(args => RefreshForcePowers())/>
-        </div>
-        <div class="form-group col">
-            <label>Casting Period</label>
-            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
-                @bind-Value=@_selectedCastingPeriods Data=@_castingPeriods class="form-control" Change=@(args => RefreshForcePowers())/>
-        </div>
-        <div class="form-group col">
-            <label>Range</label>
-            <RadzenDropDown AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" Multiple="true" Placeholder="None" 
-                @bind-Value=@_selectedPowerRanges Data=@_powerRanges class="form-control" Change=@(args => RefreshForcePowers())/>
-        </div>
-    </div>
-</EditForm>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Level</th>
-            <th>Name</th>
-            <th>Alignment</th>
-            <th>Period</th>
-            <th>Range</th>
-            <th colspan=2>
-                <NavLink href="forcepowers/add" class="btn btn-sm btn-success">Add Force Power</NavLink>
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (_loading)
-        { 
-            <tr>
-                <td colspan="7" class="text-center">
-                    <span class="spinner-border spinner-border-lg align-center"></span>
-                </td>
-            </tr>
-        }
-        else if (_forcePowers != null)
-        {
-            foreach (var power in _forcePowers)
-            {
-                <tr>
-                    <td>@power.Level</td>
-                    <td>@power.Name</td>
-                    <td>@power.Alignment.GetStringValue()</td>
-                    <td>@power.CastingPeriod.GetStringValue()</td>
-                    <td>@power.Range.GetStringValue()</td>
-                    <td style="white-space: nowrap">
-                        <NavLink href="@($"forcepowers/edit/{power.Id}")" class="btn btn-sm btn-primary mr-1">Edit</NavLink>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger" @onclick="(() => RemoveForcePower(power))">
-                            <span class="oi oi-trash" aria-hidden="true"></span>
-                        </button>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>
-
-<div class="row">
-    <PagingFooter T=ForcePowerResponse @bind-Data=_forcePowers CurrentPage=@_paging.PageNumber CurrentPageChanged=@((int page) => CurrentPageChanged(page) ) />
+<div class="d-flex align-items-center mb-5">
+    <MudText Class="fw-bold" Typo="Typo.h3">Force Powers</MudText> 
+    <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("forcepowers/add"))"/>
 </div>
+<MudForm Model="@this">
+    <MudGrid Class="mb-4">
+        <MudItem xs="2">
+            <MudTextField T="string" Label="Search" Value="@_searching.Search" ValueChanged="args => SearchChanged(args, nameof(_searching.Search))" Variant="Variant.Outlined"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect T="int" Label="Levels" MultiSelection="true" SelectedValues="_searching.Levels" SelectedValuesChanged="args => SearchChanged(args, nameof(_searching.Levels))"
+                Variant="Variant.Outlined">
+                @for (var lvl = 0; lvl < 10; lvl++)
+                {
+                    <MudSelectItem T="int" Value="@lvl"/>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect T="string" Label="Alignments" MultiSelection="true" SelectedValues="_searching.Alignments.Select(x => x.GetStringValue())" 
+                SelectedValuesChanged="args => SearchChanged(args, nameof(_searching.Alignments))" Variant="Variant.Outlined">
+                @foreach (var alignment in Enum.GetValues<ForceAlignment>())
+                {
+                    <MudSelectItem T="string" Value="@alignment.GetStringValue()">@alignment.GetStringValue()</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect T="string" Label="Casting Period" MultiSelection="true" SelectedValues="_searching.CastingPeriods.Select(x => x.GetStringValue())" 
+                SelectedValuesChanged="args => SearchChanged(args, nameof(_searching.CastingPeriods))" Variant="Variant.Outlined">
+                @foreach (var castingPeriod in Enum.GetValues<CastingPeriod>())
+                {
+                    <MudSelectItem T="string" Value="@castingPeriod.GetStringValue()">@castingPeriod.GetStringValue()</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect T="string" Label="Range" MultiSelection="true" SelectedValues="_searching.Ranges.Select(x => x.GetStringValue())" 
+                       SelectedValuesChanged="args => SearchChanged(args, nameof(_searching.Ranges))" Variant="Variant.Outlined">
+                @foreach (var powerRange in Enum.GetValues<PowerRange>())
+                {
+                    <MudSelectItem T="string" Value="@powerRange.GetStringValue()">@powerRange.GetStringValue()</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+    </MudGrid>
+</MudForm>
+ <MudTable Items="@_forcePowers" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+          Outlined="true" Dense="true" Striped="true" Class="mb-2">
+    <ColGroup>
+        <col />
+        <col />
+        <col />
+        <col />
+        <col />
+        <col style="width: 150px;"/>
+    </ColGroup>
+    <HeaderContent>
+        <MudTh Class="bg-dark text-white">Level</MudTh>
+        <MudTh Class="bg-dark text-white">Name</MudTh>
+        <MudTh Class="bg-dark text-white">Alignment</MudTh>
+        <MudTh Class="bg-dark text-white">Period</MudTh>
+        <MudTh Class="bg-dark text-white">Range</MudTh>
+        <MudTh Class="bg-dark text-white"/>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Level">@context.Level</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Alignment">@context.Alignment.GetStringValue()</MudTd>
+        <MudTd DataLabel="Period">@context.CastingPeriod.GetStringValue()</MudTd>
+        <MudTd DataLabel="Range">@context.Range.GetStringValue()</MudTd>
+        <MudTd Class="d-flex justify-content-end">
+            <MudIconButton Icon="@Icons.Filled.Edit" OnClick="@(() => NavigationManager.NavigateTo($"forcepowers/edit/{context.Id}"))" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
+            <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveForcePower(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable> 

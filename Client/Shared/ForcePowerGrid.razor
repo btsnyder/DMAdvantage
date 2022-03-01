@@ -30,7 +30,7 @@
                     <div class="d-flex flex-column">
                         <text><b>Alignment:</b> @power.Alignment</text>
                         <text><b>Concentration:</b> @power.Concentration</text>
-                        <text><b>Hit:</b> @power.HitOption?.GetStringValue()</text>
+                        <text><b>Hit:</b> @power.HitOption.GetStringValue()</text>
                         @if (!string.IsNullOrWhiteSpace(power.HitDescription))
                         {
                             <div><b>Description:</b> @power.HitDescription</div>

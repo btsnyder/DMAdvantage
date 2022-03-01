@@ -15,13 +15,13 @@ namespace DMAdvantage.Shared.Query
         {
             if (!string.IsNullOrWhiteSpace(Search))
                 query = query.Where(f => f.Name != null && f.Name.ToLower().Contains(Search.ToLower()));
-            if (Levels.Length != 0)
+            if (Levels.Any())
                 query = query.Where(f => Levels.Contains(f.Level));
-            if (Alignments.Length != 0)
+            if (Alignments.Any())
                 query = query.Where(f => Alignments.Contains(f.Alignment));
-            if (CastingPeriods.Length != 0)
+            if (CastingPeriods.Any())
                 query = query.Where(f => CastingPeriods.Contains(f.CastingPeriod));
-            if (Ranges.Length != 0)
+            if (Ranges.Any())
                 query = query.Where(f => Ranges.Contains(f.Range));
             return query;
         }

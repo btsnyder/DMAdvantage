@@ -2,21 +2,23 @@
 
 @if (Data != null)
 {
-    <ul class="pagination justify-content-end">
+    <div class="d-flex justify-content-end">
         <text class="my-auto mx-2">@GetDisplay()</text>
-        <li class="page-item">
-            <button type="button" class="page-link" disabled=@(!Data.HasPrevious) @onclick="(() => UpdateCurrentPage(-1))">Previous</button>
-        </li>
-        @for (int i = 1; i <= Data.TotalPages; i++)
-        {
-            int buffer = i;
+        <ul class="pagination">
             <li class="page-item">
-                <button type="button" class="page-link" @onclick="(() => UpdateCurrentPage(buffer))">@buffer</button>
+                <button type="button" class="page-link" disabled="@(!Data.HasPrevious)" @onclick="(() => UpdateCurrentPage(-1))">Previous</button>
             </li>
-        }
-        <li class="page-item">
-            <button type="button" class="page-link" disabled=@(!Data.HasNext) @onclick="(() => UpdateCurrentPage(Data.CurrentPage + 1))">Next</button>
-        </li>
-    </ul>
+            @for (int i = 1; i <= Data.TotalPages; i++)
+            {
+                int buffer = i;
+                <li class="page-item">
+                    <button type="button" class="page-link" @onclick="(() => UpdateCurrentPage(buffer))">@buffer</button>
+                </li>
+            }
+            <li class="page-item">
+                <button type="button" class="page-link" disabled="@(!Data.HasNext)" @onclick="(() => UpdateCurrentPage(Data.CurrentPage + 1))">Next</button>
+            </li>
+        </ul>
+    </div>
 }
 

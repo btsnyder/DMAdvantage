@@ -1,6 +1,4 @@
-﻿using DMAdvantage.Client.Models;
-using DMAdvantage.Client.Services;
-using DMAdvantage.Client.Services.Implementations;
+﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;

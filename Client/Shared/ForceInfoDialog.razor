@@ -4,7 +4,7 @@
             <div class="d-flex flex-column">
                 <text><b>Alignment:</b> @ForcePower.Alignment</text>
                 <text><b>Concentration:</b> @ForcePower.Concentration</text>
-                <text><b>Hit:</b> @ForcePower.HitOption?.GetStringValue()</text>
+                <text><b>Hit:</b> @ForcePower.HitOption.GetStringValue()</text>
                 @if (!string.IsNullOrWhiteSpace(ForcePower.HitDescription))
                 {
                     <div><b>Description:</b> @ForcePower.HitDescription</div>

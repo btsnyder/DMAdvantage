@@ -1,4 +1,5 @@
-﻿using DMAdvantage.Shared.Models;
+﻿using System.Linq;
+using DMAdvantage.Shared.Models;
 
 namespace DMAdvantage.Shared.Query
 {
@@ -25,7 +26,13 @@ namespace DMAdvantage.Shared.Query
         public static PagedList<T> ToPagedList(List<T> source, PagingParameters paging)
         {
             var count = source.Count;
-            var items = source.Skip((paging.PageNumber - 1) * paging.PageSize).Take(paging.PageSize).ToList();
+            var skipped = (paging.PageNumber - 1) * paging.PageSize;
+            while (skipped >= count)
+            {
+                skipped = Math.Max(0, skipped - paging.PageSize);
+                paging.PageNumber--;
+            }
+            var items = source.Skip(skipped).Take(paging.PageSize).ToList();
             return new PagedList<T>(items, count, paging.PageNumber, paging.PageSize);
         }
     }

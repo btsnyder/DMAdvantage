@@ -2,10 +2,9 @@
 @attribute [Authorize]
 
 <h1>Edit Tech Power</h1>
-<TechEditForm Id=@Id/>
+<TechEditForm Id="@Id"/>
 
 @code
 {
-    [Parameter]
-    public string Id { get; set; }
+    [Parameter] public string Id { get; set; }
 }

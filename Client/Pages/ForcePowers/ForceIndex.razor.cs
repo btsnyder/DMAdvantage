@@ -1,4 +1,5 @@
-﻿using DMAdvantage.Shared.Enums;
+﻿using DMAdvantage.Client.Services;
+using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
@@ -8,24 +9,56 @@ namespace DMAdvantage.Client.Pages.ForcePowers
     public partial class ForceIndex
     {
         private bool _loading;
-        private IEnumerable<int>? _selectedLevels;
-        private IEnumerable<string>? _selectedAlignments;
-        private IEnumerable<string>? _selectedCastingPeriods;
-        private IEnumerable<string>? _selectedPowerRanges;
-        private readonly IEnumerable<int> _levels = new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        private readonly IEnumerable<string> _alignments = Enum.GetValues<ForceAlignment>().Select(x => x.GetStringValue());
-        private readonly IEnumerable<string> _castingPeriods = Enum.GetValues<CastingPeriod>().Select(x => x.GetStringValue());
-        private readonly IEnumerable<string> _powerRanges = Enum.GetValues<PowerRange>().Select(x => x.GetStringValue());
-        private CancellationTokenSource _source;
+        private CancellationTokenSource? _source;
         private CancellationToken _token;
-        public async Task SearchChanged(ChangeEventArgs e)
+        private readonly ForcePowerSearchParameters _searching = new();
+        private List<ForcePowerResponse>? _forcePowers;
+
+        [Inject] private IApiService ApiService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
+
+        public async Task SearchChanged<T>(T value, string property)
         {
+            switch (value)
+            {
+                case string search:
+                    _searching.Search = search;
+                    break;
+                case IEnumerable<int> levels:
+                    _searching.Levels = levels.ToArray();
+                    break;
+                case IEnumerable<string> selected:
+                    SetSearchEnum(selected, property);
+                    break;
+                case IEnumerable<CastingPeriod> castingPeriods:
+                    _searching.CastingPeriods = castingPeriods.ToArray();
+                    break;
+                case IEnumerable<PowerRange> powerRanges:
+                    _searching.Ranges = powerRanges.ToArray();
+                    break;
+                default:
+                    throw new ArgumentException("Not a handled search type");
+            }
             await RefreshForcePowers();
         }
 
-        private readonly PagingParameters _paging = new();
-        private readonly ForcePowerSearchParameters _searching = new();
-        private PagedList<ForcePowerResponse>? _forcePowers;
+        private void SetSearchEnum(IEnumerable<string> value, string property)
+        {
+            switch (property)
+            {
+                case nameof(ForcePowerSearchParameters.Alignments):
+                    _searching.Alignments = EnumExtensions.GetEnumValues<ForceAlignment>(value).ToArray();
+                    break;
+                case nameof(ForcePowerSearchParameters.CastingPeriods):
+                    _searching.CastingPeriods = EnumExtensions.GetEnumValues<CastingPeriod>(value).ToArray();
+                    break;
+                case nameof(ForcePowerSearchParameters.Ranges):
+                    _searching.Ranges = EnumExtensions.GetEnumValues<PowerRange>(value).ToArray();
+                    break;
+                default:
+                    throw new ArgumentException("Not a handled search type");
+            }
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -38,30 +71,15 @@ namespace DMAdvantage.Client.Pages.ForcePowers
             _source?.Cancel();
             _source = new CancellationTokenSource();
             _token = _source.Token;
-
-            _searching.Levels = _selectedLevels?.ToArray() ?? Array.Empty<int>();
-            _searching.Alignments = _selectedAlignments == null ? Array.Empty<ForceAlignment>() : 
-                EnumExtensions.GetEnumValues<ForceAlignment>(_selectedAlignments).ToArray();
-            _searching.CastingPeriods = _selectedCastingPeriods == null ? Array.Empty<CastingPeriod>() : 
-                EnumExtensions.GetEnumValues<CastingPeriod>(_selectedCastingPeriods).ToArray();
-            _searching.Ranges = _selectedPowerRanges == null ? Array.Empty<PowerRange>() :
-                EnumExtensions.GetEnumValues<PowerRange>(_selectedPowerRanges).ToArray();
-            _forcePowers = await ApiService.GetAllPagedEntities<ForcePowerResponse>(_paging, _searching, _token);
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_searching);
             _loading = false;
         }
 
         private async Task RemoveForcePower(ForcePowerResponse forcePower)
         {
-            if (_forcePowers == null)
-                return;
+            if (_forcePowers == null) return;
             _forcePowers.Remove(forcePower);
             await ApiService.RemoveEntity<ForcePowerResponse>(forcePower.Id);
-        }
-
-        private async Task CurrentPageChanged(int page)
-        {
-            _paging.PageNumber = page;
-            await RefreshForcePowers();
         }
     }
 }

@@ -12,17 +12,17 @@ namespace DMAdvantage.Client.Shared
 
         private ForcePowerResponse? _selectedForcePower;
 
-        void ShowForcePower(ForcePowerResponse power)
+        private void ShowForcePower(ForcePowerResponse power)
         {
             _selectedForcePower = power;
         }
 
-        void HideForcePower()
+        private void HideForcePower()
         {
             _selectedForcePower = null;
         }
 
-        async Task ForceClicked(ForcePowerResponse power)
+        private async Task ForceClicked(ForcePowerResponse power)
         {
             await Click.InvokeAsync(power);
         }

@@ -1,9 +1,11 @@
 ﻿using DMAdvantage.Client.Models;
 using DMAdvantage.Client.Services;
+using DMAdvantage.Client.Validators;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
 using Radzen;
+using MudBlazor;
 
 namespace DMAdvantage.Client.Pages.ForcePowers
 {
@@ -12,14 +14,15 @@ namespace DMAdvantage.Client.Pages.ForcePowers
         private ForcePowerRequest _model = new();
         private bool _loading;
         private List<ForcePowerResponse> _forcePowers;
-        private string? _selectedPrerequisite;
-        private readonly ForcePowerSearchParameters _search = new();
+        private ForcePowerResponse? _selectedPrerequisite;
         private IEnumerable<string> _durations = Array.Empty<string>();
         private List<string> _startingDurations = new();
+        private MudForm _form;
+        private readonly ForcePowerRequestFluentValidator _forcePowerValidator = new();
 
-        [Inject] private IAlertService AlertService { get; set; }
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
+        [Inject] private ISnackbar Snackbar { get; set; }
 
         [Parameter] public string? Id { get; set; }
 
@@ -34,7 +37,7 @@ namespace DMAdvantage.Client.Pages.ForcePowers
             if (_model.PrerequisiteId != null)
             {
                 var prereq = await ApiService.GetEntityById<ForcePowerResponse>(_model.PrerequisiteId.Value);
-                _selectedPrerequisite = prereq?.Name;
+                _selectedPrerequisite = prereq;
             }
 
             await base.OnInitializedAsync();
@@ -48,59 +51,53 @@ namespace DMAdvantage.Client.Pages.ForcePowers
                 if (Id == null)
                 {
                     await ApiService.AddEntity(_model);
-                    AlertService.Alert(AlertType.Success, "Force power added successfully", keepAfterRouteChange: true);
+                    Snackbar.Add("Force power added successfully", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                 }
                 else
                 {
                     await ApiService.UpdateEntity(Guid.Parse(Id), _model);
-                    AlertService.Alert(AlertType.Success, "Update successful", keepAfterRouteChange: true);
+                    Snackbar.Add("Update successful", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                 }
                 NavigationManager.NavigateTo("forcepowers");
             }
             catch (Exception ex)
             {
-                AlertService.Alert(AlertType.Error, ex.Message);
+                Snackbar.Add($"Error submitting change: {ex}", Severity.Error);
                 _loading = false;
                 StateHasChanged();
             }
         }
 
-        private void OnPrerequisiteChange(object value)
+        private async Task OnSubmit()
         {
-            var name = (string)value;
-            var power = _forcePowers.FirstOrDefault(x => x.Name == name);
-            if (power != null)
-                _model.PrerequisiteId = power.Id;
-            else
-                _model.PrerequisiteId = null;
+            _forcePowerValidator.Snackbar = Snackbar;
+            await _form.Validate();
+            _forcePowerValidator.Snackbar = null;
+
+            if (_form.IsValid)
+            {
+                OnValidSubmit();
+            }
         }
 
-        private async Task OnLoadData(LoadDataArgs args)
+        private void OnPrerequisiteChange(ForcePowerResponse? value)
         {
-            _search.Search = args.Filter;
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_search) ?? new List<ForcePowerResponse>();
-
-            await InvokeAsync(StateHasChanged);
+            _selectedPrerequisite = value;
+            _model.PrerequisiteId = value?.Id;
         }
 
-        private void OnDurationChange(object value)
+        private Task<IEnumerable<string>> DurationSearch(string value)
         {
-            var duration = (string)value;
-            _model.Duration = duration;
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
+            return Task.FromResult(_durations
+                .Where(x => x.ToLower().Contains(value.ToLower())));
         }
 
-        private async Task OnLoadDurationData(LoadDataArgs args)
+        private Task<IEnumerable<ForcePowerResponse?>> PrerequisiteSearch(string value)
         {
-            var search = args.Filter;
-            _model.Duration = search;
-            _durations = _startingDurations.Where(x => x.ToLower().Contains(search.ToLower()));
-            await InvokeAsync(StateHasChanged);
-        }
-
-        private void ClearPrerequisite()
-        {
-            _selectedPrerequisite = null;
-            _model.PrerequisiteId = null;
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<ForcePowerResponse?>>(Array.Empty<ForcePowerResponse>());
+            return Task.FromResult<IEnumerable<ForcePowerResponse?>>(_forcePowers
+                .Where(x => x.Name?.ToLower().Contains(value.ToLower()) == true));
         }
     }
 }

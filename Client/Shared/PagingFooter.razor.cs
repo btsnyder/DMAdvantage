@@ -50,7 +50,7 @@ namespace DMAdvantage.Client.Shared
 
         public string GetDisplay()
         {
-            if (_data == null)
+            if (_data == null || _data.Count == 0)
                 return string.Empty;
             var startingIndex = (_data.CurrentPage - 1) * _data.PageSize + 1;
             if (_data.Count == 1)

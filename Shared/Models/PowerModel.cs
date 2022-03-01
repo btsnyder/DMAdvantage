@@ -15,7 +15,7 @@ namespace DMAdvantage.Shared.Models
         public string? RangeDescription { get; set; }
         public string? Duration { get; set; }
         public bool Concentration { get; set; }
-        public HitOption? HitOption { get; set; }
+        public HitOption HitOption { get; set; }
         public string? HitDescription { get; set; }
     }
 }

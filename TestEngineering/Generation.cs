@@ -180,7 +180,7 @@ namespace TestEngineering
                 RangeDescription = Nonsense(50),
                 Duration = Nonsense(),
                 Concentration = Faker.Boolean.Random(),
-                HitOption = Faker.Boolean.Random() ? RandomEnum<HitOption>() : null,
+                HitOption = RandomEnum<HitOption>(),
                 HitDescription = Nonsense(50),
                 Alignment = RandomEnum<ForceAlignment>(),
                 Potency = Nonsense(),
@@ -211,7 +211,7 @@ namespace TestEngineering
                 RangeDescription = Nonsense(50),
                 Duration = Nonsense(),
                 Concentration = Faker.Boolean.Random(),
-                HitOption = Faker.Boolean.Random() ? RandomEnum<HitOption>() : null,
+                HitOption = RandomEnum<HitOption>(),
                 HitDescription = Nonsense(50),
                 Overcharge = Nonsense()
             };

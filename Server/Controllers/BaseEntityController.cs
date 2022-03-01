@@ -37,7 +37,7 @@ namespace DMAdvantage.Server.Controllers
 
                 if (results is not PagedList<TEntity> pagedResults)
                     return Ok(_mapper.Map<IEnumerable<TResponse>>(results));
-                
+
                 var metadata = new PagedData
                 {
                     TotalCount = pagedResults.TotalCount,

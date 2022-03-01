@@ -54,7 +54,7 @@ namespace DMAdvantage.Client.Services.Implementations
             var uri = $"/api/{GetPath(typeof(T))}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}";
             if (searching != null)
                 uri += $"&{searching.GetQuery()}";
-            (var data, var headers) = await _httpService.GetWithResponseHeader<List<T>>(uri, token);
+            var (data, headers) = await _httpService.GetWithResponseHeader<List<T>>(uri, token);
 
             if (data == null)
                 return null;
@@ -67,14 +67,13 @@ namespace DMAdvantage.Client.Services.Implementations
                     pagingResponse = JsonSerializer.Deserialize<PagedData>(pagingHeader);
             }
 
-            if (pagingResponse == null)
-                pagingResponse = new PagedData
-                {
-                    TotalCount = data.Count,
-                    PageSize = paging.PageSize,
-                    CurrentPage = paging.PageNumber,
-                    TotalPages = 1
-                };
+            pagingResponse ??= new PagedData
+            {
+                TotalCount = data.Count,
+                PageSize = paging.PageSize,
+                CurrentPage = paging.PageNumber,
+                TotalPages = 1
+            };
 
             return new PagedList<T>(data, pagingResponse.TotalCount, pagingResponse.CurrentPage, pagingResponse.PageSize);
         }
