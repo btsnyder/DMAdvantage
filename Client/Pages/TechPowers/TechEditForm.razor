@@ -1,104 +1,61 @@
-﻿<EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator />
-    <div class="row my-2">
-        <div class="form-group col-3">
-            <label>Name</label>
-            <InputText @bind-Value="@_model.Name" class="form-control" />
-            <ValidationMessage For="@(() => _model.Name)" />
-        </div>
-        <div class="form-group col-1">
-            <label>Level</label>
-            <InputNumber @bind-Value="@_model.Level" class="form-control" />
-            <ValidationMessage For="@(() => _model.Level)" />
-        </div>
-        <div class="form-group col-2">
-            <label>Casting Period</label>
-            <InputSelect @bind-Value="@_model.CastingPeriod" class="form-control">
-                @foreach (var period in Enum.GetValues<CastingPeriod>())
-                { 
-                    <option value="@period">@period.GetStringValue()</option>
+﻿<MudForm Model="@_model" @ref="_form">
+    <MudGrid Class="mb-5">
+        <MudItem xs="3">
+            <MudTextField @bind-Value="@_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_techPowerValidator.ValidateValue)"/>
+        </MudItem>
+        <MudItem xs="1">
+            <MudNumericField @bind-Value="@_model.Level" Label="Level" Variant="Variant.Outlined" For="() => _model.Level" Validation="@(_techPowerValidator.ValidateValue)"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect T="CastingPeriod" @bind-Value="@_model.CastingPeriod" Label="Casting Period" Variant="Variant.Outlined" For="() => _model.CastingPeriod">
+                @foreach (var casting in Enum.GetValues<CastingPeriod>())
+                {
+                    <MudSelectItem Value="@casting">@casting.GetStringValue()</MudSelectItem>
                 }
-            </InputSelect>
-            <ValidationMessage For="@(() => _model.CastingPeriod)" />
-        </div>
-        <div class="form-group col-2">
-            <label>Casting Description</label>
-            <InputText @bind-Value="@_model.CastingDescription" class="form-control"/>
-            <ValidationMessage For="@(() => _model.CastingDescription)" />
-        </div>
-        <div class="form-group col-2">
-            <label>Range</label>
-            <InputSelect @bind-Value="@_model.Range" class="form-control">
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="2">
+            <MudTextField @bind-Value="@_model.CastingDescription" Label="Casting Description" Variant="Variant.Outlined" For="() => _model.CastingDescription"/>
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect T="PowerRange" @bind-Value="@_model.Range" Label="Range" Variant="Variant.Outlined" For="() => _model.Range">
                 @foreach (var range in Enum.GetValues<PowerRange>())
-                { 
-                    <option value="@range">@range.GetStringValue()</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="@(() => _model.Range)" />
-        </div>
-        <div class="form-group col-2">
-            <label>Range Description</label>
-            <InputText @bind-Value="@_model.RangeDescription" class="form-control"/>
-            <ValidationMessage For="@(() => _model.RangeDescription)" />
-        </div>
-    </div>
-    <div class="row my-2">
-        <div class="form-group col-12" style="height: 250px;">
-            <label>Description</label>
-            <InputTextArea @bind-Value="@_model.Description" class="form-control h-75" />
-            <ValidationMessage For="@(() => _model.Description)" />
-        </div>
-    </div>
-    <div class="row my-2">
-        <div class="form-group col-3">
-            <label>Duration</label>
-            <RadzenAutoComplete @bind-Value="@_model.Duration" Data="@_durations" LoadData="@OnLoadDurationData"  Change="@OnDurationChange" Style="width: 100%;" />
-            <ValidationMessage For="@(() => _model.Duration)" />
-        </div>
-        <div class="form-group col-1">
-            <label class="row">Concentration</label>
-            <input type="checkbox" class="btn-check row" id="btn-check-outlined" autocomplete="off" @bind="@_model.Concentration">
-                @if(_model.Concentration)
                 {
-                    <label class="btn btn-outline-primary" for="btn-check-outlined">True</label> 
+                    <MudSelectItem Value="@range">@range.GetStringValue()</MudSelectItem>
                 }
-                else
-                {
-                    <label class="btn btn-outline-primary" for="btn-check-outlined">False</label> 
-                }
-            <ValidationMessage For="@(() => _model.Concentration)" class="row"/>
-        </div>
-        <div class="form-group col-3">
-            <label>Hit Option</label>
-            <InputSelect @bind-Value="@_model.HitOption" class="form-control">
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="2">
+            <MudTextField @bind-Value="@_model.RangeDescription" Label="Range Description" Variant="Variant.Outlined" For="() => _model.RangeDescription"/>
+        </MudItem>
+
+        <MudItem xs="12">
+            <MudTextField @bind-Value="@_model.Description" Label="Description" Variant="Variant.Outlined" Lines="10" For="() => _model.Description"/>
+        </MudItem>
+
+        <MudItem xs="3">
+            <MudAutocomplete T="string" Label="Duration" @bind-Value="@_model.Duration" SearchFunc="@DurationSearch" Variant="Variant.Outlined" />
+        </MudItem>
+         <MudItem xs="2" Class="d-flex justify-center">
+            <ToggledText @bind-Value="@_model.Concentration" Text="Concentration" />
+        </MudItem>
+        <MudItem xs="2">
+            <MudSelect T="HitOption" @bind-Value="@_model.HitOption" Label="Hit Option" Variant="Variant.Outlined" For="() => _model.HitOption">
                 @foreach (var hit in Enum.GetValues<HitOption>())
-                { 
-                    <option value="@hit">@hit.GetStringValue()</option>
+                {
+                    <MudSelectItem Value="@hit">@hit.GetStringValue()</MudSelectItem>
                 }
-            </InputSelect>
-            <ValidationMessage For="@(() => _model.HitOption)" />
-        </div>
-        <div class="form-group col-3">
-            <label>Hit Description</label>
-            <InputText @bind-Value="@_model.HitDescription" class="form-control"/>
-            <ValidationMessage For="@(() => _model.HitDescription)" />
-        </div>
-    </div>
-    <div class="row my-2">
-        <div class="form-group col">
-            <label>Potency</label>
-            <InputText @bind-Value="@_model.Overcharge" class="form-control"/>
-            <ValidationMessage For="@(() => _model.Overcharge)" />
-        </div>
-    </div>
-    <div class="form-group">
-        <button disabled="@_loading" class="btn btn-primary">
-            @if (_loading)
-            {
-                <span class="spinner-border spinner-border-sm mr-1"></span>
-            }
-            Save
-        </button>
-        <NavLink href="techpowers" class="btn btn-link">Cancel</NavLink>
-    </div>
-</EditForm>
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="3">
+            <MudTextField @bind-Value="@_model.HitDescription" Label="Hit Description" Variant="Variant.Outlined" For="() => _model.HitDescription"/>
+        </MudItem>
+
+        <MudItem xs="6">
+            <MudTextField @bind-Value="@_model.Overcharge" Label="Overcharge" Variant="Variant.Outlined" For="() => _model.Overcharge"/>
+        </MudItem>
+        <MudItem xs="6" />
+
+        <Submit @bind-Loading="@_loading" CancelRef="techpowers" OnClick="OnSubmit"/>
+    </MudGrid>
+</MudForm>

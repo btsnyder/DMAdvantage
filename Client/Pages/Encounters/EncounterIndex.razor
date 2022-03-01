@@ -17,15 +17,15 @@
             <col style="width: 150px;"/>
         </ColGroup>
         <HeaderContent>
-            <MudTh Class="bg-dark text-white">Name</MudTh>
-            <MudTh Class="bg-dark text-white">Id</MudTh>
-            <MudTh Class="bg-dark text-white"/>
+            <MudTh Class="mud-theme-tertiary text-white">Name</MudTh>
+            <MudTh Class="mud-theme-tertiary text-white">Id</MudTh>
+            <MudTh Class="mud-theme-tertiary text-white"/>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Name">@context.Id</MudTd>
             <MudTd Class="d-flex justify-content-end">
-                <MudIconButton Icon="@Icons.Filled.RemoveRedEye" OnClick="@(() => NavigationManager.NavigateTo($"encounters/view/{context.Id}"))" Variant="Variant.Filled" Color="Color.Dark" Class="mx-1"/>
+                <MudIconButton Icon="@Icons.Filled.RemoveRedEye" OnClick="@(() => NavigationManager.NavigateTo($"encounters/view/{context.Id}"))" Variant="Variant.Filled" Color="Color.Secondary" Class="mx-1"/>
                 <MudIconButton Icon="@Icons.Filled.Edit" OnClick="@(() => NavigationManager.NavigateTo($"encounters/edit/{context.Id}"))" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
                 <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveEncounter(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
             </MudTd>

@@ -100,12 +100,12 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         private string GetRowClass(InitativeDataModel data)
         {
-            return data == _currentPlayer ? "indigo lighten-4" : string.Empty;
+            return data == _currentPlayer ? "indigo lighten-1" : string.Empty;
         }
 
         private string HealthBackground(InitativeDataModel data)
         {
-            return data == _currentPlayer ? Colors.Indigo.Lighten4 : string.Empty;
+            return data == _currentPlayer ? Colors.Indigo.Lighten1 : string.Empty;
         }
 
         private void ShowWeaponProperty(WeaponDescription weapon)

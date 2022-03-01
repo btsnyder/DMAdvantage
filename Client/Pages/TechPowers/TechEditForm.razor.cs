@@ -1,9 +1,9 @@
 ﻿using DMAdvantage.Client.Models;
 using DMAdvantage.Client.Services;
+using DMAdvantage.Client.Validators;
 using DMAdvantage.Shared.Models;
-using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
-using Radzen;
+using MudBlazor;
 
 namespace DMAdvantage.Client.Pages.TechPowers
 {
@@ -12,13 +12,14 @@ namespace DMAdvantage.Client.Pages.TechPowers
         private TechPowerRequest _model = new();
         private bool _loading;
         private List<TechPowerResponse> _techPowers;
-        private readonly TechPowerSearchParameters _search = new();
         private IEnumerable<string> _durations = Array.Empty<string>();
         private List<string> _startingDurations = new();
+        private MudForm _form;
+        private readonly TechPowerRequestFluentValidator _techPowerValidator = new();
 
-        [Inject] private IAlertService AlertService { get; set; }
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
+        [Inject] private ISnackbar Snackbar { get; set; }
 
         [Parameter] public string? Id { get; set; }
 
@@ -41,36 +42,41 @@ namespace DMAdvantage.Client.Pages.TechPowers
                 if (Id == null)
                 {
                     await ApiService.AddEntity(_model);
-                    AlertService.Alert(AlertType.Success, "Force power added successfully", true);
+                    Snackbar.Add("Tech power added successfully", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                 }
                 else
                 {
                     await ApiService.UpdateEntity(Guid.Parse(Id), _model);
-                    AlertService.Alert(AlertType.Success, "Update successful", true);
+                    Snackbar.Add("Update successful", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                 }
 
                 NavigationManager.NavigateTo("techpowers");
             }
             catch (Exception ex)
             {
-                AlertService.Alert(AlertType.Error, ex.Message);
+                Snackbar.Add($"Error submitting change: {ex}", Severity.Error);
                 _loading = false;
                 StateHasChanged();
             }
         }
 
-        private void OnDurationChange(object value)
+        private async Task OnSubmit()
         {
-            var duration = (string)value;
-            _model.Duration = duration;
+            _techPowerValidator.Snackbar = Snackbar;
+            await _form.Validate();
+            _techPowerValidator.Snackbar = null;
+
+            if (_form.IsValid)
+            {
+                OnValidSubmit();
+            }
         }
 
-        private async Task OnLoadDurationData(LoadDataArgs args)
+        private Task<IEnumerable<string>> DurationSearch(string value)
         {
-            var search = args.Filter;
-            _model.Duration = search;
-            _durations = _startingDurations.Where(x => x.ToLower().Contains(search.ToLower()));
-            await InvokeAsync(StateHasChanged);
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
+            return Task.FromResult(_durations
+                .Where(x => x.ToLower().Contains(value.ToLower())));
         }
     }
 }

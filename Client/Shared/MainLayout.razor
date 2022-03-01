@@ -2,29 +2,9 @@
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
 
-<MudThemeProvider/>
+<MudThemeProvider IsDarkMode="true" Theme="MyCustomTheme"/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
-
-@if (AccountService.GetLoggedIn())
-{
-     @*<RadzenMenu Class="navbar-expand bg-dark" >
-        <RadzenMenuItem Text="Home" Path="/" Icon="home" Class="nav-main-link"/>
-        <RadzenMenuItem Text="Data" Icon="topic" Class="nav-main-link">
-            <RadzenMenuItem Text="Characters" Path="characters" Icon="person" Class="nav-main-link nav-sub-main-link bg-secondary"/>
-            <RadzenMenuItem Text="Creatures" Path="creatures" Icon="groups" Class="nav-main-link nav-sub-main-link bg-secondary"/>
-            <RadzenMenuItem Text="Force Powers" Path="forcepowers" Icon="front_hand" Class="nav-main-link nav-sub-main-link bg-secondary"/>
-            <RadzenMenuItem Text="Tech Powers" Path="techpowers" Icon="memory" Class="nav-main-link nav-sub-main-link bg-secondary"/>
-        </RadzenMenuItem>
-        <RadzenMenuItem Text="Encounters" Path="encounters" Icon="close_fullscreen" Class="nav-main-link"/>
-        <RadzenMenuItem Text="Logout" Path="account/logout" Icon="logout" Class="nav-main-link"/>
-    </RadzenMenu>*@
-}
-@*
-<div class="app-container @(AccountService.GetLoggedIn() ? "bg-light" : "")">
-    <Alert />
-    @Body
-</div>*@
 
 <MudLayout>
     @if (AccountService.GetLoggedIn())
@@ -49,4 +29,28 @@
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    MudTheme MyCustomTheme = new MudTheme()
+    {
+        PaletteDark = new Palette()
+        {
+            Primary = Colors.Indigo.Lighten1,
+            Secondary = Colors.DeepPurple.Lighten1,
+            Tertiary = Colors.Teal.Default,
+            Success = Colors.Green.Accent4,
+            Background = Colors.Grey.Darken3,
+            DrawerBackground = Colors.Grey.Darken3,
+            DrawerText = Colors.Shades.White,
+            DrawerIcon = Colors.Shades.White,
+            BackgroundGrey = Colors.Grey.Darken1,
+            AppbarBackground = Colors.Indigo.Darken2,
+            Surface = Colors.Grey.Darken3,
+            TextPrimary = Colors.Shades.White,
+            TextSecondary = Colors.Grey.Default,
+            ActionDefault = Colors.Grey.Lighten4,
+            ActionDisabled = Colors.Grey.Darken1,
+            LinesDefault = Colors.Grey.Lighten4,
+            Dark = Colors.Grey.Darken1
+        }
+    };
 }

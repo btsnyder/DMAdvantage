@@ -9,13 +9,29 @@ namespace DMAdvantage.Client.Pages.ForcePowers
     public partial class ForceIndex
     {
         private bool _loading;
-        private CancellationTokenSource? _source;
-        private CancellationToken _token;
         private readonly ForcePowerSearchParameters _searching = new();
         private List<ForcePowerResponse>? _forcePowers;
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            await RefreshForcePowers();
+        }
+
+        private async Task RefreshForcePowers()
+        {
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_searching);
+            _loading = false;
+        }
+
+        private async Task RemoveForcePower(ForcePowerResponse forcePower)
+        {
+            if (_forcePowers == null) return;
+            _forcePowers.Remove(forcePower);
+            await ApiService.RemoveEntity<ForcePowerResponse>(forcePower.Id);
+        }
 
         public async Task SearchChanged<T>(T value, string property)
         {
@@ -58,28 +74,6 @@ namespace DMAdvantage.Client.Pages.ForcePowers
                 default:
                     throw new ArgumentException("Not a handled search type");
             }
-        }
-
-        protected override async Task OnInitializedAsync()
-        {
-            await RefreshForcePowers();
-        }
-
-        private async Task RefreshForcePowers()
-        {
-            _loading = true;
-            _source?.Cancel();
-            _source = new CancellationTokenSource();
-            _token = _source.Token;
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_searching);
-            _loading = false;
-        }
-
-        private async Task RemoveForcePower(ForcePowerResponse forcePower)
-        {
-            if (_forcePowers == null) return;
-            _forcePowers.Remove(forcePower);
-            await ApiService.RemoveEntity<ForcePowerResponse>(forcePower.Id);
         }
     }
 }

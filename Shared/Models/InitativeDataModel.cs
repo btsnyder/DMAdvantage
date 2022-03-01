@@ -61,10 +61,10 @@
             if (Being == null)
                 return "black"; 
             if (CurrentHP > Being.HitPoints * 0.75)
-                return "#208427";
+                return "#00E676";
             if (CurrentHP > Being.HitPoints * 0.5)
                 return "#EC9A0B";
-            return CurrentHP > Being.HitPoints * 0.1 ? "#FF0049" : "#820629";
+            return CurrentHP > Being.HitPoints * 0.1 ? "#F06292" : "#E53935";
         }
     }
 }

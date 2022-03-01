@@ -150,7 +150,7 @@
                     <MudGrid>
                         <MudItem xs="12" Class="d-flex pb-0 justify-space-between">
                             <MudText Class="pa-0">@power.Name</MudText>
-                            <MudIconButton Class="pa-0" Icon="@Icons.Material.Filled.Info" Style="@($"color:{ForceInfoColor(power)}")" OnClick="@(() => ShowInfo(power))"></MudIconButton>
+                            <MudIconButton Class="pa-0" Icon="@Icons.Material.Filled.Info" Style="@($"color:{Colors.Shades.White}")" OnClick="@(() => ShowInfo(power))"></MudIconButton>
                         </MudItem>
                         <MudItem xs="12" Class="d-flex pt-0">
                             @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)

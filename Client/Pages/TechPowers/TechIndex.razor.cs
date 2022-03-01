@@ -1,6 +1,7 @@
 ﻿using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
+using DMAdvantage.Client.Services;
 using Microsoft.AspNetCore.Components;
 
 namespace DMAdvantage.Client.Pages.TechPowers
@@ -8,22 +9,11 @@ namespace DMAdvantage.Client.Pages.TechPowers
     public partial class TechIndex
     {
         private bool _loading;
-        private IEnumerable<int>? _selectedLevels;
-        private IEnumerable<string>? _selectedCastingPeriods;
-        private IEnumerable<string>? _selectedPowerRanges;
-        private readonly IEnumerable<int> _levels = new [] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-        private readonly IEnumerable<string> _castingPeriods = Enum.GetValues<CastingPeriod>().Select(x => x.GetStringValue());
-        private readonly IEnumerable<string> _powerRanges = Enum.GetValues<PowerRange>().Select(x => x.GetStringValue());
-        private CancellationTokenSource? _source;
-        private CancellationToken _token;
-        public async Task SearchChanged(ChangeEventArgs e)
-        {
-            await RefreshTechPowers();
-        }
-
-        private readonly PagingParameters _paging = new();
         private readonly TechPowerSearchParameters _searching = new();
-        private PagedList<TechPowerResponse>? _techPowers;
+        private List<TechPowerResponse>? _techPowers;
+
+        [Inject] private IApiService ApiService { get; set; }
+        [Inject] private NavigationManager NavigationManager { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -32,32 +22,55 @@ namespace DMAdvantage.Client.Pages.TechPowers
 
         private async Task RefreshTechPowers()
         {
-            _loading = true;
-            _source?.Cancel();
-            _source = new CancellationTokenSource();
-            _token = _source.Token;
-
-            _searching.Levels = _selectedLevels?.ToArray() ?? Array.Empty<int>();
-            _searching.CastingPeriods = _selectedCastingPeriods == null ? Array.Empty<CastingPeriod>() :
-                EnumExtensions.GetEnumValues<CastingPeriod>(_selectedCastingPeriods).ToArray();
-            _searching.Ranges = _selectedPowerRanges == null ? Array.Empty<PowerRange>() :
-                EnumExtensions.GetEnumValues<PowerRange>(_selectedPowerRanges).ToArray();
-            _techPowers = await ApiService.GetAllPagedEntities<TechPowerResponse>(_paging, _searching, _token);
+            _techPowers = await ApiService.GetAllEntities<TechPowerResponse>(_searching);
             _loading = false;
         }
 
         private async Task RemoveTechPower(TechPowerResponse techPower)
         {
-            if (_techPowers == null)
-                return;
+            if (_techPowers == null) return;
             _techPowers.Remove(techPower);
             await ApiService.RemoveEntity<TechPowerResponse>(techPower.Id);
         }
 
-        private async Task CurrentPageChanged(int page)
+        public async Task SearchChanged<T>(T value, string property)
         {
-            _paging.PageNumber = page;
+            switch (value)
+            {
+                case string search:
+                    _searching.Search = search;
+                    break;
+                case IEnumerable<int> levels:
+                    _searching.Levels = levels.ToArray();
+                    break;
+                case IEnumerable<string> selected:
+                    SetSearchEnum(selected, property);
+                    break;
+                case IEnumerable<CastingPeriod> castingPeriods:
+                    _searching.CastingPeriods = castingPeriods.ToArray();
+                    break;
+                case IEnumerable<PowerRange> powerRanges:
+                    _searching.Ranges = powerRanges.ToArray();
+                    break;
+                default:
+                    throw new ArgumentException("Not a handled search type");
+            }
             await RefreshTechPowers();
+        }
+
+        private void SetSearchEnum(IEnumerable<string> value, string property)
+        {
+            switch (property)
+            {
+                case nameof(ForcePowerSearchParameters.CastingPeriods):
+                    _searching.CastingPeriods = EnumExtensions.GetEnumValues<CastingPeriod>(value).ToArray();
+                    break;
+                case nameof(ForcePowerSearchParameters.Ranges):
+                    _searching.Ranges = EnumExtensions.GetEnumValues<PowerRange>(value).ToArray();
+                    break;
+                default:
+                    throw new ArgumentException("Not a handled search type");
+            }
         }
     }
 }

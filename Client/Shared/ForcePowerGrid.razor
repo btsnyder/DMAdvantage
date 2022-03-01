@@ -18,11 +18,11 @@
                     }
                     @if (power == _selectedForcePower)
                     {
-                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Filled.ExpandLess" OnClick="@(() => HideForcePower())" />
+                        <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Filled.ExpandLess" OnClick="@(() => HideForcePower())" />
                     }
                     else
                     {
-                        <MudIconButton Variant="Variant.Filled" Icon="@Icons.Filled.ExpandMore" OnClick="@(() => ShowForcePower(power))" />
+                        <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Filled.ExpandMore" OnClick="@(() => ShowForcePower(power))" />
                     }
                 </div>
                 @if (power == _selectedForcePower)

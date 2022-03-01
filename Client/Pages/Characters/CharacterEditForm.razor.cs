@@ -79,12 +79,7 @@ namespace DMAdvantage.Client.Pages.Characters
 
         private Color ForceColor(ForcePowerResponse power)
         {
-            return _model.ForcePowerIds.Contains(power.Id) ? Color.Primary : Color.Default;
-        }
-
-        private string ForceInfoColor(ForcePowerResponse power)
-        {
-            return _model.ForcePowerIds.Contains(power.Id) ? Colors.Shades.White : Colors.Shades.Black;
+            return _model.ForcePowerIds.Contains(power.Id) ? Color.Primary : Color.Dark;
         }
 
         private void UpdateForcePower(ForcePowerResponse power)

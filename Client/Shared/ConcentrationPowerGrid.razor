@@ -4,7 +4,7 @@
     @if (ConcentrationPowers.Count > 0)
     {
         <h2 class="px-3">Concentration Powers</h2>
-        <MudTable Items="ConcentrationPowers" Breakpoint="Breakpoint.None" Dense="true" Elevation="3">
+        <MudTable Items="ConcentrationPowers" Breakpoint="Breakpoint.None" Dense="true" Elevation="3" Outlined="true">
             <ColGroup>
                 <col />
                 <col />
@@ -12,10 +12,10 @@
                 <col style="width: 150px;" />
             </ColGroup>
             <HeaderContent>
-                <MudTh Class="mud-theme-dark text-white">Player</MudTh>
-                <MudTh Class="mud-theme-dark text-white">Power</MudTh>
-                <MudTh Class="mud-theme-dark text-white">Duration</MudTh>
-                <MudTh Class="mud-theme-dark text-white"/>
+                <MudTh Class="mud-theme-tertiary text-white">Player</MudTh>
+                <MudTh Class="mud-theme-tertiary text-white">Power</MudTh>
+                <MudTh Class="mud-theme-tertiary text-white">Duration</MudTh>
+                <MudTh Class="mud-theme-tertiary text-white"/>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Player">@context.Key</MudTd>

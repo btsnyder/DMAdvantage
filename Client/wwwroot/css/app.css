@@ -8,25 +8,8 @@ h1:focus {
     outline: none;
 }
 
-a, .btn-link {
-    color: #0071c1;
-    text-decoration: none !important;
-}
-
-.nav-main-link .rz-navigation-item-link {
-    color: white !important;
-}
-
-.nav-main-link .rz-navigation-item-link:hover {
-    color: darkseagreen !important;
-}
-
-.nav-sub-main-link .rz-navigation-item-link:hover {
-    background-color: darkblue !important;
-}
-
-.rz-menu-toggle {
-    color: white !important;
+a:hover {
+    color: #7986CB;
 }
 
 .btn-primary {

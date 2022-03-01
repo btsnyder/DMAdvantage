@@ -13,7 +13,7 @@
         <ConcentrationPowerGrid @bind-ConcentrationPowers=@_concentrationPowers FromView="true"/>
 
         <MudItem xs="6">
-            <MudTable Items="_initatives" T="InitativeDataModel" Breakpoint="Breakpoint.None" Elevation="3">
+            <MudTable Items="_initatives" T="InitativeDataModel" Breakpoint="Breakpoint.None" Elevation="3" Outlined="true">
                 <ColGroup>
                     <col style="width: 15%"/>
                     <col style="width: 46%"/>
@@ -23,12 +23,12 @@
                     <col style="width: 11%"/>
                 </ColGroup>
                 <HeaderContent>
-                    <MudTh Class="mud-theme-dark text-white">Init</MudTh>
-                    <MudTh Class="mud-theme-dark text-white">Name</MudTh>
-                    <MudTh Class="mud-theme-dark text-white">AC</MudTh>
-                    <MudTh Class="mud-theme-dark text-white">HP</MudTh>
-                    <MudTh Class="mud-theme-dark text-white">FP</MudTh>
-                    <MudTh Class="mud-theme-dark text-white">TP</MudTh>
+                    <MudTh Class="mud-theme-tertiary text-white">Init</MudTh>
+                    <MudTh Class="mud-theme-tertiary text-white">Name</MudTh>
+                    <MudTh Class="mud-theme-tertiary text-white">AC</MudTh>
+                    <MudTh Class="mud-theme-tertiary text-white">HP</MudTh>
+                    <MudTh Class="mud-theme-tertiary text-white">FP</MudTh>
+                    <MudTh Class="mud-theme-tertiary text-white">TP</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Init" Class="@GetRowClass(context)">@context.Initative</MudTd>
@@ -44,7 +44,7 @@
         <MudItem xs="6">
             @if (_currentPlayer?.Being is CharacterResponse character)
             {
-                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Outlined="true">
                     <MudTabPanel Text="Basic">  
                         <MudGrid>
                             <MudItem xs="12">
@@ -174,7 +174,7 @@
                     <MudTabPanel Text="Actions">  
                         @foreach (var weapon in character.Weapons)
                         {
-                            <MudPaper Class="my-4 pa-4" Elevation="3">
+                            <MudPaper Class="my-4 pa-4" Elevation="3" Outlined="true">
                                 <MudGrid>
                                     <MudItem xs="4">@weapon.Name</MudItem>
                                     <MudItem xs="2">@character.WeaponBonus(weapon.Melee).PrintInt()</MudItem>
@@ -184,7 +184,7 @@
                                     <MudItem xs="12" Class="d-flex flex-wrap">
                                         @foreach (var prop in weapon.PropertyDescriptions)
                                         {
-                                            <MudButton Class="mx-2" Variant="Variant.Outlined" Color="Color.Primary" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name</MudButton>
+                                            <MudButton Class="mx-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name</MudButton>
                                         }
                                     </MudItem>
                                 </MudGrid>

@@ -3,7 +3,6 @@ using DMAdvantage.Client.Services.Implementations;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor;
 using MudBlazor.Services;
-using Radzen;
 
 namespace DMAdvantage.Client
 {

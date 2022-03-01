@@ -17,16 +17,16 @@
             <col style="width: 150px;"/>
         </ColGroup>
         <HeaderContent>
-            <MudTh Class="bg-dark text-white">Name</MudTh>
-            <MudTh Class="bg-dark text-white">Player</MudTh>
-            <MudTh Class="bg-dark text-white"/>
+            <MudTh Class="mud-theme-tertiary text-white">Name</MudTh>
+            <MudTh Class="mud-theme-tertiary text-white">Player</MudTh>
+            <MudTh Class="mud-theme-tertiary text-white"/>
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Player">@context.PlayerName</MudTd>
             <MudTd>
                 <div class="d-flex justify-content-end">
-                    <MudIconButton Icon="@Icons.Filled.RemoveRedEye" OnClick="@(() => NavigationManager.NavigateTo($"characters/view/{context.PlayerName}"))" Variant="Variant.Filled" Color="Color.Dark" Class="mx-1"/>
+                    <MudIconButton Icon="@Icons.Filled.RemoveRedEye" OnClick="@(() => NavigationManager.NavigateTo($"characters/view/{context.PlayerName}"))" Variant="Variant.Filled" Color="Color.Secondary" Class="mx-1"/>
                     <MudIconButton Icon="@Icons.Filled.Edit" OnClick="() => EditCharacter(context.Id)" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
                     <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveCharacter(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
                 </div>
