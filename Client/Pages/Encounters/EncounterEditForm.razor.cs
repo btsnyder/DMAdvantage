@@ -3,6 +3,7 @@ using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
+using Timer = System.Timers.Timer;
 
 namespace DMAdvantage.Client.Pages.Encounters
 {
@@ -26,7 +27,9 @@ namespace DMAdvantage.Client.Pages.Encounters
         private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
         private bool _autoSave = false;
         private Timer _timer;
+        private bool _saving = false;
         private MudForm _form;
+        private readonly object _saveLock = new();
 
         private EncounterRequest _model = new();
 
@@ -83,26 +86,18 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         protected override void OnAfterRender(bool firstRender)
         {
-            if (firstRender)
-            {
-                _timer = new Timer(async _ =>
-                {
-                    if (Id == null || !_autoSave)
-                        return;
-                    _model.Data.Clear();
-                    foreach (var init in _initatives)
-                    {
-                        _model.Data.Add(init);
-                    }
-                    _model.CurrentPlayer = _currentPlayer?.BeingId ?? Guid.Empty;
-                    _model.ConcentrationPowers.Clear();
-                    foreach (var (name, power) in _concentrationPowers)
-                    {
-                        _model.ConcentrationPowers.Add(name, power.Id);
-                    }
-                    await ApiService.UpdateEntity(Guid.Parse(Id ?? string.Empty), _model);
-                }, null, 3000, 3000);
-            }
+            if (!firstRender) return;
+            _timer = new Timer(3000);
+            _timer.Elapsed += async (_, _) => await AutoSave();
+            _timer.Start();
+        }
+
+        private async Task AutoSave()
+        {
+            if (Id == null || !_autoSave)
+                return;
+
+            await OnValidSubmit();
         }
 
         private void NavigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
@@ -111,8 +106,14 @@ namespace DMAdvantage.Client.Pages.Encounters
             NavigationManager.LocationChanged -= NavigationManager_LocationChanged;
         }
 
-        private async void OnValidSubmit()
+        private async Task OnValidSubmit()
         {
+            lock (_saveLock)
+            {
+                if (_saving)
+                    return;
+                _saving = true;
+            }
             _loading = true;
             try
             {
@@ -147,6 +148,10 @@ namespace DMAdvantage.Client.Pages.Encounters
             {
                 _loading = false;
                 StateHasChanged();
+                lock (_saveLock)
+                {
+                    _saving = false;
+                }
             }
         }
 

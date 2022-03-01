@@ -5,6 +5,7 @@ using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
+using Timer = System.Timers.Timer;
 
 namespace DMAdvantage.Client.Pages.Encounters
 {
@@ -45,16 +46,17 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         protected override void OnAfterRender(bool firstRender)
         {
-            if (firstRender)
-            {
-                _timer = new Timer(async _ =>
-                {
-                    if (_autoLoad)
-                    {
-                        await ReloadEncounter();
-                    }
-                }, null, 3000, 3000);
-            }
+            if (!firstRender) return;
+            _timer = new Timer(3000);
+            _timer.Elapsed += async (_, _) => await AutoLoad();
+            _timer.Start();
+        }
+
+        private async Task AutoLoad()
+        {
+            if (!_autoLoad) return;
+
+            await ReloadEncounter();
         }
 
         private async Task ReloadEncounter()
