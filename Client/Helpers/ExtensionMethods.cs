@@ -55,7 +55,14 @@ namespace DMAdvantage.Client.Helpers
                 PropertyNameCaseInsensitive = true
             };
             options.Converters.Add(new StringConverter());
-            return await response.Content.ReadFromJsonAsync<T>(options);
+            try
+            {
+                return await response.Content.ReadFromJsonAsync<T>(options);
+            }
+            catch
+            {
+                return default;
+            }
         }
 
         public static async Task AddJwtHeader(this HttpRequestMessage request, ILocalStorageService localStorage)

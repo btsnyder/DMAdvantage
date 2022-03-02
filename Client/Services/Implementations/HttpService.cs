@@ -1,4 +1,5 @@
-﻿using DMAdvantage.Client.Helpers;
+﻿using System.Net;
+using DMAdvantage.Client.Helpers;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Headers;
 using System.Text;
@@ -22,19 +23,19 @@ namespace DMAdvantage.Client.Services.Implementations
             _localStorageService = localStorageService;
         }
 
-        public async Task<T?> Get<T>(string uri)
+        public async Task<T?> Get<T>(string uri) where T : class
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             return await ProcessRequest<T>(request);
         }
 
-        public async Task<(T?, HttpResponseHeaders)> GetWithResponseHeader<T>(string uri, CancellationToken? token)
+        public async Task<(T?, HttpResponseHeaders?)> GetWithResponseHeader<T>(string uri, CancellationToken? token) where T : class
         {
             var request = new HttpRequestMessage(HttpMethod.Get, uri);
             return await ProcessRequestWithHeaders<T>(request, token);
         }
 
-        public async Task<T?> GetWithHeader<T>(string uri, string key, string value)
+        public async Task<T?> GetWithHeader<T>(string uri, string key, string value) where T : class
         {
             var request = CreateRequest(HttpMethod.Post, uri, new Dictionary<string, string> { { key, value } });
             return await ProcessRequest<T>(request);
@@ -46,7 +47,7 @@ namespace DMAdvantage.Client.Services.Implementations
             await ProcessRequest(request);
         }
 
-        public async Task<T?> Post<T>(string uri, object value)
+        public async Task<T?> Post<T>(string uri, object value) where T : class
         {
             var request = CreateRequest(HttpMethod.Post, uri, value);
             return await ProcessRequest<T>(request);
@@ -58,7 +59,7 @@ namespace DMAdvantage.Client.Services.Implementations
             await ProcessRequest(request);
         }
 
-        public async Task<T?> Put<T>(string uri, object value)
+        public async Task<T?> Put<T>(string uri, object value) where T : class
         {
             var request = CreateRequest(new HttpMethod("PATCH"), uri, value);
             return await ProcessRequest<T>(request);
@@ -70,7 +71,7 @@ namespace DMAdvantage.Client.Services.Implementations
             await ProcessRequest(request);
         }
 
-        public async Task<T?> Delete<T>(string uri)
+        public async Task<T?> Delete<T>(string uri) where T : class
         {
             var request = CreateRequest(HttpMethod.Delete, uri);
             
@@ -104,36 +105,36 @@ namespace DMAdvantage.Client.Services.Implementations
             await response.ProcessResponseValidity(_navigationManager);
         }
 
-        private async Task<T?> ProcessRequest<T>(HttpRequestMessage request, CancellationToken? token = null)
+        private async Task<T?> ProcessRequest<T>(HttpRequestMessage request, CancellationToken? token = null) where T : class
         {
             using var response = await SendAuthorizedRequest(request, token);
 
             if (token.HasValue && token.Value.IsCancellationRequested)
-                return default;
+                return null;
 
             var valid = await response.ProcessResponseValidity(_navigationManager);
             if (!valid)
-                return default;
+                return null;
 
             if (token.HasValue && token.Value.IsCancellationRequested)
-                return default;
+                return null;
             return await response.ParseContent<T>();
         }
 
-        private async Task<(T?, HttpResponseHeaders)> ProcessRequestWithHeaders<T>(HttpRequestMessage request, CancellationToken? token)
+        private async Task<(T?, HttpResponseHeaders?)> ProcessRequestWithHeaders<T>(HttpRequestMessage request, CancellationToken? token) where T : class
         {
             using var response = await SendAuthorizedRequest(request, token);
 
             if (token.HasValue && token.Value.IsCancellationRequested)
-                return default;
+                return (null, null);
 
             var valid = await response.ProcessResponseValidity(_navigationManager);
 
             if (!valid)
-                return default;
+                return (null, null);
 
             if (token.HasValue && token.Value.IsCancellationRequested)
-                return default;
+                return (null, null);
             var content = await response.ParseContent<T>();
             return (content, response.Headers);
         }

@@ -13,7 +13,7 @@
             <MudNumericField @bind-Value="@_model.ArmorClass" Label="Armor Class" Variant="Variant.Outlined" For="() => _model.ArmorClass" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
-            <MudNumericField @bind-Value="@_model.Speed" Label="Speed" Variant="Variant.Outlined" For="() => _model.Speed" Validation="@(_creatureValidator.ValidateValue)"/>
+            <MudTextField @bind-Value="@_model.Speed" Label="Speed" Variant="Variant.Outlined" For="() => _model.Speed" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
 
         <MudItem xs="2">
@@ -66,7 +66,7 @@
                 <MudTextField Class="m-2" @bind-Value="action.Hit" Label="Hit" For="() => action.Hit"/>
                 <MudTextField Class="m-2" @bind-Value="action.Range" Label="Range" For="() => action.Range"/>
                 <MudTextField Class="m-2" @bind-Value="action.Damage" Label="Damage" For="() => action.Damage"/>
-                <MudSelect Class="m-2" T="DamageType" @bind-Value="@action.DamageType" Label="Type" For="() => action.DamageType">
+                <MudSelect Class="m-2" Style="width: 150px;" T="DamageType" @bind-Value="@action.DamageType" Label="Type" For="() => action.DamageType">
                     @foreach (var type in Enum.GetValues<DamageType>())
                     {
                         <MudSelectItem Value="@type">@type.GetStringValue()</MudSelectItem>

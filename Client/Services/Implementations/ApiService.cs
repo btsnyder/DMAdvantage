@@ -20,7 +20,7 @@ namespace DMAdvantage.Client.Services.Implementations
             await _httpService.Post($"/api/{GetPath(typeof(T))}", model);
         }
 
-        public async Task<T?> GetEntityById<T>(Guid id)
+        public async Task<T?> GetEntityById<T>(Guid id) where T : class
         {
             return await _httpService.Get<T>($"/api/{GetPath(typeof(T))}/{id}");
         }
@@ -60,7 +60,7 @@ namespace DMAdvantage.Client.Services.Implementations
                 return null;
 
             PagedData? pagingResponse = null;
-            if (headers.TryGetValues(PagedData.Header.ToLower(), out IEnumerable<string>? values))
+            if (headers?.TryGetValues(PagedData.Header.ToLower(), out IEnumerable<string>? values) == true)
             {
                 var pagingHeader = values?.FirstOrDefault();
                 if (pagingHeader != null)
@@ -97,25 +97,23 @@ namespace DMAdvantage.Client.Services.Implementations
             return await _httpService.Get<EncounterResponse>($"/api/view/encounter/{id}");
         }
 
-        public async Task<List<T>> GetViews<T>(IEnumerable<Guid>? ids = null)
+        public async Task<List<T>?> GetViews<T>(IEnumerable<Guid>? ids = null)
         {
             var uri = $"/api/view/{GetPath(typeof(T))}";
-            if (ids != null && ids.Any())
+            var values = ids?.ToList();
+            if (values != null && values.Any())
             {
                 uri += "?";
-                foreach (var id in ids)
-                {
-                    uri += $"ids={id}&";
-                }
+                uri = values.Aggregate(uri, (current, id) => current + $"ids={id}&");
             }
             uri = uri.TrimEnd('&');
-            return await _httpService.Get<List<T>>(uri) ?? new();
+            return await _httpService.Get<List<T>>(uri);
         }
 
-        public async Task<CharacterResponse> GetCharacterViewFromPlayerName(string name)
+        public async Task<CharacterResponse?> GetCharacterViewFromPlayerName(string name)
         {
             var uri = $"/api/view/characters/player/{name}";
-            return await _httpService.Get<CharacterResponse>(uri) ?? new();
+            return await _httpService.Get<CharacterResponse>(uri);
         }
     }
 }

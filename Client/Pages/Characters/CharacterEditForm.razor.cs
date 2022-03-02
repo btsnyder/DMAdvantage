@@ -1,14 +1,9 @@
-﻿using DMAdvantage.Client.Models;
-using DMAdvantage.Client.Services;
+﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
-using FluentValidation;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.JSInterop;
 using MudBlazor;
-using Severity = MudBlazor.Severity;
 
 namespace DMAdvantage.Client.Pages.Characters
 {
@@ -16,20 +11,20 @@ namespace DMAdvantage.Client.Pages.Characters
     {
         private IEnumerable<string> _weaponProperties = Array.Empty<string>();
         private CharacterRequest _model = new();
-        private bool _loading;
         private List<ForcePowerResponse> _forcePowers = new();
         private MudForm _form;
+        private bool _loading;
         private readonly CharacterRequestFluentValidator _characterValidator = new();
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
 
-        [Parameter]
-        public string? Id { get; set; }
+        [Parameter] public string? Id { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
+            _loading = true;
             _weaponProperties = Enum.GetNames<WeaponProperty>();
             if (Id != null)
             {
@@ -38,6 +33,7 @@ namespace DMAdvantage.Client.Pages.Characters
             _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new List<ForcePowerResponse>();
 
             await base.OnInitializedAsync();
+            _loading = false;
         }
 
         private async void OnValidSubmit()
@@ -60,9 +56,8 @@ namespace DMAdvantage.Client.Pages.Characters
             catch (Exception ex)
             {
                 Snackbar.Add($"Error submitting change: {ex}", Severity.Error);
-                _loading = false;
-                StateHasChanged();
             }
+            _loading = false;
         }
 
         private async Task OnSubmit()

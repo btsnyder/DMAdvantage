@@ -23,16 +23,16 @@
 </MudLayout>
 
 @code {
-    bool _drawerOpen;
+    private bool _drawerOpen;
 
-    void DrawerToggle()
+    private void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
     }
 
-    MudTheme MyCustomTheme = new MudTheme()
+    private readonly MudTheme MyCustomTheme = new()
     {
-        PaletteDark = new Palette()
+        PaletteDark = new Palette
         {
             Primary = Colors.Indigo.Lighten1,
             Secondary = Colors.DeepPurple.Lighten1,

@@ -1,7 +1,11 @@
 ﻿@page "/characters/view/{PlayerName}"
 @inject IDialogService DialogService
 
-@if (_model != null)
+@if (_loading)
+{
+    <LightsaberLoad />
+}
+else if (_model != null)
 {
     <MudGrid>
         <MudItem xs="12">
@@ -150,6 +154,10 @@
             </div>
         </div>
     }
+}
+else
+{
+    <PageNotFound/>
 }
 
 @code
