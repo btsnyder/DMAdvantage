@@ -4,10 +4,10 @@ namespace DMAdvantage.Shared.Models
 {
     public class CharacterRequest : BeingModel, IEntityRequest
     {
-        public string? PlayerName { get; set; }
+        public string PlayerName { get; set; }
         [Required]
         public int Level { get; set; }
-        public string? Class { get; set; }
+        public string Class { get; set; }
         public bool? StrengthSave { get; set; } = false;
         public bool? DexteritySave { get; set; } = false;
         public bool? ConstitutionSave { get; set; } = false;

@@ -4,10 +4,10 @@ namespace DMAdvantage.Shared.Models
 {
     public interface IBeingResponse : IEntityResponse
     {
-        public string? Name { get; set; }
+        public string Name { get; set; }
         public int HitPoints { get; set; }
         public int ArmorClass { get; set; }
-        public string? Speed { get; set; }
+        public string Speed { get; set; }
         public int Strength { get; set; }
         public int StrengthBonus { get; set; }
         public int Dexterity { get; set; }

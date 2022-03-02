@@ -4,7 +4,7 @@ namespace DMAdvantage.Shared.Query
 {
     public class NamedSearchParameters<T> : ISearchParameters<T>, ISearchQuery where T : INamedEntity
     {
-        public string? Search { get; set; }
+        public string Search { get; set; }
 
         public IQueryable<T> AddToQuery(IQueryable<T> query)
         {

@@ -2,7 +2,7 @@
 {
     public class TechPower : Power
     {
-        public string? Overcharge { get; set; }
+        public string Overcharge { get; set; }
 
         public override string OrderBy()
         {

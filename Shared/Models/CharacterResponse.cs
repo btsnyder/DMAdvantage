@@ -3,9 +3,9 @@
     public class CharacterResponse : CharacterRequest, IBeingResponse
     {
         public Guid Id { get; set; }
-        public string Display => Name ?? string.Empty;
+        public string Display => Name;
 
-        new public int GetProficiencyBonus()
+        public new int GetProficiencyBonus()
         {
             return Level switch
             {

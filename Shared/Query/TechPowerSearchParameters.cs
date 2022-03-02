@@ -5,7 +5,7 @@ namespace DMAdvantage.Shared.Query
 {
     public class TechPowerSearchParameters : ISearchParameters<TechPower>, ISearchQuery
     {
-        public string? Search { get; set; }
+        public string Search { get; set; }
         public int[] Levels { get; set; } = Array.Empty<int>();
         public CastingPeriod[] CastingPeriods { get; set; } = Array.Empty<CastingPeriod>();
         public PowerRange[] Ranges { get; set; } = Array.Empty<PowerRange>();

@@ -5,7 +5,7 @@ namespace DMAdvantage.Shared.Query
 {
     public class ForcePowerSearchParameters : ISearchParameters<ForcePower>, ISearchQuery
     {
-        public string? Search { get; set; }
+        public string Search { get; set; }
         public int[] Levels { get; set; } = Array.Empty<int>();
         public ForceAlignment[] Alignments { get; set; } = Array.Empty<ForceAlignment>();
         public CastingPeriod[] CastingPeriods { get; set; } = Array.Empty<CastingPeriod>();

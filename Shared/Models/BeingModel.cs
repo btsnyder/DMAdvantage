@@ -6,13 +6,13 @@ namespace DMAdvantage.Shared.Models
     public class BeingModel
     {
         [Required]
-        public string? Name { get; set; }
+        public string Name { get; set; }
         [Required]
         public int HitPoints { get; set; }
         [Required]
         public int ArmorClass { get; set; }
         [Required]
-        public string? Speed { get; set; }
+        public string Speed { get; set; }
         [Required]
         public int Strength { get; set; }
         [Required]

@@ -5,9 +5,9 @@ namespace DMAdvantage.Shared.Entities
 {
     public class Character : Being
     {
-        public string? PlayerName { get; set; }
+        public string PlayerName { get; set; }
         public int Level { get; set; }
-        public string? Class { get; set; }
+        public string Class { get; set; }
         public bool? StrengthSave { get; set; } = false;
         public bool? DexteritySave { get; set; } = false;
         public bool? ConstitutionSave { get; set; } = false;
@@ -34,6 +34,8 @@ namespace DMAdvantage.Shared.Entities
         public bool? Persuasion { get; set; } = false;
         public string? WeaponsCache { get; set; }
         public List<Weapon> Weapons => JsonSerializer.Deserialize<List<Weapon>>(WeaponsCache ?? string.Empty) ?? new List<Weapon>();
+
+        public ICollection<Ability> Abilities { get; set; }
 
         public override string OrderBy()
         {

@@ -2,6 +2,6 @@
 {
     public class TechPowerRequest : PowerModel, IEntityRequest
     {
-        public string? Overcharge { get; set; }
+        public string Overcharge { get; set; }
     }
 }

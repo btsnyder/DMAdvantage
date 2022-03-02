@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using DMAdvantage.Shared.Models;
+﻿using DMAdvantage.Shared.Models;
 
 namespace DMAdvantage.Shared.Query
 {
