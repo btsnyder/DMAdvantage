@@ -7,11 +7,11 @@ namespace DMAdvantage.Data
 {
     public class Repository : IRepository
     {
-        private readonly Context _ctx;
+        public Context Context { get; }
 
-        public Repository(Context ctx)
+        public Repository(Context context)
         {
-            _ctx = ctx;
+            Context = context;
         }
 
         public IEnumerable<T> GetAllEntities<T>(string username, ISearchParameters<T>? searching = null) where T : BaseEntity
@@ -50,38 +50,49 @@ namespace DMAdvantage.Data
         {
             if (string.IsNullOrWhiteSpace(name))
                 return null;
-            return _ctx.Characters.FirstOrDefault(c => c.PlayerName == name);
+            return Context.Characters.FirstOrDefault(c => c.PlayerName == name);
         }
 
         public IEnumerable<T> GetEntitiesByIdsWithoutUser<T>(Guid[] ids) where T : BaseEntity
         {
-            if (ids.Any())
-                return GetFromDatabase<T>().Where(c => ids.Contains(c.Id));
-            else
-                return GetFromDatabase<T>();
+            return ids.Any() ? GetFromDatabase<T>(tracking: false).Where(c => ids.Contains(c.Id)) : GetFromDatabase<T>(tracking: false);
         }
 
         public void AddEntity(object entity)
         {
-            _ctx.Add(entity);
+            Context.Add(entity);
         }
 
         public void RemoveEntity(object entity)
         {
-            _ctx.Remove(entity);
+            Context.Remove(entity);
         }
 
         public bool SaveAll()
         {
-            return _ctx.SaveChanges() > 0;
+            return Context.SaveChanges() > 0;
         }
 
-        private IQueryable<T> GetFromDatabase<T>(string? username = null) where T : BaseEntity
+        public void DetachAllEntities()
+        {
+            Context.ChangeTracker.Clear();
+        }
+
+        private IQueryable<T> GetFromDatabase<T>(string? username = null, bool tracking = true) where T : BaseEntity
         {
             try
             {
-                DbSet<T> dbSet = _ctx.Set<T>();
-                return username == null ? dbSet : dbSet.Where(c => c.User != null && c.User.UserName == username);
+                DbSet<T> dbSet = Context.Set<T>();
+                if (dbSet is DbSet<Character> characters)
+                    return tracking ? username == null ? (IQueryable<T>) characters.Include(x => x.Abilities) :
+                        (IQueryable<T>) characters.Include(x => x.Abilities)
+                            .Where(c => c.User != null && c.User.UserName == username) :
+                        username == null ? (IQueryable<T>) characters.AsNoTracking().Include(x => x.Abilities).AsNoTracking() :
+                        (IQueryable<T>) characters.AsNoTracking().Include(x => x.Abilities).AsNoTracking()
+                            .Where(c => c.User != null && c.User.UserName == username);
+                return tracking ?
+                    username == null ? dbSet : dbSet.Where(c => c.User != null && c.User.UserName == username) :
+                    username == null ? dbSet.AsNoTracking() : dbSet.AsNoTracking().Where(c => c.User != null && c.User.UserName == username);
             }
             catch (Exception ex)
             {

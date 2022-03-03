@@ -63,13 +63,11 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-
                 var username = User.Identity?.Name ?? string.Empty;
 
                 var entity = _repository.GetEntityById<TEntity>(id, username);
-                if (entity != null)
-                    return Ok(_mapper.Map<TResponse>(entity));
-                else return NotFound();
+                if (entity == null) return NotFound();
+                return Ok(_mapper.Map<TResponse>(entity));
             }
             catch (Exception ex)
             {
@@ -84,12 +82,14 @@ namespace DMAdvantage.Server.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    _repository.DetachAllEntities();
                     var newEntity = _mapper.Map<TEntity>(request);
 
                     var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
                     newEntity.User = currentUser;
 
                     _repository.AddEntity(newEntity);
+
                     if (_repository.SaveAll())
                     {
                         return Created($"/api/{typeof(TEntity).Name.ToLower()}s/{newEntity.Id}", _mapper.Map<TResponse>(newEntity));

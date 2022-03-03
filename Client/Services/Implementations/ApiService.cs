@@ -86,6 +86,8 @@ namespace DMAdvantage.Client.Services.Implementations
         private static string GetPath(Type t)
         {
             var path = t.Name;
+            if (path.Contains("Ability"))
+                return "abilities";
             path = path.Replace("Request", "");
             path = path.Replace("Response", "");
             path += "s";
@@ -100,6 +102,8 @@ namespace DMAdvantage.Client.Services.Implementations
         public async Task<List<T>?> GetViews<T>(IEnumerable<Guid>? ids = null)
         {
             var uri = $"/api/view/{GetPath(typeof(T))}";
+            if (typeof(T).Name.Contains("Ability"))
+                uri += "ids";
             var values = ids?.ToList();
             if (values != null && values.Any())
             {

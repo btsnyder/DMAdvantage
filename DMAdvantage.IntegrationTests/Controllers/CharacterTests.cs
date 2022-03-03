@@ -146,6 +146,9 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var character = await client.CreateCharacter();
             var newCharacter = Generation.CharacterRequest();
+            newCharacter.Abilities = character.Abilities;
+            var newAbility = await client.CreateAbility();
+            newCharacter.Abilities.Add(newAbility);
 
             var response = await client.PutAsync($"api/characters/{character.Id}", newCharacter);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

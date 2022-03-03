@@ -6,6 +6,7 @@ namespace DMAdvantage.Data
 {
     public interface IRepository
     { 
+        public Context Context { get; }
         public T? GetEntityById<T>(Guid id, string username) where T : BaseEntity;
         public T? GetEntityByIdWithoutUser<T>(Guid id) where T : BaseEntity;
         public Character? GetCharacterByPlayerNameWithoutUser(string name);
@@ -14,6 +15,7 @@ namespace DMAdvantage.Data
         public PagedList<T> GetAllEntities<T>(string username, PagingParameters search, ISearchParameters<T>? searching) where T : BaseEntity;
 
         void AddEntity(object entity);
+        void DetachAllEntities();
         void RemoveEntity(object entity);
         bool SaveAll();
     }

@@ -77,8 +77,8 @@ namespace DMAdvantage.Client.Helpers
         {
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-                throw new Exception(error == null ? "Unknown error occured." : error["message"]);
+                var error = await response.Content.ReadAsStringAsync();
+                throw new Exception(error);
             }
         }
 

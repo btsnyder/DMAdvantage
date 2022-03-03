@@ -1,0 +1,10 @@
+﻿@page "/abilities/edit/{Id}"
+@attribute [Authorize]
+
+<h1>Edit Ability</h1>
+<AbilityEditForm Id="@Id"/>
+
+@code
+{
+    [Parameter] public string Id { get; set; }
+}

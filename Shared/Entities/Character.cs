@@ -32,10 +32,10 @@ namespace DMAdvantage.Shared.Entities
         public bool? Intimidation { get; set; } = false;
         public bool? Performance { get; set; } = false;
         public bool? Persuasion { get; set; } = false;
-        public string? WeaponsCache { get; set; }
+        public string WeaponsCache { get; set; } = string.Empty;
         public List<Weapon> Weapons => JsonSerializer.Deserialize<List<Weapon>>(WeaponsCache ?? string.Empty) ?? new List<Weapon>();
 
-        public ICollection<Ability> Abilities { get; set; }
+        public ICollection<Ability> Abilities { get; set; } = new List<Ability>();
 
         public override string OrderBy()
         {

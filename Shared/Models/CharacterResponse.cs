@@ -5,18 +5,6 @@
         public Guid Id { get; set; }
         public string Display => Name;
 
-        public new int GetProficiencyBonus()
-        {
-            return Level switch
-            {
-                < 5 => 2,
-                < 9 => 3,
-                < 13 => 4,
-                < 17 => 5,
-                _ => 6
-            };
-        }
-
         public int SkillBonus(int bonus, bool? proficient)
         {
             return proficient switch

@@ -11,6 +11,7 @@ namespace DMAdvantage.Data
         {
             CreateMap<Character, CharacterRequest>();
             CreateMap<CharacterRequest, Character>()
+                .ForMember(c => c.Abilities, opt => opt.Ignore())
                 .ForMember(c => c.Weapons, opt => opt.Ignore())
                 .ForMember(c => c.WeaponsCache, opt => opt.MapFrom(map => JsonSerializer.Serialize(map.Weapons, (JsonSerializerOptions?)null)));
             CreateMap<Character, CharacterResponse>();
@@ -49,6 +50,8 @@ namespace DMAdvantage.Data
             CreateMap<ForcePower, ForcePowerResponse>().ReverseMap();
             CreateMap<TechPower, TechPowerRequest>().ReverseMap();
             CreateMap<TechPower, TechPowerResponse>().ReverseMap();
+            CreateMap<Ability, AbilityRequest>().ReverseMap();
+            CreateMap<Ability, AbilityResponse>().ReverseMap();
             CreateMap<User, LoginResponse>();
         }
     }

@@ -55,9 +55,10 @@ namespace DMAdvantage.Client.Pages.Characters
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Error submitting change: {ex}", Severity.Error);
+                Snackbar.Add($"Error submitting change: {ex.Message}", Severity.Error);
             }
             _loading = false;
+            StateHasChanged();
         }
 
         private async Task OnSubmit()

@@ -33,5 +33,6 @@ namespace DMAdvantage.Shared.Models
         public bool? Performance { get; set; } = false;
         public bool? Persuasion { get; set; } = false;
         public List<Weapon> Weapons { get; set; } = new();
+        public List<AbilityResponse> Abilities { get; set; } = new();
     }
 }

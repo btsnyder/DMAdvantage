@@ -43,7 +43,24 @@ namespace DMAdvantage.Shared.Models
         public int MaxForcePowerLevel { get; set; }
         public List<Guid> TechPowerIds { get; set; } = new();
         public int TechPoints { get; set; }
-        public int GetProficiencyBonus() => 0;
+
+        public int GetProficiencyBonus()
+        {
+            if (this is CharacterRequest character)
+            {
+                return character.Level switch
+                {
+                    < 5 => 2,
+                    < 9 => 3,
+                    < 13 => 4,
+                    < 17 => 5,
+                    _ => 6
+                };
+            }
+
+            return 0;
+        }
+
         public int ForceAttackModifier(ForceAlignment alignment)
         {
             return alignment switch

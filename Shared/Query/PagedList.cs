@@ -26,7 +26,7 @@ namespace DMAdvantage.Shared.Query
         {
             var count = source.Count;
             var skipped = (paging.PageNumber - 1) * paging.PageSize;
-            while (skipped >= count)
+            while (count != 0 && skipped >= count)
             {
                 skipped = Math.Max(0, skipped - paging.PageSize);
                 paging.PageNumber--;

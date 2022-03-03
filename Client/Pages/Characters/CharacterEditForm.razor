@@ -132,6 +132,11 @@ else
                     <hr/>
                 </MudItem>
             }
+
+            <MudItem xs="12">
+                <MultipleEntityDropdown TEntity="AbilityResponse" @bind-SelectedEntities="_model.Abilities" Label="Abilities"/>
+            </MudItem>
+
             <MudItem xs="4">
                 <MudNumericField @bind-Value="_model.ForcePoints" Label="Points" Variant="Variant.Outlined" For="() => _model.ForcePoints" Validation="@(_characterValidator.ValidateValue)"/>
             </MudItem>

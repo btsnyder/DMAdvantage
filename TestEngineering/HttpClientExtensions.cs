@@ -46,6 +46,8 @@ namespace TestEngineering
         private static string GetPath(MemberInfo t)
         {
             var path = t.Name;
+            if (path.Contains("Ability"))
+                return "abilities";
             path = path.Replace("Response", "");
             path = path.Replace("Request", "");
             path += "s";
@@ -55,6 +57,8 @@ namespace TestEngineering
         public static async Task<CharacterResponse> CreateCharacter(this HttpClient client, CharacterRequest? character = null)
         {
             character ??= Generation.CharacterRequest();
+            var ability = await client.CreateAbility();
+            character.Abilities.Add(ability);
             var response = await client.PostAsync("/api/characters", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<CharacterResponse>();
@@ -118,6 +122,15 @@ namespace TestEngineering
             var response = await client.PostAsync("/api/techpowers", techPower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<TechPowerResponse>();
+            return created;
+        }
+
+        public static async Task<AbilityResponse> CreateAbility(this HttpClient client, AbilityRequest? ability = null)
+        {
+            ability ??= Generation.AbilityRequest();
+            var response = await client.PostAsync("/api/abilities", ability);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var created = await response.ParseEntity<AbilityResponse>();
             return created;
         }
 

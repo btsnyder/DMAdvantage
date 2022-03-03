@@ -98,5 +98,20 @@ namespace DMAdvantage.Server.Controllers
                 return BadRequest("Failed to return entities");
             }
         }
+
+        [HttpGet("abilitiesids")]
+        public IActionResult GetAbilitiesByIds([FromQuery] Guid[] ids)
+        {
+            try
+            {
+                var results = _repository.GetEntitiesByIdsWithoutUser<Ability>(ids);
+                return Ok(_mapper.Map<IEnumerable<AbilityResponse>>(results));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return entities: {ex}");
+                return BadRequest("Failed to return entities");
+            }
+        }
     }
 }

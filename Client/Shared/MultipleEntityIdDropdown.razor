@@ -1,0 +1,8 @@
+﻿@typeparam TEntity
+
+<MudAutocomplete ResetValueOnEmptyText="true" CoerceText="true" T="string" SearchFunc="@Search"
+                Value="@_value" ValueChanged="@Selected" Label="@Label" Dense="true"/>
+@foreach (var entity in _selectedEntities)
+{
+    <MudChip Color="Color.Primary" OnClose="EntityRemoved" Text="@entity.Display"/>
+}

@@ -154,7 +154,7 @@ namespace TestEngineering
                 TotalForcePowers = Faker.RandomNumber.Next(),
                 MaxForcePowerLevel = Faker.RandomNumber.Next(),
                 TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
-                TechPoints = Faker.RandomNumber.Next()
+                TechPoints = Faker.RandomNumber.Next(),
             };
             return creatureRequest;
         }
@@ -299,6 +299,23 @@ namespace TestEngineering
                 Data = mockInitativeData,
                 ConcentrationPowers = mockConcentration
             };
+        }
+
+        public static AbilityRequest AbilityRequest()
+        {
+            return new AbilityRequest
+            {
+                Name = Faker.Name.FullName(),
+                Description = Nonsense()
+            };
+        }
+
+        public static Ability Ability()
+        {
+            var ability = _mapper.Map<Ability>(AbilityRequest());
+            ability.Id = Guid.NewGuid();
+            ability.User = MockHttpContext.CurrentUser;
+            return ability;
         }
     }
 }
