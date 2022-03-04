@@ -162,7 +162,7 @@
                                 </MudItem>
 
                                 <MudItem xs="12" Class="d-flex justify-content-end">
-                                    <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddCharacter"/>
+                                    <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddCreature"/>
                                 </MudItem>
                             }
                     </MudGrid>
@@ -193,10 +193,11 @@
                     <col style="width: 10%"/>
                     <col style="width: 15%"/>
                     <col style="width: 40%"/>
-                    <col style="width: 10%"/>
-                    <col style="width: 10%"/>
-                    <col style="width: 10%"/>
-                    <col style="width: 10%"/>
+                    <col style="width: 7%"/>
+                    <col style="width: 7%"/>
+                    <col style="width: 7%"/>
+                    <col style="width: 7%"/>
+                    <col style="width: 7%"/>
                 </ColGroup>
                 <HeaderContent>
                     <MudTh Class="mud-theme-tertiary text-white" />
@@ -206,6 +207,7 @@
                     <MudTh Class="mud-theme-tertiary text-white">HP</MudTh>
                     <MudTh Class="mud-theme-tertiary text-white">FP</MudTh>
                     <MudTh Class="mud-theme-tertiary text-white">TP</MudTh>
+                    <MudTh Class="mud-theme-tertiary text-white" />
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Current">
@@ -229,6 +231,9 @@
                     <MudTd DataLabel="HP" Style=@($"color: {context.GetHPColor()};")>@context.CurrentHP</MudTd>
                     <MudTd DataLabel="FP">@context.CurrentFP</MudTd>
                     <MudTd DataLabel="TP">@context.CurrentTP</MudTd>
+                    <MudTd DataLabel="Delete">                
+                        <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveInitative(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+                    </MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
@@ -391,7 +396,7 @@
                                     <MudItem xs="12" Class="d-flex flex-wrap">
                                         @foreach (var prop in weapon.PropertyDescriptions)
                                         {
-                                            <MudButton Class="mx-2" Variant="Variant.Outlined" Color="Color.Primary" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name</MudButton>
+                                            <MudButton Class="m-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name (@prop.Description)</MudButton>
                                         }
                                     </MudItem>
                                 </MudGrid>
@@ -416,6 +421,17 @@
                                 </MudGrid>
                             </MudPaper>
                         }
+                    }
+                </MudTabPanel>
+                <MudTabPanel Text="Abilities">  
+                    @if (_selectedInitativeCharacter != null)
+                    {
+                        <MudItem xs="12" Class="d-flex flex-wrap">
+                            @foreach (var ability in _selectedInitativeCharacter.Abilities.OrderBy(x => x.Display))
+                            {
+                                <MudButton Class="m-2" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ShowAbility(ability))" Size="Size.Small">@ability.Name</MudButton>
+                            }
+                        </MudItem>
                     }
                 </MudTabPanel>
                 <MudTabPanel Text="ForcePowers">
@@ -470,5 +486,12 @@
     {
         var description = StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)];
         DialogService.ShowMessageBox(weapon.Name, description);
+    }
+
+    void ShowAbility(AbilityResponse ability)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters {{"Text", ability.Description}};
+        DialogService.Show<SimpleTextDialog>(ability.Name, parameters, options);
     }
 }

@@ -253,5 +253,19 @@ namespace DMAdvantage.Client.Pages.Encounters
                StateHasChanged();
             }
         }
+
+        private void RemoveInitative(InitativeDataModel data)
+        {
+            if (data == _selectedInitative)
+                _selectedInitative = null;
+            _initatives.Remove(data);
+            var removedConcetrations = _concentrationPowers.Where(x => x.Key == data.Being.Name);
+            foreach (var power in removedConcetrations)
+            {
+                _concentrationPowers.Remove(power.Key);
+            }
+            if (data == _currentPlayer)
+                _currentPlayer = _initatives.First();
+        }
     }
 }

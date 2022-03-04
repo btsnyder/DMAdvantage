@@ -32,7 +32,7 @@ else if (_model != null)
             <MudText>Spd: <b>@_model.Speed</b></MudText>
         </MudItem>
     </MudGrid>
-    <MudPaper Class="py-2 my-5" Elevation="3">
+    <MudPaper Class="py-2 my-5" Elevation="3" Outlined="true">
         <div class="d-flex justify-content-around align-items-center">
                 <div class="d-flex flex-column align-items-center">
                     <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">STR</MudText>
@@ -69,7 +69,7 @@ else if (_model != null)
             </div>
     </MudPaper>
     <MudText Class="fw-bold" Typo="Typo.h6">Weapons</MudText>
-    <MudTable Items="_model.Weapons" Breakpoint="Breakpoint.None" Dense="true">
+    <MudTable Items="_model.Weapons" Breakpoint="Breakpoint.None" Dense="true" Outlined="true">
         <ColGroup>
             <col style="width: 50%;"/>
             <col style="width: 25%;"/>
@@ -86,6 +86,13 @@ else if (_model != null)
             <MudTd DataLabel="Dam">@context.Damage@_model.WeaponBonus(context.Melee, true).PrintInt()</MudTd>
         </RowTemplate>
     </MudTable>
+    <MudText Class="fw-bold mt-5" Typo="Typo.h6">Abilities</MudText>
+    <MudContainer Class="d-flex flex-wrap p-0">
+        @foreach (var ability in _model.Abilities.OrderBy(x => x.Display))
+        {
+            <MudButton Class="m-1 my-2" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ShowAbility(ability))" Size="Size.Medium">@ability.Name</MudButton>
+        }
+    </MudContainer>
     <MudText Class="fw-bold mt-5" Typo="Typo.h6">Force Powers</MudText>
     <div class="row mb-2 align-items-center">
         <div class="col"></div>
@@ -104,7 +111,7 @@ else if (_model != null)
             <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Light).PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Light)</b></text>
         </div>
     </div>
     <div class="row mb-2 align-items-center justify-center">
@@ -112,10 +119,10 @@ else if (_model != null)
             <text>Universal</text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.StrengthBonus.PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Universal).PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Universal)</b></text>
         </div>
     </div>
     <div class="row mb-2 align-items-center justify-center">
@@ -126,7 +133,7 @@ else if (_model != null)
             <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.DexterityBonus.PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Dark)</b></text>
         </div>
     </div>
     @for (var i = 0; i <= _model.MaxForcePowerLevel; i++)
@@ -137,9 +144,9 @@ else if (_model != null)
             <div class="d-flex flex-wrap">
                 @foreach (var power in _forcePowers.Where(x => x.Level == i && _model.ForcePowerIds.Contains(x.Id)))
                 {
-                    <MudButton Variant="Variant.Filled" Color="Color.Info" Class="px-2 py-1 ma-2" OnClick="@(() => ShowInfo(power))" Disabled="@IsDisabled(power)">
+                    <MudButton Variant="Variant.Filled" Color="Color.Info" Class="px-2 py-1 ma-1" OnClick="@(() => ShowInfo(power))" Disabled="@IsDisabled(power)">
                         <MudGrid>
-                            <MudItem xs="12" Class="d-flex pb-0 justify-space-between">
+                            <MudItem xs="12" Class="d-flex pb-0">
                                 <MudText Class="pa-0">@power.Name</MudText>
                             </MudItem>
                             <MudItem xs="12" Class="d-flex pt-0">
@@ -164,8 +171,15 @@ else
 {
     void ShowInfo(ForcePowerResponse power)
     {
-        var options = new MudBlazor.DialogOptions { CloseOnEscapeKey = true };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
         var parameters = new DialogParameters {{"ForcePower", power}};
         DialogService.Show<ForceInfoDialog>(power.Name, parameters, options);
+    }
+
+    void ShowAbility(AbilityResponse ability)
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        var parameters = new DialogParameters {{"Text", ability.Description}};
+        DialogService.Show<SimpleTextDialog>(ability.Name, parameters, options);
     }
 }

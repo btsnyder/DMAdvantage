@@ -184,7 +184,9 @@
                                     <MudItem xs="12" Class="d-flex flex-wrap">
                                         @foreach (var prop in weapon.PropertyDescriptions)
                                         {
-                                            <MudButton Class="mx-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name</MudButton>
+                                            <MudButton Class="mx-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">
+                                                @prop.Name @(string.IsNullOrWhiteSpace(prop.Description) ? "" : $"({prop.Description}cd )")
+                                            </MudButton>
                                         }
                                     </MudItem>
                                 </MudGrid>
@@ -226,6 +228,14 @@
                             <ForcePowerGrid Title="Level 8" Powers="@SelectedForcePowers.Where(x => x.Level == 8).ToList()" ShowCast="false" />
                             <ForcePowerGrid Title="Level 9" Powers="@SelectedForcePowers.Where(x => x.Level == 9).ToList()" ShowCast="false" />
                         </MudGrid>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Abilities">  
+                        <MudItem xs="12" Class="d-flex flex-wrap">
+                            @foreach (var ability in character.Abilities.OrderBy(x => x.Display))
+                            {
+                                <MudButton Class="mx-2" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ShowAbility(ability))" Size="Size.Small">@ability.Name</MudButton>
+                            }
+                        </MudItem>
                     </MudTabPanel>
                 </MudTabs>
             }

@@ -1,4 +1,5 @@
 ﻿using DMAdvantage.Client.Services;
+using DMAdvantage.Client.Shared;
 using DMAdvantage.Shared;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
@@ -114,6 +115,13 @@ namespace DMAdvantage.Client.Pages.Encounters
         {
             var description = StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)];
             DialogService.ShowMessageBox(weapon.Name, description);
+        }
+
+        private void ShowAbility(AbilityResponse ability)
+        {
+            var options = new DialogOptions { CloseOnEscapeKey = true };
+            var parameters = new DialogParameters {{"Text", ability.Description}};
+            DialogService.Show<SimpleTextDialog>(ability.Name, parameters, options);
         }
     }
 }

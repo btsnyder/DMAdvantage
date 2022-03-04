@@ -3,6 +3,7 @@ using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -59,7 +60,9 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var result = _repository.GetCharacterByPlayerNameWithoutUser(name);
+                var result = _repository.Context.Characters
+                    .Include(c => c.Abilities)
+                    .FirstOrDefault(c => c.PlayerName == name);
                 return Ok(_mapper.Map<CharacterResponse>(result));
             }
             catch (Exception ex)
