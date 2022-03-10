@@ -11,19 +11,19 @@ namespace DMAdvantage.Shared.Query
         public CastingPeriod[] CastingPeriods { get; set; } = Array.Empty<CastingPeriod>();
         public PowerRange[] Ranges { get; set; } = Array.Empty<PowerRange>();
 
-        public IQueryable<ForcePower> AddToQuery(IQueryable<ForcePower> query)
+        public bool IsFound(ForcePower power)
         {
-            if (!string.IsNullOrWhiteSpace(Search))
-                query = query.Where(f => f.Name != null && f.Name.ToLower().Contains(Search.ToLower()));
-            if (Levels.Any())
-                query = query.Where(f => Levels.Contains(f.Level));
-            if (Alignments.Any())
-                query = query.Where(f => Alignments.Contains(f.Alignment));
-            if (CastingPeriods.Any())
-                query = query.Where(f => CastingPeriods.Contains(f.CastingPeriod));
-            if (Ranges.Any())
-                query = query.Where(f => Ranges.Contains(f.Range));
-            return query;
+            if (!string.IsNullOrWhiteSpace(Search) && power.Name?.ToLower().Contains(Search.ToLower()) != true)
+                return false;
+            if (Levels.Any() && !Levels.Contains(power.Level))
+                return false;
+            if (Alignments.Any() && !Alignments.Contains(power.Alignment))
+                return false;
+            if (CastingPeriods.Any() && !CastingPeriods.Contains(power.CastingPeriod))
+                return false;
+            if (Ranges.Any() && !Ranges.Contains(power.Range))
+                return false;
+            return true;
         }
 
         public string GetQuery()

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Text.Json;
+using AutoMapper;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
@@ -13,43 +14,45 @@ namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AbilitiesController : BaseEntityController<Ability, AbilityResponse, AbilityRequest>
+    public class ClassesController : BaseEntityController<DMClass, DMClassResponse, DMClassRequest>
     {
-        public AbilitiesController(IRepository repository,
-            ILogger<AbilitiesController> logger,
+        public ClassesController(IRepository repository,
+            ILogger<ClassesController> logger,
             IMapper mapper,
-            UserManager<User> userManager)
-            : base(repository, logger, mapper, userManager)
+            UserManager<User> userManager) : 
+            base(repository, logger, mapper, userManager)
         {
+            apiPath = "classes";
         }
 
         [HttpGet]
-        public IActionResult GetAllAbilities([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Ability>? searching = null)
+        public IActionResult GetAllClasses([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<DMClass>? searching = null)
         {
             if (searching == null) return GetAllEntities(paging);
             return GetAllEntities(searching, paging);
         }
 
+
         [HttpGet("{id:guid}")]
-        public IActionResult GetAbilityById(Guid id)
+        public IActionResult GetClassById(Guid id)
         {
             return GetEntityById(id);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewAbility([FromBody] AbilityRequest request)
+        public async Task<IActionResult> CreateNewClass([FromBody] DMClassRequest request)
         {
             return await CreateNewEntity(request);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateAbilityById(Guid id, [FromBody] AbilityRequest request)
+        public async Task<IActionResult> UpdateClassById(Guid id, [FromBody] DMClassRequest request)
         {
             return await UpdateEntityById(id, request);
         }
 
         [HttpDelete("{id:guid}")]
-        public IActionResult DeleteAbilityById(Guid id)
+        public IActionResult DeleteClassById(Guid id)
         {
             return DeleteEntityById(id);
         }

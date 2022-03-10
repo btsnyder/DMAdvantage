@@ -1,0 +1,26 @@
+﻿@inject IDialogService DialogService
+
+@if (_loading)
+{
+    <LightsaberLoad />
+}
+else
+{
+    <MudForm Model="@_model" @ref="@_form">
+        <MudGrid Class="mb-5">
+            <MudItem xs="6">
+                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_classValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="6">
+                <MudSelect T="int" @bind-Value="@_model.HitDice" Label="Hit Dice" Variant="Variant.Outlined" For="() => _model.HitDice" Validation="@(_classValidator.ValidateValue)">
+                    <MudSelectItem Value="6"/>
+                    <MudSelectItem Value="8"/>
+                    <MudSelectItem Value="10"/>
+                    <MudSelectItem Value="12"/>
+                </MudSelect>
+            </MudItem>
+
+            <Submit CancelRef="classes" OnClick="OnSubmit"/>
+        </MudGrid>
+    </MudForm>
+}

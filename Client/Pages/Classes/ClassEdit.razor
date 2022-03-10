@@ -1,0 +1,10 @@
+﻿@page "/classes/edit/{Id}"
+@attribute [Authorize]
+
+<h1>Edit Class</h1>
+<ClassEditForm Id="@Id"/>
+
+@code
+{
+    [Parameter] public string Id { get; set; }
+}

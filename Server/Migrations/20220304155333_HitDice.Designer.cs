@@ -4,6 +4,7 @@ using DMAdvantage.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMAdvantage.Server.Migrations
 {
     [DbContext(typeof(Context))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20220304155333_HitDice")]
+    partial class HitDice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -86,8 +88,8 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<bool?>("CharismaSave")
                         .HasColumnType("bit");
 
-                    b.Property<Guid?>("ClassId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("Class")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Constitution")
                         .HasColumnType("int");
@@ -223,8 +225,6 @@ namespace DMAdvantage.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClassId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Characters");
@@ -325,29 +325,6 @@ namespace DMAdvantage.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Creatures");
-                });
-
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.DMClass", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("HitDice")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("DMClasses");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Encounter", b =>
@@ -718,29 +695,14 @@ namespace DMAdvantage.Server.Migrations
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Character", b =>
                 {
-                    b.HasOne("DMAdvantage.Shared.Entities.DMClass", "Class")
-                        .WithMany("Characters")
-                        .HasForeignKey("ClassId");
-
                     b.HasOne("DMAdvantage.Shared.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Class");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Creature", b =>
-                {
-                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.DMClass", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.User", "User")
                         .WithMany()
@@ -825,11 +787,6 @@ namespace DMAdvantage.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.DMClass", b =>
-                {
-                    b.Navigation("Characters");
                 });
 #pragma warning restore 612, 618
         }

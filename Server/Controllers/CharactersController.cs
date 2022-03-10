@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -19,8 +20,7 @@ namespace DMAdvantage.Server.Controllers
         public CharactersController(IRepository repository,
             ILogger<CharactersController> logger,
             IMapper mapper,
-            UserManager<User> userManager)
-            : base(repository, logger, mapper, userManager)
+            UserManager<User> userManager) : base(repository, logger, mapper, userManager)
         {
         }
 
@@ -30,32 +30,20 @@ namespace DMAdvantage.Server.Controllers
             try
             {
                 var username = User.Identity?.Name ?? string.Empty;
-
                 var search = searching?.Search ?? string.Empty;
-                var query = _repository.Context.Characters
-                    .Include(c => c.Abilities)
-                    .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search))
-                    .AsNoTracking();
-                
-                var characters = query.ToList().OrderBy(c => c.OrderBy());
 
+                var characters = _repository.Context.Characters
+                    .Include(c => c.Abilities)
+                    .Include(c => c.Class)
+                    .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search))
+                    .AsNoTracking().ToList()
+                    .OrderBy(c => c.OrderBy());
+                
                 if (paging == null)
                     return Ok(_mapper.Map<IEnumerable<CharacterResponse>>(characters));
-                
-                var pagedResults = PagedList<Character>.ToPagedList(characters.ToList(), paging);
 
-                var metadata = new PagedData
-                {
-                    TotalCount = pagedResults.TotalCount,
-                    PageSize = pagedResults.PageSize,
-                    CurrentPage = pagedResults.CurrentPage,
-                    TotalPages = pagedResults.TotalPages,
-                    HasNext = pagedResults.HasNext,
-                    HasPrevious = pagedResults.HasPrevious
-                };
-
-                Response.Headers.Add(PagedData.Header, JsonSerializer.Serialize(metadata));
-
+                var pagedResults = PagedList<Character>.ToPagedList(characters, paging);
+                Response.SetPagedHeader(pagedResults);
                 return Ok(_mapper.Map<IEnumerable<CharacterResponse>>(pagedResults));
             }
             catch (Exception ex)
@@ -74,7 +62,8 @@ namespace DMAdvantage.Server.Controllers
                 var username = User.Identity?.Name ?? string.Empty;
 
                 var character = _repository.Context.Characters
-                    .Include(c => c.Abilities).AsNoTracking()
+                    .Include(c => c.Abilities)
+                    .Include(c => c.Class).AsNoTracking()
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (character == null) return NotFound();
@@ -113,32 +102,18 @@ namespace DMAdvantage.Server.Controllers
             return BadRequest("Failed to save new entity.");
         }
 
-        private async Task<Character> CreateNewCharacterInContext(CharacterRequest request)
-        {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
-
-            var entry = _repository.Context.Add(new Character());
-            entry.Entity.User = currentUser;
-            entry.CurrentValues.SetValues(request);
-            var abilities =
-                _repository.Context.Abilities
-                    .Where(x => request.Abilities.Select(a => a.Id).Contains(x.Id))
-                    .ToList();
-            entry.Entity.Abilities = abilities;
-            entry.Entity.WeaponsCache = JsonSerializer.Serialize(request.Weapons);
-            return entry.Entity;
-        }
-
         [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateCharacterById(Guid id, [FromBody] CharacterRequest request)
         {
             try
             {
-                var username = User.Identity?.Name ?? string.Empty;
-
+                var username = User.Identity?.Name;
+                if (username == null)
+                    throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
                 var entityFromRepo = _repository.Context.Characters
                     .Include(c => c.Abilities)
+                    .Include(c => c.Class)
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entityFromRepo == null)
@@ -148,14 +123,7 @@ namespace DMAdvantage.Server.Controllers
                     return Created($"/api/characters/{character.Id}", _mapper.Map<CharacterResponse>(character));
                 }
 
-                var entry = _repository.Context.Entry(entityFromRepo);
-                entry.CurrentValues.SetValues(request);
-                var abilities =
-                    _repository.Context.Abilities
-                        .Where(x => request.Abilities.Select(a => a.Id).Contains(x.Id))
-                        .ToList();
-                entry.Entity.Abilities = abilities;
-                entry.Entity.WeaponsCache = JsonSerializer.Serialize(request.Weapons);
+                await CreateNewCharacterInContext(request, entityFromRepo);
                 _repository.SaveAll();
                 return NoContent();
             }
@@ -166,6 +134,31 @@ namespace DMAdvantage.Server.Controllers
 
             return BadRequest("Failed to update entity.");
         }
+
+        private async Task<Character> CreateNewCharacterInContext(CharacterRequest request, Character? character = null)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
+
+            if (currentUser == null)
+                throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
+
+            EntityEntry<Character> entry;
+            if (character == null)
+                entry = _repository.Context.Add(new Character());
+            else
+                entry = _repository.Context.Entry(character);
+            entry.Entity.User = currentUser;
+            entry.CurrentValues.SetValues(request);
+            var abilities = _repository.Context.Abilities
+                .Where(x => request.Abilities.Select(a => a.Id).Contains(x.Id)).ToList();
+            entry.Entity.Abilities = abilities;
+            var dmclass = _repository.Context.DMClasses
+                .FirstOrDefault(x => request.Class.Id == x.Id);
+            entry.Entity.Class = dmclass;
+            entry.Entity.WeaponsCache = JsonSerializer.Serialize(request.Weapons);
+            return entry.Entity;
+        }
+
 
         [HttpDelete("{id:guid}")]
         public IActionResult DeleteCharacterById(Guid id)

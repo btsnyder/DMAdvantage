@@ -4,188 +4,201 @@
 <MudForm Model="@_model" @ref="@_form">
     <MudGrid Class="mb-5">
         <MudItem xs="12" Class="d-flex justify-content-between">
-            <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name"/>
+            <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Disabled="IsView"/>
             <MudSpacer/>
-            <ToggledText @bind-Value="_autoSave" Text="Auto Save" />
-        </MudItem>
-
-        <MudItem xs="12">
-            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Outlined="true">
-                <MudTabPanel Text="Character">  
-                    <MudGrid>
-                        <MudItem xs="12">
-                            <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="CharacterResponse" SearchFunc="@CharacterSearch"
-                                @bind-Value=@_selectedCharacter Label="Search" Dense="true" ToStringFunc="@(character => character.Display)"/>
-                        </MudItem>
-
-                            @if (_selectedCharacter != null)
-                            {
-                                <MudItem xs="3" Class="d-flex justify-center">
-                                    <MudText>Name</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>AC</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>HP</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>LVL</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>STR</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>DEX</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>CON</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>INT</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>WIS</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>CHA</MudText>
-                                </MudItem>
-
-
-                                <MudItem xs="3" Class="d-flex justify-center">
-                                    <MudText Class="fw-bold" Typo="Typo.h5">@_selectedCharacter.Name</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Warning" Size="Size.Large">@_selectedCharacter.ArmorClass</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Error" Size="Size.Large">@_selectedCharacter.HitPoints</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Success" Size="Size.Large">@_selectedCharacter.Level</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.StrengthBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.DexterityBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.ConstitutionBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.IntelligenceBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.WisdomBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.CharismaBonus.PrintInt()</MudChip>
-                                </MudItem>
-
-                                <MudItem xs="12" Class="d-flex justify-content-end">
-                                    <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddCharacter"/>
-                                </MudItem>
-                            }
-                    </MudGrid>
-                </MudTabPanel>
-                <MudTabPanel Text="Creature">  
-                    <MudGrid>
-                        <MudItem xs="12">
-                            <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="CreatureResponse" SearchFunc="@CreatureSearch"
-                                @bind-Value=@_selectedCreature Label="Search" Dense="true" ToStringFunc="@(creature => creature.Display)"/>
-                        </MudItem>
-
-                            @if (_selectedCreature != null)
-                            {
-                                <MudItem xs="3" Class="d-flex justify-center">
-                                    <MudText>Name</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>AC</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>HP</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>CR</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>STR</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>DEX</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>CON</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>INT</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>WIS</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudText>CHA</MudText>
-                                </MudItem>
-
-
-                                <MudItem xs="3" Class="d-flex justify-center">
-                                    <MudText Class="fw-bold" Typo="Typo.h5">@_selectedCreature.Name</MudText>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Warning" Size="Size.Large">@_selectedCreature.ArmorClass</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Error" Size="Size.Large">@_selectedCreature.HitPoints</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Success" Size="Size.Large">@_selectedCreature.ChallengeRating</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.StrengthBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.DexterityBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.ConstitutionBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.IntelligenceBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.WisdomBonus.PrintInt()</MudChip>
-                                </MudItem>
-                                <MudItem xs="1" Class="d-flex justify-center">
-                                    <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.CharismaBonus.PrintInt()</MudChip>
-                                </MudItem>
-
-                                <MudItem xs="12" Class="d-flex justify-content-end">
-                                    <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddCreature"/>
-                                </MudItem>
-                            }
-                    </MudGrid>
-                </MudTabPanel>
-            </MudTabs>
-        </MudItem>
-
-        <MudItem xs="12">
-            <ConcentrationPowerGrid @bind-ConcentrationPowers="@_concentrationPowers" />
-        </MudItem>
-
-        <MudItem xs="12" Class="d-flex">
-            @if (_initativeEditing)
+            @if (IsView)
             {
-                <MudFab Style="width: 250px;" Class="mx-2" Color="Color.Error" StartIcon="@Icons.Filled.Close" Label="Close Edit" OnClick="InitativeEditDone" />
+                <ToggledText @bind-Value="_autoLoad" Text="Auto Load" />
             }
             else
             {
-                <MudFab Style="width: 250px;" Class="mx-2" Color="Color.Secondary" StartIcon="@Icons.Filled.Create" Label="Edit Initative" OnClick="InitativeEditStart" />
+                <ToggledText @bind-Value="_autoSave" Text="Auto Save" />
             }
-            <MudIconButton Class="mx-2" Color="Color.Primary" Variant="Variant.Filled" Icon="@Icons.Filled.ChevronLeft" OnClick="InitativePrevious"/>
-            <MudIconButton Class="mx-2" Color="Color.Primary" Variant="Variant.Filled" Icon="@Icons.Filled.ChevronRight" OnClick="InitativeNext"/>
         </MudItem>
+
+        @if (!IsView)
+        {
+            <MudItem xs="12">
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Outlined="true">
+                    <MudTabPanel Text="Character">  
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="CharacterResponse" SearchFunc="@CharacterSearch"
+                                    @bind-Value=@_selectedCharacter Label="Search" Dense="true" ToStringFunc="@(character => character.Display)"/>
+                            </MudItem>
+
+                                @if (_selectedCharacter != null)
+                                {
+                                    <MudItem xs="3" Class="d-flex justify-center">
+                                        <MudText>Name</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>AC</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>HP</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>LVL</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>STR</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>DEX</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>CON</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>INT</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>WIS</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>CHA</MudText>
+                                    </MudItem>
+
+
+                                    <MudItem xs="3" Class="d-flex justify-center">
+                                        <MudText Class="fw-bold" Typo="Typo.h5">@_selectedCharacter.Name</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Warning" Size="Size.Large">@_selectedCharacter.ArmorClass</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Error" Size="Size.Large">@_selectedCharacter.HitPoints</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Success" Size="Size.Large">@_selectedCharacter.Level</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.StrengthBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.DexterityBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.ConstitutionBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.IntelligenceBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.WisdomBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCharacter.CharismaBonus.PrintInt()</MudChip>
+                                    </MudItem>
+
+                                    <MudItem xs="12" Class="d-flex justify-content-end">
+                                        <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddCharacter"/>
+                                    </MudItem>
+                                }
+                        </MudGrid>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Creature">  
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="CreatureResponse" SearchFunc="@CreatureSearch"
+                                    @bind-Value=@_selectedCreature Label="Search" Dense="true" ToStringFunc="@(creature => creature.Display)"/>
+                            </MudItem>
+
+                                @if (_selectedCreature != null)
+                                {
+                                    <MudItem xs="3" Class="d-flex justify-center">
+                                        <MudText>Name</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>AC</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>HP</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>CR</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>STR</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>DEX</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>CON</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>INT</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>WIS</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudText>CHA</MudText>
+                                    </MudItem>
+
+
+                                    <MudItem xs="3" Class="d-flex justify-center">
+                                        <MudText Class="fw-bold" Typo="Typo.h5">@_selectedCreature.Name</MudText>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Warning" Size="Size.Large">@_selectedCreature.ArmorClass</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Error" Size="Size.Large">@_selectedCreature.HitPoints</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Success" Size="Size.Large">@_selectedCreature.ChallengeRating</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.StrengthBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.DexterityBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.ConstitutionBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.IntelligenceBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.WisdomBonus.PrintInt()</MudChip>
+                                    </MudItem>
+                                    <MudItem xs="1" Class="d-flex justify-center">
+                                        <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedCreature.CharismaBonus.PrintInt()</MudChip>
+                                    </MudItem>
+
+                                    <MudItem xs="12" Class="d-flex justify-content-end">
+                                        <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddCreature"/>
+                                    </MudItem>
+                                }
+                        </MudGrid>
+                    </MudTabPanel>
+                </MudTabs>
+            </MudItem>
+        }
+
+        <MudItem xs="12">
+            <ConcentrationPowerGrid @bind-ConcentrationPowers="@_concentrationPowers" FromView="IsView"/>
+        </MudItem>
+
+        @if (!IsView)
+        {
+            <MudItem xs="12" Class="d-flex">
+                @if (_initativeEditing)
+                {
+                    <MudFab Style="width: 250px;" Class="mx-2" Color="Color.Error" StartIcon="@Icons.Filled.Close" Label="Close Edit" OnClick="InitativeEditDone" />
+                }
+                else
+                {
+                    <MudFab Style="width: 250px;" Class="mx-2" Color="Color.Secondary" StartIcon="@Icons.Filled.Create" Label="Edit Initative" OnClick="InitativeEditStart" />
+                }
+                <MudIconButton Class="mx-2" Color="Color.Primary" Variant="Variant.Filled" Icon="@Icons.Filled.ChevronLeft" OnClick="InitativePrevious"/>
+                <MudIconButton Class="mx-2" Color="Color.Primary" Variant="Variant.Filled" Icon="@Icons.Filled.ChevronRight" OnClick="InitativeNext"/>
+            </MudItem>
+        }
 
         <MudItem xs="6">
             <MudTable Items="_initatives" T="InitativeDataModel" Hover="true" Breakpoint="Breakpoint.None" Elevation="3" OnRowClick="@(args => InitativeRowClickEvent(args))" Outlined="true">
@@ -210,14 +223,14 @@
                     <MudTh Class="mud-theme-tertiary text-white" />
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd DataLabel="Current">
+                    <MudTd DataLabel="Current" Class="@GetRowClass(context)">
                         @if (_currentPlayer == context)
                         {
                             <MudIcon Icon="@Icons.Filled.DoubleArrow" />
                         }
                     </MudTd>
-                    <MudTd DataLabel="Init">
-                        @if (_initativeEditing)
+                    <MudTd DataLabel="Init" Class="@GetRowClass(context)">
+                        @if (_initativeEditing && !IsView)
                         {
                             <MudNumericField @bind-Value="context.Initative" Variant="Variant.Outlined" />
                         }
@@ -226,258 +239,273 @@
                             <MudText>@context.Initative</MudText> 
                         }
                     </MudTd>
-                    <MudTd DataLabel="Name">@context.Name</MudTd>
-                    <MudTd DataLabel="AC">@context.Being?.ArmorClass</MudTd>
-                    <MudTd DataLabel="HP" Style=@($"color: {context.GetHPColor()};")>@context.CurrentHP</MudTd>
-                    <MudTd DataLabel="FP">@context.CurrentFP</MudTd>
-                    <MudTd DataLabel="TP">@context.CurrentTP</MudTd>
-                    <MudTd DataLabel="Delete">                
-                        <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveInitative(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+                    <MudTd DataLabel="Name" Class="@GetRowClass(context)">@InitativeDisplayName(context)</MudTd>
+                    <MudTd DataLabel="AC" Class="@GetRowClass(context)">@context.Being?.ArmorClass</MudTd>
+                    <MudTd DataLabel="HP" Style=@($"color: {context.GetHPColor()}; background: {HealthBackground(context)}")>@(IsView ? context.GetHPDisplay() : @context.CurrentHP)</MudTd>
+                    <MudTd DataLabel="FP" Class="@GetRowClass(context)">@(IsView ? context.ForcePoints : context.CurrentFP)</MudTd>
+                    <MudTd DataLabel="TP" Class="@GetRowClass(context)">@(IsView ? context.TechPoints : context.CurrentTP)</MudTd>
+                    <MudTd DataLabel="Delete" Class="@GetRowClass(context)">                
+                        @if (!IsView)
+                        {
+                            <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveInitative(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+                        }
                     </MudTd>
                 </RowTemplate>
             </MudTable>
         </MudItem>
 
         <MudItem xs="6">
-            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Outlined="true">
-                <MudTabPanel Text="Basic">  
-                    <MudGrid>
-                        <MudItem xs="12">
-                            <MudText>Name: <b>@_selectedInitative?.Name</b></MudText>
-                        </MudItem>
-
-                        @if (_selectedInitativeCharacter != null)
-                        {
-                            <MudItem xs="6">
-                                <MudText>Player: <b>@_selectedInitativeCharacter.PlayerName</b></MudText>
+            @if (IsView && _selectedInitativeCreature == null)
+            {
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Outlined="true">
+                    <MudTabPanel Text="Basic">  
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText>Name: <b>@_selectedInitative?.Name</b></MudText>
                             </MudItem>
-                            <MudItem xs="6">
-                                <MudText>Class: <b>@_selectedInitativeCharacter.Class</b></MudText>
-                            </MudItem>
-                        }
 
-                        <MudItem xs="3">
-                            <MudText>AC: <b>@_selectedInitative?.Being?.ArmorClass</b></MudText>
-                        </MudItem>
-                        <MudItem xs="3">
-                            <MudText>Initative: <b>@_selectedInitative?.Being?.DexterityBonus.PrintInt()</b></MudText>
-                        </MudItem>
-                        <MudItem xs="3">
                             @if (_selectedInitativeCharacter != null)
                             {
-                                <MudText>Proficiency: <b>@_selectedInitativeCharacter?.GetProficiencyBonus().PrintInt()</b></MudText>
+                                <MudItem xs="6">
+                                    <MudText>Player: <b>@_selectedInitativeCharacter.PlayerName</b></MudText>
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudText>Class: <b>@_selectedInitativeCharacter.Class</b></MudText>
+                                </MudItem>
                             }
-                        </MudItem>
-                        <MudItem xs="3">
-                            <MudText>Speed: <b>@_selectedInitative?.Being?.Speed</b></MudText>
-                        </MudItem>
 
-                        <MudItem xs="12" Class="d-flex align-items-center">
-                            <MudText>HP:</MudText>
-                            @if (_selectedInitative?.Being != null)
-                            {
-                                <MudProgressLinear Class="mx-2" Color="Color.Info" @bind-Value="@_selectedInitative.HPAsDouble" Size="Size.Large" Max="@_selectedInitative.Being.HitPoints" />
-                            }
-                            <MudText Class="mx-2">@_selectedInitative?.CurrentHP/@_selectedInitative?.Being?.HitPoints</MudText>
-                            <MudNumericField Class="mx-2" Variant="Variant.Outlined" @bind-Value="_healthEdit" Style="width: 100px;" />
-                            <MudIconButton Class="mx-2 my-auto" Color="Color.Error" Variant="Variant.Filled" Icon="@Icons.Filled.WaterDrop" OnClick="ApplyDamage"/>
-                            <MudIconButton Class="mx-2 my-auto" Color="Color.Success" Variant="Variant.Filled" Icon="@Icons.Filled.MedicalServices" OnClick="ApplyHealth"/>
-                        </MudItem>
+                            <MudItem xs="3">
+                                <MudText>AC: <b>@_selectedInitative?.Being?.ArmorClass</b></MudText>
+                            </MudItem>
+                            <MudItem xs="3">
+                                <MudText>Initative: <b>@_selectedInitative?.Being?.DexterityBonus.PrintInt()</b></MudText>
+                            </MudItem>
+                            <MudItem xs="3">
+                                @if (_selectedInitativeCharacter != null)
+                                {
+                                    <MudText>Proficiency: <b>@_selectedInitativeCharacter?.GetProficiencyBonus().PrintInt()</b></MudText>
+                                }
+                            </MudItem>
+                            <MudItem xs="3">
+                                <MudText>Speed: <b>@_selectedInitative?.Being?.Speed</b></MudText>
+                            </MudItem>
 
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">STR: @_selectedInitative?.Being?.Strength</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">CON: @_selectedInitative?.Being?.Constitution</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">DEX: @_selectedInitative?.Being?.Dexterity</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">INT: @_selectedInitative?.Being?.Intelligence</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">WIS: @_selectedInitative?.Being?.Wisdom</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">CHA: @_selectedInitative?.Being?.Charisma</MudItem>
+                            <MudItem xs="12" Class="d-flex align-items-center">
+                                <MudText>HP:</MudText>
+                                @if (_selectedInitative?.Being != null)
+                                {
+                                    <MudProgressLinear Class="mx-2" Color="Color.Info" @bind-Value="@_selectedInitative.HPAsDouble" Size="Size.Large" Max="@_selectedInitative.Being.HitPoints" />
+                                }
+                                <MudText Class="mx-2">@_selectedInitative?.CurrentHP/@_selectedInitative?.Being?.HitPoints</MudText>
+                                @if (!IsView)
+                                {
+                                    <MudNumericField Class="mx-2" Variant="Variant.Outlined" @bind-Value="_healthEdit" Style="width: 100px;" />
+                                    <MudIconButton Class="mx-2 my-auto" Color="Color.Error" Variant="Variant.Filled" Icon="@Icons.Filled.WaterDrop" OnClick="ApplyDamage"/>
+                                    <MudIconButton Class="mx-2 my-auto" Color="Color.Success" Variant="Variant.Filled" Icon="@Icons.Filled.MedicalServices" OnClick="ApplyHealth"/>
+                                }
+                            </MudItem>
 
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.StrengthBonus.PrintInt()</b>)</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.DexterityBonus.PrintInt()</b>)</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.ConstitutionBonus.PrintInt()</b>)</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.IntelligenceBonus.PrintInt()</b>)</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.WisdomBonus.PrintInt()</b>)</MudItem>
-                        <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.CharismaBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">STR: @_selectedInitative?.Being?.Strength</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">CON: @_selectedInitative?.Being?.Constitution</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">DEX: @_selectedInitative?.Being?.Dexterity</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">INT: @_selectedInitative?.Being?.Intelligence</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">WIS: @_selectedInitative?.Being?.Wisdom</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">CHA: @_selectedInitative?.Being?.Charisma</MudItem>
+
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.StrengthBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.DexterityBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.ConstitutionBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.IntelligenceBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.WisdomBonus.PrintInt()</b>)</MudItem>
+                            <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Being?.CharismaBonus.PrintInt()</b>)</MudItem>
                         
+                            @if (_selectedInitativeCharacter != null)
+                            {
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">
+                                    Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.StrengthBonus, _selectedInitativeCharacter.StrengthSave).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                    Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.DexteritySave).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                    Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.ConstitutionBonus, _selectedInitativeCharacter.ConstitutionSave).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                    Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.IntelligenceSave).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                    Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.WisdomSave).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                    Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.CharismaSave).PrintInt()</b>
+                                </MudItem>
+
+                                <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                    Acrobatics: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.Acrobatics).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                    Investigation: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Investigation).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                    Persuasion: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Persuasion).PrintInt()</b>
+                                </MudItem>
+
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Animal Handling: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.AnimalHandling).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Lore: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Lore).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Piloting: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Piloting).PrintInt()</b>
+                                </MudItem>
+
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Athletics: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.StrengthBonus, _selectedInitativeCharacter.Athletics).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Medicine: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Medicine).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Sleight Of Hand: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.SleightOfHand).PrintInt()</b>
+                                </MudItem>
+
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Deception: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Deception).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Nature: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Nature).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Stealth: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.Stealth).PrintInt()</b>
+                                </MudItem>
+
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Insight: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Insight).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Perception: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Perception).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Survival: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Survival).PrintInt()</b>
+                                </MudItem>
+
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Intimidation: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Intimidation).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Performance: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Performance).PrintInt()</b>
+                                </MudItem>
+                                <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                    Technology: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Technology).PrintInt()</b>
+                                </MudItem>
+                            }
+                        </MudGrid>
+                    </MudTabPanel>
+                    <MudTabPanel Text="Actions">  
                         @if (_selectedInitativeCharacter != null)
                         {
-                            <MudItem xs="2" Class="d-flex justify-center pa-0">
-                                Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.StrengthBonus, _selectedInitativeCharacter.StrengthSave).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="2" Class="d-flex justify-center pt-0">
-                                Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.DexteritySave).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="2" Class="d-flex justify-center pt-0">
-                                Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.ConstitutionBonus, _selectedInitativeCharacter.ConstitutionSave).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="2" Class="d-flex justify-center pt-0">
-                                Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.IntelligenceSave).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="2" Class="d-flex justify-center pt-0">
-                                Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.WisdomSave).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="2" Class="d-flex justify-center pt-0">
-                                Save: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.CharismaSave).PrintInt()</b>
-                            </MudItem>
-
-                            <MudItem xs="4" Class="d-flex justify-center pb-0">
-                                Acrobatics: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.Acrobatics).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pb-0">
-                                Investigation: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Investigation).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pb-0">
-                                Persuasion: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Persuasion).PrintInt()</b>
-                            </MudItem>
-
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Animal Handling: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.AnimalHandling).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Lore: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Lore).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Piloting: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Piloting).PrintInt()</b>
-                            </MudItem>
-
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Athletics: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.StrengthBonus, _selectedInitativeCharacter.Athletics).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Medicine: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Medicine).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Sleight Of Hand: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.SleightOfHand).PrintInt()</b>
-                            </MudItem>
-
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Deception: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Deception).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Nature: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Nature).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Stealth: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.DexterityBonus, _selectedInitativeCharacter.Stealth).PrintInt()</b>
-                            </MudItem>
-
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Insight: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Insight).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Perception: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Perception).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Survival: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.WisdomBonus, _selectedInitativeCharacter.Survival).PrintInt()</b>
-                            </MudItem>
-
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Intimidation: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Intimidation).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Performance: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.CharismaBonus, _selectedInitativeCharacter.Performance).PrintInt()</b>
-                            </MudItem>
-                            <MudItem xs="4" Class="d-flex justify-center pa-0">
-                                Technology: <b>@_selectedInitativeCharacter.SkillBonus(_selectedInitativeCharacter.IntelligenceBonus, _selectedInitativeCharacter.Technology).PrintInt()</b>
-                            </MudItem>
-                        }
-                    </MudGrid>
-                </MudTabPanel>
-                <MudTabPanel Text="Actions">  
-                    @if (_selectedInitativeCharacter != null)
-                    {
-                        @foreach (var weapon in _selectedInitativeCharacter.Weapons)
-                        {
-                            <MudPaper Class="my-4 pa-4" Elevation="3" Outlined="true">
-                                <MudGrid>
-                                    <MudItem xs="4">@weapon.Name</MudItem>
-                                    <MudItem xs="2">@_selectedInitativeCharacter.WeaponBonus(weapon.Melee).PrintInt()</MudItem>
-                                    <MudItem xs="2">@weapon.Damage@_selectedInitativeCharacter.WeaponBonus(weapon.Melee, true).PrintInt()</MudItem>
-                                    <MudItem xs="4">@weapon.DamageType</MudItem>
-
-                                    <MudItem xs="12" Class="d-flex flex-wrap">
-                                        @foreach (var prop in weapon.PropertyDescriptions)
-                                        {
-                                            <MudButton Class="m-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name (@prop.Description)</MudButton>
-                                        }
-                                    </MudItem>
-                                </MudGrid>
-                            </MudPaper>
-                        }
-                    }
-                    @if (_selectedInitativeCreature != null)
-                    {
-                        @foreach (var action in _selectedInitativeCreature.Actions)
-                        {
-                            <MudPaper Class="my-4 pa-4" Elevation="3" Outlined="true">
-                                <MudGrid>
-                                    <MudItem xs="4">@action.Name</MudItem>
-                                    <MudItem xs="2">@action.Hit</MudItem>
-                                    <MudItem xs="2">@action.Range</MudItem>
-                                    <MudItem xs="2">@action.Damage</MudItem>
-                                    <MudItem xs="2">@(string.IsNullOrWhiteSpace(action.Damage) ? "" : @action.DamageType)</MudItem>
-
-                                    <MudItem xs="12">
-                                        <p>@action.Description</p>
-                                    </MudItem>
-                                </MudGrid>
-                            </MudPaper>
-                        }
-                    }
-                </MudTabPanel>
-                <MudTabPanel Text="Abilities">  
-                    @if (_selectedInitativeCharacter != null)
-                    {
-                        <MudItem xs="12" Class="d-flex flex-wrap">
-                            @foreach (var ability in _selectedInitativeCharacter.Abilities.OrderBy(x => x.Display))
+                            @foreach (var weapon in _selectedInitativeCharacter.Weapons)
                             {
-                                <MudButton Class="m-2" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ShowAbility(ability))" Size="Size.Small">@ability.Name</MudButton>
+                                <MudPaper Class="my-4 pa-4" Elevation="3" Outlined="true">
+                                    <MudGrid>
+                                        <MudItem xs="4">@weapon.Name</MudItem>
+                                        <MudItem xs="2">@_selectedInitativeCharacter.WeaponBonus(weapon.Melee).PrintInt()</MudItem>
+                                        <MudItem xs="2">@weapon.Damage@_selectedInitativeCharacter.WeaponBonus(weapon.Melee, true).PrintInt()</MudItem>
+                                        <MudItem xs="4">@weapon.DamageType</MudItem>
+
+                                        <MudItem xs="12" Class="d-flex flex-wrap">
+                                            @foreach (var prop in weapon.PropertyDescriptions)
+                                            {
+                                                <MudButton Class="m-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name (@prop.Description)</MudButton>
+                                            }
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudPaper>
                             }
-                        </MudItem>
-                    }
-                </MudTabPanel>
-                <MudTabPanel Text="ForcePowers">
-                    <MudGrid>
-                        <MudItem xs="3"/>
-                        <MudItem xs="3" Class="d-flex justify-center">Light</MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center">Universal</MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center">Dark</MudItem>
+                        }
+                        @if (_selectedInitativeCreature != null)
+                        {
+                            @foreach (var action in _selectedInitativeCreature.Actions)
+                            {
+                                <MudPaper Class="my-4 pa-4" Elevation="3" Outlined="true">
+                                    <MudGrid>
+                                        <MudItem xs="4">@action.Name</MudItem>
+                                        <MudItem xs="2">@action.Hit</MudItem>
+                                        <MudItem xs="2">@action.Range</MudItem>
+                                        <MudItem xs="2">@action.Damage</MudItem>
+                                        <MudItem xs="2">@(string.IsNullOrWhiteSpace(action.Damage) ? "" : @action.DamageType)</MudItem>
 
-                        <MudItem xs="3" Class="d-flex justify-center">Modifier</MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></MudItem>
+                                        <MudItem xs="12">
+                                            <p>@action.Description</p>
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudPaper>
+                            }
+                        }
+                    </MudTabPanel>
+                    <MudTabPanel Text="Abilities">  
+                        @if (_selectedInitativeCharacter != null)
+                        {
+                            <MudItem xs="12" Class="d-flex flex-wrap">
+                                @foreach (var ability in _selectedInitativeCharacter.Abilities.OrderBy(x => x.Display))
+                                {
+                                    <MudButton Class="m-2" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ShowAbility(ability))" Size="Size.Small">@ability.Name</MudButton>
+                                }
+                            </MudItem>
+                        }
+                    </MudTabPanel>
+                    <MudTabPanel Text="ForcePowers">
+                        <MudGrid>
+                            <MudItem xs="3"/>
+                            <MudItem xs="3" Class="d-flex justify-center">Light</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center">Universal</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center">Dark</MudItem>
 
-                        <MudItem xs="3" Class="d-flex justify-center">Save DC</MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Light)</b></MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Universal)</b></MudItem>
-                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Dark)</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center">Modifier</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></MudItem>
 
-                        <MudItem xs="12" Class="d-flex align-items-center">
-                            <MudText Class="me-5">FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b></MudText>
-                            <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Add" Color="Color.Error" Size="Size.Small" 
-                                OnClick="@(() => _selectedInitative!.CurrentFP++)" Disabled=@(_selectedInitative == null)/>
-                            <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Remove" Color="Color.Error" Size="Size.Small" 
-                                OnClick="@(() => _selectedInitative!.CurrentFP--)" Disabled=@(_selectedInitative == null)/>
-                        </MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center">Save DC</MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Light)</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Universal)</b></MudItem>
+                            <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Dark)</b></MudItem>
 
-                        <MudItem xs="12">
-                            <MudText Typo="Typo.h6" Class="fw-bold">Force Powers</MudText>
-                        </MudItem>
-                        <ForcePowerGrid Title="At-Will" Powers="@SelectedForcePowers.Where(x => x.Level == 0).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 1" Powers="@SelectedForcePowers.Where(x => x.Level == 1).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 2" Powers="@SelectedForcePowers.Where(x => x.Level == 2).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 3" Powers="@SelectedForcePowers.Where(x => x.Level == 3).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 4" Powers="@SelectedForcePowers.Where(x => x.Level == 4).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 5" Powers="@SelectedForcePowers.Where(x => x.Level == 5).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 6" Powers="@SelectedForcePowers.Where(x => x.Level == 6).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 7" Powers="@SelectedForcePowers.Where(x => x.Level == 7).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 8" Powers="@SelectedForcePowers.Where(x => x.Level == 8).ToList()" Click="ForcePowerClicked" />
-                        <ForcePowerGrid Title="Level 9" Powers="@SelectedForcePowers.Where(x => x.Level == 9).ToList()" Click="ForcePowerClicked" />
-                    </MudGrid>
-                </MudTabPanel>
-            </MudTabs>
+                            <MudItem xs="12" Class="d-flex align-items-center">
+                                <MudText Class="me-5">FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b></MudText>
+                                @if (!IsView)
+                                {
+                                    <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Add" Color="Color.Error" Size="Size.Small" 
+                                        OnClick="@(() => _selectedInitative!.CurrentFP++)" Disabled=@(_selectedInitative == null)/>
+                                    <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Remove" Color="Color.Error" Size="Size.Small" 
+                                        OnClick="@(() => _selectedInitative!.CurrentFP--)" Disabled=@(_selectedInitative == null)/>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h6" Class="fw-bold">Force Powers</MudText>
+                            </MudItem>
+                            <ForcePowerGrid Title="At-Will" Powers="@SelectedForcePowers.Where(x => x.Level == 0).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 1" Powers="@SelectedForcePowers.Where(x => x.Level == 1).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 2" Powers="@SelectedForcePowers.Where(x => x.Level == 2).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 3" Powers="@SelectedForcePowers.Where(x => x.Level == 3).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 4" Powers="@SelectedForcePowers.Where(x => x.Level == 4).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 5" Powers="@SelectedForcePowers.Where(x => x.Level == 5).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 6" Powers="@SelectedForcePowers.Where(x => x.Level == 6).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 7" Powers="@SelectedForcePowers.Where(x => x.Level == 7).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 8" Powers="@SelectedForcePowers.Where(x => x.Level == 8).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                            <ForcePowerGrid Title="Level 9" Powers="@SelectedForcePowers.Where(x => x.Level == 9).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                        </MudGrid>
+                    </MudTabPanel>
+                </MudTabs>
+            }
         </MudItem>
 
-        <Submit @bind-Loading="@_loading" CancelRef="encounters" OnClick="OnValidSubmit"/>
+        @if (!IsView)
+        {
+            <Submit @bind-Loading="@_loading" CancelRef="encounters" OnClick="OnValidSubmit"/>
+        }
     </MudGrid>
 </MudForm>
 

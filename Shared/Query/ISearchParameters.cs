@@ -2,6 +2,8 @@
 {
     public interface ISearchParameters<T>
     {
-        IQueryable<T> AddToQuery(IQueryable<T> query);
+        string Search { get; }
+
+        bool IsFound(T entity);
     }
 }

@@ -12,6 +12,7 @@ namespace DMAdvantage.Client.Pages.Characters
         private IEnumerable<string> _weaponProperties = Array.Empty<string>();
         private CharacterRequest _model = new();
         private List<ForcePowerResponse> _forcePowers = new();
+        private List<DMClassResponse> _classes = new();
         private MudForm _form;
         private bool _loading;
         private readonly CharacterRequestFluentValidator _characterValidator = new();
@@ -31,6 +32,7 @@ namespace DMAdvantage.Client.Pages.Characters
                 _model = await ApiService.GetEntityById<CharacterResponse>(Guid.Parse(Id)) ?? new CharacterResponse();
             }
             _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new List<ForcePowerResponse>();
+            _classes = await ApiService.GetAllEntities<DMClassResponse>() ?? new List<DMClassResponse>();
 
             await base.OnInitializedAsync();
             _loading = false;
@@ -55,7 +57,7 @@ namespace DMAdvantage.Client.Pages.Characters
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Error submitting change: {ex.Message}", Severity.Error);
+                Snackbar.Add($"Error submitting change!", Severity.Error);
             }
             _loading = false;
             StateHasChanged();

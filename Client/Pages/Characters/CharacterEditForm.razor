@@ -8,28 +8,34 @@ else
 {
     <MudForm Model="@_model" @ref="@_form">
         <MudGrid Class="mb-5">
-            <MudItem xs="4">
+            <MudItem xs="3">
                 <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_characterValidator.ValidateValue)"/>
             </MudItem>
-            <MudItem xs="4">
+            <MudItem xs="3">
                 <MudTextField @bind-Value="_model.PlayerName" Label="Player" Variant="Variant.Outlined" For="() => _model.PlayerName"/>
             </MudItem>
-            <MudItem xs="4">
-                <MudTextField @bind-Value="_model.Class" Label="Class" Variant="Variant.Outlined" For="() => _model.Class"/>
-            </MudItem>
-            
             <MudItem xs="3">
-                <MudNumericField @bind-Value="_model.Level" Label="Level" Variant="Variant.Outlined" For="() => _model.Level" Validation="@(_characterValidator.ValidateValue)"/>
-            </MudItem>
-            <MudItem xs="3">
-                <MudNumericField @bind-Value="_model.HitPoints" Label="Hit Points" Variant="Variant.Outlined" For="() => _model.HitPoints" Validation="@(_characterValidator.ValidateValue)"/>
-            </MudItem>
-            <MudItem xs="3">
-                <MudNumericField @bind-Value="_model.ArmorClass" Label="Armor Class" Variant="Variant.Outlined" For="() => _model.ArmorClass" Validation="@(_characterValidator.ValidateValue)"/>
+                <MudSelect T="DMClassResponse" @bind-Value="@_model.Class" Label="Class" Variant="Variant.Outlined" For="() => _model.Class">
+                    @foreach (var dmclass in _classes)
+                    {
+                        <MudSelectItem Value="@dmclass">@dmclass.Name</MudSelectItem>
+                    }
+                </MudSelect>
             </MudItem>
             <MudItem xs="3">
                 <MudTextField @bind-Value="_model.Speed" Label="Speed" Variant="Variant.Outlined" For="() => _model.Speed" Validation="@(_characterValidator.ValidateValue)"/>
             </MudItem>
+            
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_model.Level" Label="Level" Variant="Variant.Outlined" For="() => _model.Level" Validation="@(_characterValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_model.HitPoints" Label="Hit Points" Variant="Variant.Outlined" For="() => _model.HitPoints" Validation="@(_characterValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_model.ArmorClass" Label="Armor Class" Variant="Variant.Outlined" For="() => _model.ArmorClass" Validation="@(_characterValidator.ValidateValue)"/>
+            </MudItem>
+ 
             
             <MudItem xs="2">
                 <MudPaper class="d-flex flex-column px-2" Outlined="true">

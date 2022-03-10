@@ -22,9 +22,9 @@ namespace DMAdvantage.Shared.Query
             AddRange(items);
         }
 
-        public static PagedList<T> ToPagedList(List<T> source, PagingParameters paging)
+        public static PagedList<T> ToPagedList(IEnumerable<T> source, PagingParameters paging)
         {
-            var count = source.Count;
+            var count = source.Count();
             var skipped = (paging.PageNumber - 1) * paging.PageSize;
             while (count != 0 && skipped >= count)
             {

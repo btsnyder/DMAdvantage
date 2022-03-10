@@ -17,8 +17,6 @@ namespace DMAdvantage.Data
         public IEnumerable<T> GetAllEntities<T>(string username, ISearchParameters<T>? searching = null) where T : BaseEntity
         {
             var query = GetFromDatabase<T>(username);
-            if (searching != null)
-                query = searching.AddToQuery(query);
             return query.ToList()
                 .OrderBy(c => c.OrderBy())
                 .ToArray();
@@ -27,8 +25,6 @@ namespace DMAdvantage.Data
         public PagedList<T> GetAllEntities<T>(string username, PagingParameters paging, ISearchParameters<T>? searching = null) where T : BaseEntity
         {
             var query = GetFromDatabase<T>(username);
-            if (searching != null)
-                query = searching.AddToQuery(query);
 
             var data = query.ToList().OrderBy(c => c.OrderBy());
             return PagedList<T>.ToPagedList(data.ToList(), paging);
@@ -41,9 +37,16 @@ namespace DMAdvantage.Data
             return GetFromDatabase<T>(username).FirstOrDefault(c => c.Id == id);
         }
 
+        public T? GetEntityByIdV2<T>(Guid id, string username, bool include, bool tracking) where T : BaseEntity
+        {
+            if (id == Guid.Empty)
+                return null;
+            return GetFromDatabase<T>(username, include, tracking).FirstOrDefault(c => c.Id == id);
+        }
+
         public T? GetEntityByIdWithoutUser<T>(Guid id) where T : BaseEntity
         {
-            return id == Guid.Empty ? null : GetFromDatabase<T>().FirstOrDefault(c => c.Id == id);
+            return id == Guid.Empty ? null : GetFromDatabaseWithoutUser<T>().FirstOrDefault(c => c.Id == id);
         }
 
         public Character? GetCharacterByPlayerNameWithoutUser(string name)
@@ -55,7 +58,7 @@ namespace DMAdvantage.Data
 
         public IEnumerable<T> GetEntitiesByIdsWithoutUser<T>(Guid[] ids) where T : BaseEntity
         {
-            return ids.Any() ? GetFromDatabase<T>(tracking: false).Where(c => ids.Contains(c.Id)) : GetFromDatabase<T>(tracking: false);
+            return ids.Any() ? GetFromDatabaseWithoutUser<T>().Where(c => ids.Contains(c.Id)) : GetFromDatabaseWithoutUser<T>();
         }
 
         public void AddEntity(object entity)
@@ -78,21 +81,51 @@ namespace DMAdvantage.Data
             Context.ChangeTracker.Clear();
         }
 
-        private IQueryable<T> GetFromDatabase<T>(string? username = null, bool tracking = true) where T : BaseEntity
+        private IQueryable<T> GetFromDatabase<T>(string username, bool include = true, bool tracking = true) where T : BaseEntity
         {
             try
             {
                 DbSet<T> dbSet = Context.Set<T>();
                 if (dbSet is DbSet<Character> characters)
-                    return tracking ? username == null ? (IQueryable<T>) characters.Include(x => x.Abilities) :
-                        (IQueryable<T>) characters.Include(x => x.Abilities)
-                            .Where(c => c.User != null && c.User.UserName == username) :
-                        username == null ? (IQueryable<T>) characters.AsNoTracking().Include(x => x.Abilities).AsNoTracking() :
-                        (IQueryable<T>) characters.AsNoTracking().Include(x => x.Abilities).AsNoTracking()
-                            .Where(c => c.User != null && c.User.UserName == username);
+                {
+                    if (tracking && include)
+                    {
+                        return (IQueryable<T>)characters.Include(x => x.Abilities).Where(c => c.User != null && c.User.UserName == username);
+                    }
+                    else if (include)
+                    {
+                        return (IQueryable<T>)characters.Include(x => x.Abilities).Where(c => c.User != null && c.User.UserName == username).AsNoTracking();
+                    }
+                    else if (tracking)
+                    {
+                        return (IQueryable<T>)characters.Where(c => c.User != null && c.User.UserName == username);
+                    }
+                    else
+                    {
+                        return (IQueryable<T>)characters.Where(c => c.User != null && c.User.UserName == username).AsNoTracking();
+                    }
+                }
                 return tracking ?
-                    username == null ? dbSet : dbSet.Where(c => c.User != null && c.User.UserName == username) :
-                    username == null ? dbSet.AsNoTracking() : dbSet.AsNoTracking().Where(c => c.User != null && c.User.UserName == username);
+                    dbSet.Where(c => c.User != null && c.User.UserName == username) :
+                    dbSet.Where(c => c.User != null && c.User.UserName == username).AsNoTracking();
+            }
+            catch (Exception ex)
+            {
+                // Invalid type was provided (i.e. table does not exist in database)
+                throw new ArgumentException("Invalid Entity", ex);
+            }
+        }
+
+        private IQueryable<T> GetFromDatabaseWithoutUser<T>() where T : BaseEntity
+        {
+            try
+            {
+                DbSet<T> dbSet = Context.Set<T>();
+                if (dbSet is DbSet<Character> characters)
+                {
+                    return (IQueryable<T>)characters.Include(x => x.Abilities).AsNoTracking();
+                }
+                return dbSet.AsNoTracking();
             }
             catch (Exception ex)
             {

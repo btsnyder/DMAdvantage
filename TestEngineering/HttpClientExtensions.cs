@@ -48,6 +48,8 @@ namespace TestEngineering
             var path = t.Name;
             if (path.Contains("Ability"))
                 return "abilities";
+            if (path.Contains("Class"))
+                return "classes";
             path = path.Replace("Response", "");
             path = path.Replace("Request", "");
             path += "s";
@@ -131,6 +133,15 @@ namespace TestEngineering
             var response = await client.PostAsync("/api/abilities", ability);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<AbilityResponse>();
+            return created;
+        }
+
+        public static async Task<DMClassResponse> CreateDMClass(this HttpClient client, DMClassRequest? dmclass = null)
+        {
+            dmclass ??= Generation.DMClassRequest();
+            var response = await client.PostAsync("/api/classes", dmclass);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var created = await response.ParseEntity<DMClassResponse>();
             return created;
         }
 

@@ -6,11 +6,13 @@ namespace DMAdvantage.Client.Validators
 {
     public class CharacterRequestFluentValidator : AbstractValidator<CharacterRequest>
     {
+        private int[] _possibleHitDice = new int[] { 6, 8, 10, 12 };
         public ISnackbar? Snackbar { get; set; }
 
         public CharacterRequestFluentValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
+            RuleFor(x => x.HitDice).Must(x => _possibleHitDice.Contains(x));
             RuleFor(x => x.HitPoints).InclusiveBetween(0, 500);
             RuleFor(x => x.ArmorClass).InclusiveBetween(0, 50);
             RuleFor(x => x.Speed).NotEmpty();

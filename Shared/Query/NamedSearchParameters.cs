@@ -6,11 +6,11 @@ namespace DMAdvantage.Shared.Query
     {
         public string Search { get; set; }
 
-        public IQueryable<T> AddToQuery(IQueryable<T> query)
+        public bool IsFound(T entity)
         {
-            if (!string.IsNullOrWhiteSpace(Search))
-                query = query.Where(f => f.Name != null && f.Name.ToLower().Contains(Search.ToLower()));
-            return query;
+            if (!string.IsNullOrWhiteSpace(Search) && entity.Name?.ToLower().Contains(Search.ToLower()) != true)
+                return false;
+            return true;
         }
 
         public string GetQuery()

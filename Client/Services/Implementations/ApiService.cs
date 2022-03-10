@@ -88,6 +88,8 @@ namespace DMAdvantage.Client.Services.Implementations
             var path = t.Name;
             if (path.Contains("Ability"))
                 return "abilities";
+            if (path.Contains("Class"))
+                return "classes";
             path = path.Replace("Request", "");
             path = path.Replace("Response", "");
             path += "s";

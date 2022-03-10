@@ -7,7 +7,8 @@ namespace DMAdvantage.Shared.Models
         public string PlayerName { get; set; }
         [Required]
         public int Level { get; set; }
-        public string Class { get; set; }
+        public int HitDice { get; set; }
+        public DMClassResponse Class { get; set; }
         public bool? StrengthSave { get; set; } = false;
         public bool? DexteritySave { get; set; } = false;
         public bool? ConstitutionSave { get; set; } = false;

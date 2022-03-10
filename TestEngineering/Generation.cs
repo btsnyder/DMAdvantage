@@ -51,7 +51,6 @@ namespace TestEngineering
                 MaxForcePowerLevel= Faker.RandomNumber.Next(),
                 TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPoints = Faker.RandomNumber.Next(),
-                Class = Nonsense(),
                 StrengthSave = NullableBoolean(),
                 DexteritySave = NullableBoolean(),
                 ConstitutionSave = NullableBoolean(),
@@ -316,6 +315,23 @@ namespace TestEngineering
             ability.Id = Guid.NewGuid();
             ability.User = MockHttpContext.CurrentUser;
             return ability;
+        }
+
+        public static DMClassRequest DMClassRequest()
+        {
+            return new DMClassRequest
+            {
+                Name = Faker.Name.FullName(),
+                HitDice = Faker.RandomNumber.Next()
+            };
+        }
+
+        public static DMClass DMClass()
+        {
+            var dmclass = _mapper.Map<DMClass>(DMClassRequest());
+            dmclass.Id = Guid.NewGuid();
+            dmclass.User = MockHttpContext.CurrentUser;
+            return dmclass;
         }
     }
 }

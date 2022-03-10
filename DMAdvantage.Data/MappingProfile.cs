@@ -52,6 +52,8 @@ namespace DMAdvantage.Data
             CreateMap<TechPower, TechPowerResponse>().ReverseMap();
             CreateMap<Ability, AbilityRequest>().ReverseMap();
             CreateMap<Ability, AbilityResponse>().ReverseMap();
+            CreateMap<DMClass, DMClassRequest>().ReverseMap();
+            CreateMap<DMClass, DMClassResponse>().ReverseMap();
             CreateMap<User, LoginResponse>();
         }
     }

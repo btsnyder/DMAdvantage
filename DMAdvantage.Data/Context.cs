@@ -26,6 +26,8 @@ namespace DMAdvantage.Data
         public DbSet<ForcePower> ForcePowers => Set<ForcePower>();
         public DbSet<TechPower> TechPowers => Set<TechPower>();
         public DbSet<Ability> Abilities => Set<Ability>();
+        public DbSet<DMClass> DMClasses => Set<DMClass>();
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder bldr)
         {

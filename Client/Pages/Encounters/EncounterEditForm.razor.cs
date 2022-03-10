@@ -26,6 +26,7 @@ namespace DMAdvantage.Client.Pages.Encounters
         private bool _initativeEditing;
         private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
         private bool _autoSave = false;
+        private bool _autoLoad = false;
         private Timer _timer;
         private bool _saving = false;
         private MudForm _form;
@@ -34,6 +35,8 @@ namespace DMAdvantage.Client.Pages.Encounters
         private EncounterRequest _model = new();
 
         [Parameter] public string? Id { get; set; }
+        [Parameter] public bool IsView { get; set; }
+
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -45,41 +48,11 @@ namespace DMAdvantage.Client.Pages.Encounters
 
             if (Id != null)
             {
-                _model = await ApiService.GetEntityById<EncounterResponse>(Guid.Parse(Id)) ?? new();
-
-                List<IBeingResponse> beings = new();
-                var characters = await ApiService.GetViews<CharacterResponse>(_model.Data.Select(x => x.BeingId));
-                var creatures = await ApiService.GetViews<CreatureResponse>(_model.Data.Select(x => x.BeingId));
-                beings.AddRange(characters);
-                beings.AddRange(creatures);
-
-                foreach (var being in beings)
-                {
-                    _initatives.Add(new InitativeDataModel(being, _model.Data.First(x => x.BeingId == being.Id)));
-                }
-
-                var sorted = new List<InitativeDataModel>(_initatives);
-                sorted.Sort(delegate (InitativeDataModel data1, InitativeDataModel data2) { return data2.Initative.CompareTo(data1.Initative); });
-                _initatives = new(sorted);
+                await ReloadEncounter();
             }
-
-            _selectedInitative = _initatives.FirstOrDefault();
-
             _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
             _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
             _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
-
-            if (_selectedInitative?.Being != null)
-                SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
-
-            _currentPlayer = _initatives.FirstOrDefault(x => x.BeingId == _model.CurrentPlayer);
-
-            foreach (var concentration in _model.ConcentrationPowers)
-            {
-                var power = _forcePowers.FirstOrDefault(x => x.Id == concentration.Value);
-                if (power != null)
-                    _concentrationPowers.Add(concentration.Key, power);
-            }
 
             await base.OnInitializedAsync();
         }
@@ -88,16 +61,18 @@ namespace DMAdvantage.Client.Pages.Encounters
         {
             if (!firstRender) return;
             _timer = new Timer(3000);
-            _timer.Elapsed += async (_, _) => await AutoSave();
+            _timer.Elapsed += async (_, _) => await AutoWork();
             _timer.Start();
         }
 
-        private async Task AutoSave()
+        private async Task AutoWork()
         {
-            if (Id == null || !_autoSave)
-                return;
+            if ((!_autoSave && !_autoLoad) || Id == null) return;
 
-            await OnValidSubmit();
+            if (_autoSave)
+                await OnValidSubmit();
+            if (_autoLoad)
+                await ReloadEncounter();
         }
 
         private void NavigationManager_LocationChanged(object? sender, LocationChangedEventArgs e)
@@ -266,6 +241,76 @@ namespace DMAdvantage.Client.Pages.Encounters
             }
             if (data == _currentPlayer)
                 _currentPlayer = _initatives.First();
+        }
+
+        private async Task ReloadEncounter()
+        {
+            _model = await ApiService.GetEncounterView(Guid.Parse(Id!)) ?? new();
+
+            if (_model != null)
+            {
+                List<IBeingResponse> beings = new();
+                var characters = await ApiService.GetViews<CharacterResponse>(_model.Data.Select(x => x.BeingId));
+                var creatures = await ApiService.GetViews<CreatureResponse>(_model.Data.Select(x => x.BeingId));
+                if (characters != null)
+                    beings.AddRange(characters);
+                if (creatures != null)
+                    beings.AddRange(creatures);
+
+                _initatives.Clear();
+                foreach (var initative in _model.Data)
+                {
+                    var being = beings.FirstOrDefault(b => b.Id == initative.BeingId);
+                    if (being == null) continue;
+                    _initatives.Add(new InitativeDataModel(being, initative));
+                }
+
+                var sorted = new List<InitativeDataModel>(_initatives);
+                sorted.Sort((data1, data2) => data2.Initative.CompareTo(data1.Initative));
+                _initatives = new List<InitativeDataModel>(sorted);
+
+                _currentPlayer = _initatives.FirstOrDefault(x => x.BeingId == _model.CurrentPlayer);
+                _selectedInitative ??= _initatives.FirstOrDefault();
+
+                if (_selectedInitative?.Being != null)
+                {
+                    if (_selectedInitative.Being.ForcePowerIds.Any())
+                    {
+                        SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowerIds.Contains(x.Id))
+                            .OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
+                    }
+                    else
+                    {
+                        SelectedForcePowers = new List<ForcePowerResponse>();
+                    }
+                }
+
+                _concentrationPowers.Clear();
+                foreach (var (key, value) in _model.ConcentrationPowers)
+                {
+                    var power = _forcePowers.FirstOrDefault(x => x.Id == value);
+                    if (power != null)
+                        _concentrationPowers.Add(key, power);
+                }
+            }
+            StateHasChanged();
+        }
+
+        private string GetRowClass(InitativeDataModel data)
+        {
+            return data == _selectedInitative ? "indigo lighten-1" : string.Empty;
+        }
+
+        private string HealthBackground(InitativeDataModel data)
+        {
+            return data == _selectedInitative ? Colors.Indigo.Lighten1 : string.Empty;
+        }
+
+        private string InitativeDisplayName(InitativeDataModel data)
+        {
+            var sameBeing = _initatives.Where(x => x.Being.Id == data.BeingId);
+            if (sameBeing.Count() == 1) return data.Name;
+            return $"{data.Name} {sameBeing.ToList().IndexOf(data) + 1}";
         }
     }
 }
