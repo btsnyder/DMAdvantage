@@ -7,5 +7,6 @@
         public int CurrentHP { get; set; }
         public int CurrentFP { get; set; }
         public int CurrentTP { get; set; }
+        public int CurrentHitDice { get; set; }
     }
 }

@@ -46,13 +46,15 @@ namespace DMAdvantage.Client.Pages.Encounters
         {
             NavigationManager.LocationChanged += NavigationManager_LocationChanged;
 
+            _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
+            _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
+            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+
             if (Id != null)
             {
                 await ReloadEncounter();
             }
-            _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
-            _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+            
 
             await base.OnInitializedAsync();
         }
@@ -262,7 +264,7 @@ namespace DMAdvantage.Client.Pages.Encounters
                 {
                     var being = beings.FirstOrDefault(b => b.Id == initative.BeingId);
                     if (being == null) continue;
-                    _initatives.Add(new InitativeDataModel(being, initative));
+                    _initatives.Add(new InitativeDataModel(being, initative) { });
                 }
 
                 var sorted = new List<InitativeDataModel>(_initatives);
@@ -311,6 +313,12 @@ namespace DMAdvantage.Client.Pages.Encounters
             var sameBeing = _initatives.Where(x => x.Being.Id == data.BeingId);
             if (sameBeing.Count() == 1) return data.Name;
             return $"{data.Name} {sameBeing.ToList().IndexOf(data) + 1}";
+        }
+
+        private void UseHitDice()
+        {
+            _selectedInitative!.CurrentHitDice--;
+            StateHasChanged();
         }
     }
 }

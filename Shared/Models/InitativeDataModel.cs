@@ -11,6 +11,8 @@
             CurrentHP = being.HitPoints;
             CurrentFP = being.ForcePoints;
             CurrentTP = being.TechPoints;
+            CurrentHitDice = being is CharacterResponse character ? character.Level : 0;
+
         }
 
         public InitativeDataModel(IBeingResponse being, InitativeData data)
@@ -20,6 +22,7 @@
             CurrentHP = data.CurrentHP;
             CurrentFP = data.CurrentFP;
             CurrentTP = data.CurrentTP;
+            CurrentHitDice = data.CurrentHitDice;
             Being = being;
         }
 

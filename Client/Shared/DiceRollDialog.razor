@@ -1,0 +1,69 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudGrid Style="max-height: 500px; overflow-y: scroll">
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_diceNumber" Label="# of Dice" Variant="Variant.Outlined"/>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudSelect T="int" @bind-Value="@_dice" Label="Dice" Variant="Variant.Outlined">
+                    <MudSelectItem Value="4"/>
+                    <MudSelectItem Value="6"/>
+                    <MudSelectItem Value="8"/>
+                    <MudSelectItem Value="10"/>
+                    <MudSelectItem Value="12"/>
+                    <MudSelectItem Value="20"/>
+                    <MudSelectItem Value="100"/>
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_bonus" Label="Bonus" Variant="Variant.Outlined" />
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex">
+                <MudButton FullWidth="true" Variant="Variant.Filled" Color="Color.Success" OnClick="RollDice">Roll</MudButton>
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex flex-wrap justify-center">
+                @foreach (var val in _results)
+                {
+                    <MudChip Color="Color.Info">@val</MudChip>
+                }
+                <MudChip Color="Color.Warning">@_bonus.PrintInt()</MudChip>
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex justiy-center">
+                <MudSpacer/>
+                <MudText Class="fw-bold" Typo="Typo.h4">@_total</MudText>
+                <MudSpacer/>
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Done</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private int _diceNumber = 1;
+    private int _dice = 4;
+    private int _bonus;
+    private int _total;
+    private List<int> _results = new();
+    private readonly Random _randomizer = new Random();
+
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void RollDice()
+    {
+        _results.Clear();
+        for (int i = 0; i < _diceNumber; i++)
+        {
+            _results.Add(_randomizer.Next(1, _dice + 1));
+        }
+        _total = _results.Sum() + _bonus;
+    }
+}

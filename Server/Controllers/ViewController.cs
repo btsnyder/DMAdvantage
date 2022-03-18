@@ -45,8 +45,13 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var results = _repository.GetEntitiesByIdsWithoutUser<Character>(ids);
-                return Ok(_mapper.Map<IEnumerable<CharacterResponse>>(results));
+                var results = _repository.Context.Characters
+                    .Include(c => c.Abilities)
+                    .Include(c => c.Class)
+                    .AsNoTracking();
+                if (ids.Any())
+                    results = results.Where(x => ids.Contains(x.Id));
+                return Ok(_mapper.Map<IEnumerable<CharacterResponse>>(results.ToList()));
             }
             catch (Exception ex)
             {
@@ -62,6 +67,7 @@ namespace DMAdvantage.Server.Controllers
             {
                 var result = _repository.Context.Characters
                     .Include(c => c.Abilities)
+                    .Include(c => c.Class)
                     .FirstOrDefault(c => c.PlayerName == name);
                 return Ok(_mapper.Map<CharacterResponse>(result));
             }
