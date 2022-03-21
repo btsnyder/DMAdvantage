@@ -16,7 +16,7 @@ namespace DMAdvantage.Client.Helpers
         protected override void Render(RenderTreeBuilder builder)
         {
             var authorize = Attribute.GetCustomAttribute(RouteData.PageType, typeof(AuthorizeAttribute)) != null;
-            if (authorize && !AccountService.GetLoggedIn())
+            if (authorize && !AccountService.IsLoggedIn())
             {
                 NavigationManager.NavigateTo("account/login");
             }

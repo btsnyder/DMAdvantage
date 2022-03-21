@@ -18,7 +18,6 @@ namespace DMAdvantage.Client.Shared
             }
         }
         [Parameter] public EventCallback<Dictionary<string, ForcePowerResponse>> ConcentrationPowersChanged { get; set; }
-
         [Parameter] public bool FromView { get; set; }= false;
     }
 }

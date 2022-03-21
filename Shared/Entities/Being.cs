@@ -18,7 +18,7 @@
         public int WisdomBonus { get; set; }
         public int Charisma { get; set; }
         public int CharismaBonus { get; set; }
-        public List<Guid> ForcePowerIds { get; set; } = new();
+        public ICollection<ForcePower> ForcePowers { get; set; } = new List<ForcePower>();
         public int ForcePoints { get; set; }
         public int TotalForcePowers { get; set; }
         public int MaxForcePowerLevel { get; set; }

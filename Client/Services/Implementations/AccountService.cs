@@ -9,7 +9,6 @@ namespace DMAdvantage.Client.Services.Implementations
         private readonly NavigationManager _navigationManager;
         private readonly ILocalStorageService _localStorageService;
         public static readonly string UserKey = "user";
-
         public LoginResponse? User { get; private set; }
 
         public AccountService(
@@ -40,7 +39,7 @@ namespace DMAdvantage.Client.Services.Implementations
             _navigationManager.NavigateTo("account/login");
         }
 
-        public bool GetLoggedIn()
+        public bool IsLoggedIn()
         {
             return User != null;
         }

@@ -1,4 +1,5 @@
 ﻿using DMAdvantage.Shared.Models;
+using DMAdvantage.Client.Helpers;
 using DMAdvantage.Shared.Query;
 using System.Text.Json;
 
@@ -15,21 +16,19 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task AddEntity<T>(T model)
         {
-            if (model == null)
-                return;
-            await _httpService.Post($"/api/{GetPath(typeof(T))}", model);
+            if (model == null) return;
+            await _httpService.Post($"/api/{typeof(T).GetPath()}", model);
         }
 
         public async Task<T?> GetEntityById<T>(Guid id) where T : class
         {
-            return await _httpService.Get<T>($"/api/{GetPath(typeof(T))}/{id}");
+            return await _httpService.Get<T>($"/api/{typeof(T).GetPath()}/{id}");
         }
 
         public async Task UpdateEntity<T>(Guid id, T model)
         {
-            if (model == null)
-                return;
-            await _httpService.Put($"/api/{GetPath(typeof(T))}/{id}", model);
+            if (model == null) return;
+            await _httpService.Put($"/api/{typeof(T).GetPath()}/{id}", model);
         }
 
         public async Task<List<T>?> GetAllEntities<T>(ISearchQuery? searching = null) where T : class
@@ -51,13 +50,12 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task<PagedList<T>?> GetAllPagedEntities<T>(PagingParameters paging, ISearchQuery? searching = null, CancellationToken? token = null) where T : class
         {
-            var uri = $"/api/{GetPath(typeof(T))}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}";
+            var uri = $"/api/{typeof(T).GetPath()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}";
             if (searching != null)
                 uri += $"&{searching.GetQuery()}";
             var (data, headers) = await _httpService.GetWithResponseHeader<List<T>>(uri, token);
 
-            if (data == null)
-                return null;
+            if (data == null) return null;
 
             PagedData? pagingResponse = null;
             if (headers?.TryGetValues(PagedData.Header.ToLower(), out IEnumerable<string>? values) == true)
@@ -80,20 +78,7 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task RemoveEntity<T>(Guid id)
         {
-            await _httpService.Delete($"/api/{GetPath(typeof(T))}/{id}");
-        }
-
-        private static string GetPath(Type t)
-        {
-            var path = t.Name;
-            if (path.Contains("Ability"))
-                return "abilities";
-            if (path.Contains("Class"))
-                return "classes";
-            path = path.Replace("Request", "");
-            path = path.Replace("Response", "");
-            path += "s";
-            return path.ToLower();
+            await _httpService.Delete($"/api/{typeof(T).GetPath()}/{id}");
         }
 
         public async Task<EncounterResponse?> GetEncounterView(Guid id)
@@ -103,7 +88,7 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task<List<T>?> GetViews<T>(IEnumerable<Guid>? ids = null)
         {
-            var uri = $"/api/view/{GetPath(typeof(T))}";
+            var uri = $"/api/view/{typeof(T).GetPath()}";
             if (typeof(T).Name.Contains("Ability"))
                 uri += "ids";
             var values = ids?.ToList();

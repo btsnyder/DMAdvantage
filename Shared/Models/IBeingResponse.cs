@@ -20,7 +20,7 @@ namespace DMAdvantage.Shared.Models
         public int WisdomBonus { get; set; }
         public int Charisma { get; set; }
         public int CharismaBonus { get; set; }
-        public List<Guid> ForcePowerIds { get; set; }
+        public List<ForcePowerResponse> ForcePowers { get; set; }
         public int ForcePoints { get; set; }
         public List<Guid> TechPowerIds { get; set; }
         public int TechPoints { get; set; }

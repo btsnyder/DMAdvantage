@@ -1,6 +1,5 @@
 ﻿@page "/account/login"
 @inject IAccountService AccountService
-@inject IAlertService AlertService
 @inject NavigationManager NavigationManager
 @using ButtonType = MudBlazor.ButtonType
 
@@ -41,8 +40,6 @@
 
     private async Task OnValidSubmit()
     {
-        AlertService.Clear();
-
         _loading = true;
         try
         {
@@ -51,7 +48,7 @@
         }
         catch (Exception)
         {
-            Snackbar.Add("Failed to login! Check credentials.", Severity.Error, config => { config.VisibleStateDuration = 3000; });
+            Snackbar.Add("Failed to login! Check credentials.", Severity.Error);
             StateHasChanged();
         }
         _loading = false;

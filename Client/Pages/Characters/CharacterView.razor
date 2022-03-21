@@ -153,7 +153,7 @@ else if (_model != null)
         <hr class="mt-0" />
         <div class="row mb-2">
             <div class="d-flex flex-wrap">
-                @foreach (var power in _forcePowers.Where(x => x.Level == i && _model.ForcePowerIds.Contains(x.Id)))
+                @foreach (var power in _forcePowers.Where(x => x.Level == i && _model.ForcePowers.Contains(x)))
                 {
                     <MudButton Variant="Variant.Filled" Color="Color.Info" Class="px-2 py-1 ma-1" OnClick="@(() => ShowInfo(power))" Disabled="@IsDisabled(power)">
                         <MudGrid>

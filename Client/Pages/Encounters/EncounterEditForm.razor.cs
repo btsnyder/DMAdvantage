@@ -162,7 +162,7 @@ namespace DMAdvantage.Client.Pages.Encounters
         {
             _selectedInitative = e.Item;
             if (_selectedInitative?.Being != null)
-                SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowerIds.Contains(x.Id)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
+                SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowers.Contains(x)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
         }
 
         private void OnAddCharacter()
@@ -276,9 +276,9 @@ namespace DMAdvantage.Client.Pages.Encounters
 
                 if (_selectedInitative?.Being != null)
                 {
-                    if (_selectedInitative.Being.ForcePowerIds.Any())
+                    if (_selectedInitative.Being.ForcePowers.Any())
                     {
-                        SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowerIds.Contains(x.Id))
+                        SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowers.Contains(x))
                             .OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
                     }
                     else

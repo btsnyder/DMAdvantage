@@ -77,18 +77,18 @@ namespace DMAdvantage.Client.Pages.Characters
 
         private Color ForceColor(ForcePowerResponse power)
         {
-            return _model.ForcePowerIds.Contains(power.Id) ? Color.Primary : Color.Dark;
+            return _model.ForcePowers.Any(f => f.Id == power.Id) ? Color.Primary : Color.Dark;
         }
 
         private void UpdateForcePower(ForcePowerResponse power)
         {
-            if (_model.ForcePowerIds.Contains(power.Id))
+            if (_model.ForcePowers.Contains(power))
             {
-                _model.ForcePowerIds.Remove(power.Id);
+                _model.ForcePowers.Contains(power);
             }
             else
             {
-                _model.ForcePowerIds.Add(power.Id);
+                _model.ForcePowers.Add(power);
             }
         }
 
@@ -101,13 +101,13 @@ namespace DMAdvantage.Client.Pages.Characters
 
         private bool IsDisabled(ForcePowerResponse power)
         {
-            if (_model.ForcePowerIds.Contains(power.Id))
+            if (_model.ForcePowers.Contains(power))
                 return false;
-            if (_model.ForcePowerIds.Count >= _model.TotalForcePowers)
+            if (_model.ForcePowers.Count >= _model.TotalForcePowers)
                 return true;
             if (power.PrerequisiteId.HasValue && power.PrerequisiteId != Guid.Empty)
             {
-                return !_model.ForcePowerIds.Contains(power.PrerequisiteId.Value);
+                return !_model.ForcePowers.Any(f => f.Id == power.PrerequisiteId.Value);
             }
             return false;
         }

@@ -58,9 +58,7 @@ namespace DMAdvantage.Data
             modelBuilder.Ignore<InitativeData>();
             modelBuilder.Ignore<Weapon>();
 
-            AddPropertyList(modelBuilder, (Character c) => c.ForcePowerIds);
             AddPropertyList(modelBuilder, (Character c) => c.TechPowerIds);
-            AddPropertyList(modelBuilder, (Creature c) => c.ForcePowerIds);
             AddPropertyList(modelBuilder, (Creature c) => c.TechPowerIds);
             AddPropertyList(modelBuilder, (Creature c) => c.Vulnerabilities);
             AddPropertyList(modelBuilder, (Creature c) => c.Immunities);

@@ -16,7 +16,6 @@ namespace DMAdvantage.Client
             builder.Services
                 .AddScoped<IApiService, ApiService>()
                 .AddScoped<IAccountService, AccountService>()
-                .AddScoped<IAlertService, AlertService>()
                 .AddScoped<IHttpService, HttpService>()
                 .AddScoped<ILocalStorageService, LocalStorageService>()
                 .AddMudServices(config =>

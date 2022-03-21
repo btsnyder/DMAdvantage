@@ -7,7 +7,7 @@
 <MudSnackbarProvider/>
 
 <MudLayout>
-    @if (AccountService.GetLoggedIn())
+    @if (AccountService.IsLoggedIn())
     {
         <MudAppBar Elevation="1">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />

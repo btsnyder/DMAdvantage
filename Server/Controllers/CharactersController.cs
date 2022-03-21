@@ -35,6 +35,7 @@ namespace DMAdvantage.Server.Controllers
                 var characters = _repository.Context.Characters
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
+                    .Include(c => c.ForcePowers)
                     .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search))
                     .AsNoTracking().ToList()
                     .OrderBy(c => c.OrderBy());
@@ -63,7 +64,9 @@ namespace DMAdvantage.Server.Controllers
 
                 var character = _repository.Context.Characters
                     .Include(c => c.Abilities)
-                    .Include(c => c.Class).AsNoTracking()
+                    .Include(c => c.Class)
+                    .Include(c => c.ForcePowers)
+                    .AsNoTracking()
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (character == null) return NotFound();
@@ -114,6 +117,7 @@ namespace DMAdvantage.Server.Controllers
                 var entityFromRepo = _repository.Context.Characters
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
+                    .Include(c => c.ForcePowers)
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entityFromRepo == null)
@@ -152,6 +156,9 @@ namespace DMAdvantage.Server.Controllers
             var abilities = _repository.Context.Abilities
                 .Where(x => request.Abilities.Select(a => a.Id).Contains(x.Id)).ToList();
             entry.Entity.Abilities = abilities;
+            var forcePowers = _repository.Context.ForcePowers
+                .Where(x => request.ForcePowers.Select(f => f.Id).Contains(x.Id)).ToList();
+            entry.Entity.ForcePowers = forcePowers;
             var dmclass = _repository.Context.DMClasses
                 .FirstOrDefault(x => request.Class.Id == x.Id);
             entry.Entity.Class = dmclass;

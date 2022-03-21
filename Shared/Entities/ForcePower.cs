@@ -8,6 +8,9 @@ namespace DMAdvantage.Shared.Entities
         public string Potency { get; set; }
         public Guid? PrerequisiteId { get; set; } 
 
+        public ICollection<Character> Characters { get; set; } = new List<Character>();
+        public ICollection<Creature> Creatures { get; set; } = new List<Creature>();
+
         public override string OrderBy()
         {
             return $"{Level} - {Name}";

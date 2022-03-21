@@ -108,7 +108,7 @@
         </MudItem>
 
         <MudItem xs="5">
-            <MultipleEntityIdDropdown TEntity="ForcePowerResponse" @bind-SelectedIds="_model.ForcePowerIds" Label="Force Powers"/>
+            <MultipleEntityDropdown TEntity="ForcePowerResponse" @bind-SelectedEntities="_model.ForcePowers" Label="Force Powers"/>
         </MudItem>
         <MudItem xs="1">
             <MudNumericField @bind-Value="@_model.ForcePoints" Label="FP" For="() => _model.ForcePoints" Validation="@(_creatureValidator.ValidateValue)"/>

@@ -2,39 +2,15 @@
 using DMAdvantage.Client.Services.Implementations;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
-using System.Collections.Specialized;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
-using System.Web;
 
 namespace DMAdvantage.Client.Helpers
 {
     public static class ExtensionMethods
     {
-        public static NameValueCollection QueryString(this NavigationManager navigationManager)
-        {
-            return HttpUtility.ParseQueryString(new Uri(navigationManager.Uri).Query);
-        }
-
-        public static string? QueryString(this NavigationManager navigationManager, string key)
-        {
-            return navigationManager.QueryString()[key];
-        }
-
-        public static object? GetPropertyByName(this object obj, string name)
-        {
-            var info = obj.GetType().GetProperty(name);
-            return info?.GetValue(obj);
-        }
-
-        public static void SetPropertyByName(this object obj, string name, object value)
-        {
-            var info = obj.GetType().GetProperty(name);
-            info?.SetValue(obj, value);
-        }
-
         public static async Task<bool> ProcessResponseValidity(this HttpResponseMessage response, NavigationManager navigationManager)
         {
             if (response.StatusCode == HttpStatusCode.Unauthorized)
@@ -73,7 +49,15 @@ namespace DMAdvantage.Client.Helpers
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
         }
 
-        public static async Task HandleErrors(this HttpResponseMessage response)
+        public static string PrintInt(this int i)
+        {
+            if (i >= 0)
+                return $"+{i}";
+            else
+                return i.ToString();
+        }
+
+        private static async Task HandleErrors(this HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
             {
@@ -82,12 +66,17 @@ namespace DMAdvantage.Client.Helpers
             }
         }
 
-        public static string PrintInt(this int i)
+        public static string GetPath(this Type t)
         {
-            if (i >= 0)
-                return $"+{i}";
-            else
-                return i.ToString();
+            var path = t.Name;
+            if (path.Contains("Ability"))
+                return "abilities";
+            if (path.Contains("Class"))
+                return "classes";
+            path = path.Replace("Request", "");
+            path = path.Replace("Response", "");
+            path += "s";
+            return path.ToLower();
         }
     }
 }

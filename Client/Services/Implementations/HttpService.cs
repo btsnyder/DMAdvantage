@@ -1,10 +1,8 @@
-﻿using System.Net;
-using DMAdvantage.Client.Helpers;
+﻿using DMAdvantage.Client.Helpers;
 using Microsoft.AspNetCore.Components;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using MudBlazor;
 
 namespace DMAdvantage.Client.Services.Implementations
 {
@@ -75,7 +73,6 @@ namespace DMAdvantage.Client.Services.Implementations
         public async Task<T?> Delete<T>(string uri) where T : class
         {
             var request = CreateRequest(HttpMethod.Delete, uri);
-            
             return await ProcessRequest<T>(request);
         }
 
@@ -110,15 +107,9 @@ namespace DMAdvantage.Client.Services.Implementations
         {
             using var response = await SendAuthorizedRequest(request, token);
 
-            if (token.HasValue && token.Value.IsCancellationRequested)
-                return null;
+            var isValid = await ProcessResponseValidityWithToken(response, token);
 
-            var valid = await response.ProcessResponseValidity(_navigationManager);
-            if (!valid)
-                return null;
-
-            if (token.HasValue && token.Value.IsCancellationRequested)
-                return null;
+            if (!isValid) return null;
             return await response.ParseContent<T>();
         }
 
@@ -126,18 +117,26 @@ namespace DMAdvantage.Client.Services.Implementations
         {
             using var response = await SendAuthorizedRequest(request, token);
 
+            var isValid = await ProcessResponseValidityWithToken(response, token);
+            if (!isValid) return (null, null);
+            var content = await response.ParseContent<T>();
+            return (content, response.Headers);
+        }
+
+        private async Task<bool> ProcessResponseValidityWithToken(HttpResponseMessage response, CancellationToken? token)
+        {
             if (token.HasValue && token.Value.IsCancellationRequested)
-                return (null, null);
+                return false;
 
             var valid = await response.ProcessResponseValidity(_navigationManager);
 
             if (!valid)
-                return (null, null);
+                return false;
 
             if (token.HasValue && token.Value.IsCancellationRequested)
-                return (null, null);
-            var content = await response.ParseContent<T>();
-            return (content, response.Headers);
+                return false;
+
+            return true;
         }
     }
 }

@@ -37,7 +37,7 @@ namespace DMAdvantage.Shared.Models
         public int Charisma { get; set; }
         [Required]
         public int CharismaBonus { get; set; }
-        public List<Guid> ForcePowerIds { get; set; } = new();
+        public List<ForcePowerResponse> ForcePowers { get; set; } = new();
         public int ForcePoints { get; set; }
         public int TotalForcePowers { get; set; }
         public int MaxForcePowerLevel { get; set; }

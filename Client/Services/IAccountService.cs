@@ -9,6 +9,6 @@ namespace DMAdvantage.Client.Services
         Task Initialize();
         Task Login(LoginRequest model);
         Task Logout();
-        public bool GetLoggedIn();
+        public bool IsLoggedIn();
     }
 }

@@ -48,6 +48,7 @@ namespace DMAdvantage.Server.Controllers
                 var results = _repository.Context.Characters
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
+                    .Include(c => c.ForcePowers)
                     .AsNoTracking();
                 if (ids.Any())
                     results = results.Where(x => ids.Contains(x.Id));
@@ -68,6 +69,7 @@ namespace DMAdvantage.Server.Controllers
                 var result = _repository.Context.Characters
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
+                    .Include(c => c.ForcePowers)
                     .FirstOrDefault(c => c.PlayerName == name);
                 return Ok(_mapper.Map<CharacterResponse>(result));
             }
