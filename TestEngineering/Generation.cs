@@ -48,7 +48,6 @@ namespace TestEngineering
                 ForcePoints = Faker.RandomNumber.Next(),
                 TotalForcePowers = Faker.RandomNumber.Next(),
                 MaxForcePowerLevel= Faker.RandomNumber.Next(),
-                TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPoints = Faker.RandomNumber.Next(),
                 StrengthSave = NullableBoolean(),
                 DexteritySave = NullableBoolean(),
@@ -150,7 +149,6 @@ namespace TestEngineering
                 ForcePoints = Faker.RandomNumber.Next(),
                 TotalForcePowers = Faker.RandomNumber.Next(),
                 MaxForcePowerLevel = Faker.RandomNumber.Next(),
-                TechPowerIds = new List<Guid> { Guid.NewGuid(), Guid.NewGuid() },
                 TechPoints = Faker.RandomNumber.Next(),
             };
             return creatureRequest;

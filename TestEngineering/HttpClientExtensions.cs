@@ -58,9 +58,17 @@ namespace TestEngineering
 
         public static async Task<CharacterResponse> CreateCharacter(this HttpClient client, CharacterRequest? character = null)
         {
+            var random = new Random();
             character ??= Generation.CharacterRequest();
             var ability = await client.CreateAbility();
             character.Abilities.Add(ability);
+            var powers = new List<ForcePowerResponse>();
+            for (int i = 0; i < random.Next(0, 10); i++)
+            {
+                var power = await client.CreateForcePower();
+                powers.Add(power);
+            }
+            character.ForcePowers = powers;
             var response = await client.PostAsync("/api/characters", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<CharacterResponse>();
@@ -69,7 +77,15 @@ namespace TestEngineering
 
         public static async Task<CreatureResponse> CreateCreature(this HttpClient client, CreatureRequest? creature = null)
         {
+            var random = new Random();
             creature ??= Generation.CreatureRequest();
+            var powers = new List<ForcePowerResponse>();
+            for (int i = 0; i < random.Next(0, 10); i++)
+            {
+                var power = await client.CreateForcePower();
+                powers.Add(power);
+            }
+            creature.ForcePowers = powers;
             var response = await client.PostAsync("/api/creatures", creature);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<CreatureResponse>();

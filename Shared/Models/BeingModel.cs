@@ -41,7 +41,7 @@ namespace DMAdvantage.Shared.Models
         public int ForcePoints { get; set; }
         public int TotalForcePowers { get; set; }
         public int MaxForcePowerLevel { get; set; }
-        public List<Guid> TechPowerIds { get; set; } = new();
+        public List<TechPowerResponse> TechPowers { get; set; } = new();
         public int TechPoints { get; set; }
 
         public int GetProficiencyBonus()

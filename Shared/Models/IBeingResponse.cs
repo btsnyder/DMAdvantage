@@ -22,7 +22,7 @@ namespace DMAdvantage.Shared.Models
         public int CharismaBonus { get; set; }
         public List<ForcePowerResponse> ForcePowers { get; set; }
         public int ForcePoints { get; set; }
-        public List<Guid> TechPowerIds { get; set; }
+        public List<TechPowerResponse> TechPowers { get; set; }
         public int TechPoints { get; set; }
         public int GetProficiencyBonus();
         public int ForceAttackModifier(ForceAlignment alignment);

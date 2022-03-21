@@ -160,7 +160,7 @@ namespace DMAdvantage.Server.Controllers
                 .Where(x => request.ForcePowers.Select(f => f.Id).Contains(x.Id)).ToList();
             entry.Entity.ForcePowers = forcePowers;
             var dmclass = _repository.Context.DMClasses
-                .FirstOrDefault(x => request.Class.Id == x.Id);
+                .FirstOrDefault(x => request.Class != null && request.Class.Id == x.Id);
             entry.Entity.Class = dmclass;
             entry.Entity.WeaponsCache = JsonSerializer.Serialize(request.Weapons);
             return entry.Entity;
