@@ -44,14 +44,14 @@ namespace DMAdvantage.Client.Shared
             if (string.IsNullOrWhiteSpace(value)) return Array.Empty<string>();
             await Task.Yield();
             return _data
-                .Where(x => x.Display.ToLower().Contains(value.ToLower()) && !_selectedEntities.Contains(x))
-                .Select(x => x.Display);
+                .Where(x => x.ToString()!.ToLower().Contains(value.ToLower()) && !_selectedEntities.Contains(x))
+                .Select(x => x.ToString()!);
         }
 
         private void Selected(string val)
         {
             if (string.IsNullOrWhiteSpace(val)) return;
-            var selectedEntity = _data.FirstOrDefault(x => x.Display == val);
+            var selectedEntity = _data.FirstOrDefault(x => x.ToString() == val);
             if (selectedEntity == null) return;
             _selectedEntities.Add(selectedEntity);
             SelectedIds.Add(selectedEntity.Id);
@@ -60,7 +60,7 @@ namespace DMAdvantage.Client.Shared
 
         private void EntityRemoved(MudChip chip)
         {
-            var entityToRemove = _selectedEntities.FirstOrDefault(x => x.Display == chip.Text);
+            var entityToRemove = _selectedEntities.FirstOrDefault(x => x.ToString() == chip.Text);
             if (entityToRemove == null) return;
             _selectedEntities.Remove(entityToRemove);
             SelectedIds.Remove(SelectedIds.FirstOrDefault(x => x == entityToRemove.Id));

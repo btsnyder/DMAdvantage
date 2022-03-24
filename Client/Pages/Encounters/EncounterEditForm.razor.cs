@@ -149,14 +149,14 @@ namespace DMAdvantage.Client.Pages.Encounters
         {
             if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<Character>>(Array.Empty<Character>());
             return Task.FromResult(_characters
-                .Where(x => x.Display.ToLower().Contains(value.ToLower()) && x != _selectedCharacter));
+                .Where(x => x.ToString()!.ToLower().Contains(value.ToLower()) && x != _selectedCharacter));
         }
 
         private Task<IEnumerable<Creature>> CreatureSearch(string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<Creature>>(Array.Empty<Creature>());
             return Task.FromResult(_creatures
-                .Where(x => x.Display.ToLower().Contains(value.ToLower()) && x != _selectedCreature));
+                .Where(x => x.ToString()!.ToLower().Contains(value.ToLower()) && x != _selectedCreature));
         }
         
         private void InitativeRowClickEvent(TableRowClickEventArgs<InitativeDataModel> e)

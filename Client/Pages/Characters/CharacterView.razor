@@ -88,7 +88,7 @@ else if (_model != null)
     </MudTable>
     <MudText Class="fw-bold mt-5" Typo="Typo.h6">Abilities</MudText>
     <MudContainer Class="d-flex flex-wrap p-0">
-        @foreach (var ability in _model.Abilities.OrderBy(x => x.Display))
+        @foreach (var ability in _model.Abilities.OrderBy(x => x.ToString()))
         {
             <MudButton Class="m-1 my-2" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ShowAbility(ability))" Size="Size.Medium">@ability.Name</MudButton>
         }

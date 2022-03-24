@@ -4,5 +4,5 @@
                 Value="@_value" ValueChanged="@Selected" Label="@Label" Dense="true"/>
 @foreach (var entity in _selectedEntities)
 {
-    <MudChip Color="Color.Primary" OnClose="EntityRemoved" Text="@entity.Display"/>
+    <MudChip Color="Color.Primary" OnClose="EntityRemoved" Text="@entity.ToString()"/>
 }

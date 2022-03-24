@@ -25,7 +25,7 @@
                         <MudGrid>
                             <MudItem xs="12">
                                 <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="Character" SearchFunc="@CharacterSearch"
-                                    @bind-Value=@_selectedCharacter Label="Search" Dense="true" ToStringFunc="@(character => character.Display)"/>
+                                    @bind-Value=@_selectedCharacter Label="Search" Dense="true"/>
                             </MudItem>
 
                                 @if (_selectedCharacter != null)
@@ -103,7 +103,7 @@
                         <MudGrid>
                             <MudItem xs="12">
                                 <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="Creature" SearchFunc="@CreatureSearch"
-                                    @bind-Value=@_selectedCreature Label="Search" Dense="true" ToStringFunc="@(creature => creature.Display)"/>
+                                    @bind-Value=@_selectedCreature Label="Search" Dense="true"/>
                             </MudItem>
 
                                 @if (_selectedCreature != null)
@@ -241,7 +241,7 @@
                         }
                     </MudTd>
                     <MudTd DataLabel="Name" Class="@GetRowClass(context)">@InitativeDisplayName(context)</MudTd>
-                    <MudTd DataLabel="AC" Class="@GetRowClass(context)">@context.Being?.ArmorClass</MudTd>
+                    <MudTd DataLabel="AC" Class="@GetRowClass(context)">@(IsView ? context.ArmorClass : context.Being.ArmorClass)</MudTd>
                     <MudTd DataLabel="HP" Style=@($"color: {context.GetHPColor()}; background: {HealthBackground(context)}")>@(IsView ? context.GetHPDisplay() : @context.CurrentHP)</MudTd>
                     <MudTd DataLabel="FP" Class="@GetRowClass(context)">@(IsView ? context.ForcePoints : context.CurrentFP)</MudTd>
                     <MudTd DataLabel="TP" Class="@GetRowClass(context)">@(IsView ? context.TechPoints : context.CurrentTP)</MudTd>
@@ -467,7 +467,7 @@
                         @if (_selectedInitativeCharacter != null)
                         {
                             <MudItem xs="12" Class="d-flex flex-wrap">
-                                @foreach (var ability in _selectedInitativeCharacter.Abilities.OrderBy(x => x.Display))
+                                @foreach (var ability in _selectedInitativeCharacter.Abilities.OrderBy(x => x.ToString()))
                                 {
                                     <MudButton Class="m-2" Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => ShowAbility(ability))" Size="Size.Small">@ability.Name</MudButton>
                                 }

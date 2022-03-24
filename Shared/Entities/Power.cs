@@ -1,12 +1,9 @@
 ﻿using DMAdvantage.Shared.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace DMAdvantage.Shared.Entities
 {
     public abstract class Power : BaseEntity
     {
-        [Required]
-        public string Name { get; set; }
         public string Description { get; set; }
         public int Level { get; set; }
         public CastingPeriod CastingPeriod { get; set; }

@@ -8,6 +8,5 @@
         {
             return $"{Level} - {Name}";
         }
-        public new string Display => Name;
     }
 }

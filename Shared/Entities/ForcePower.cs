@@ -15,15 +15,5 @@ namespace DMAdvantage.Shared.Entities
         {
             return $"{Level} - {Name}";
         }
-        public new string Display => Name;
-        public override bool Equals(object o)
-        {
-            var other = o as ForcePower;
-            return other?.Id == Id;
-        }
-
-        public override int GetHashCode() => Id.GetHashCode();
-
-        public override string ToString() => Name;
     }
 }

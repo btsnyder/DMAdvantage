@@ -50,7 +50,7 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
-        public IActionResult GetAllEntities<T>(NamedSearchParameters<T> searching, PagingParameters? paging = null) where T : BaseEntity, INamedEntity
+        public IActionResult GetAllEntities<T>(NamedSearchParameters<T> searching, PagingParameters? paging = null) where T : BaseEntity
         {
             try
             {

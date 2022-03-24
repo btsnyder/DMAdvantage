@@ -3,9 +3,8 @@ using System.Text.Json;
 
 namespace DMAdvantage.Shared.Entities
 {
-    public class Encounter : BaseEntity, INamedEntity
+    public class Encounter : BaseEntity
     {
-        public string Name { get; set; }
         public Guid CurrentPlayer { get; set; }
         public string DataCache { get; set; }
         public List<InitativeData> Data => JsonSerializer.Deserialize<List<InitativeData>>(DataCache ?? string.Empty) ?? new List<InitativeData>();
@@ -16,6 +15,5 @@ namespace DMAdvantage.Shared.Entities
         {
             return Name ?? string.Empty;
         }
-        public new string Display => Name;
     }
 }
