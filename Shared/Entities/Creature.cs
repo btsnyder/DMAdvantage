@@ -10,7 +10,7 @@ namespace DMAdvantage.Shared.Entities
         [Column(TypeName = "decimal(5, 2)")]
         public decimal ChallengeRating { get; set; }
         public string ActionsCache { get; set; }
-        public List<BaseAction> Actions => JsonSerializer.Deserialize<List<BaseAction>>(ActionsCache ?? string.Empty) ?? new List<BaseAction>();
+        public List<BaseAction> Actions => string.IsNullOrWhiteSpace(ActionsCache) ? new List<BaseAction>() : JsonSerializer.Deserialize<List<BaseAction>>(ActionsCache);
         public List<DamageType> Vulnerabilities { get; set; } = new();
         public List<string> Immunities { get; set; } = new();
         public List<string> Resistances { get; set; } = new();
@@ -18,5 +18,6 @@ namespace DMAdvantage.Shared.Entities
         {
             return Name ?? string.Empty;
         }
+        public new string Display => Name;
     }
 }

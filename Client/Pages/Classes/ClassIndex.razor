@@ -40,7 +40,7 @@ else
 
 @code {
     private bool _loading = true; 
-    private List<DMClassResponse>? _classes;
+    private List<DMClass>? _classes;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,17 +48,17 @@ else
         await base.OnInitializedAsync();
     }
 
-    private async Task RemoveClass(DMClassResponse ability)
+    private async Task RemoveClass(DMClass dmclass)
     {
         if (_classes == null)
             return;
-        _classes.Remove(ability);
-        await ApiService.RemoveEntity<DMClassResponse>(ability.Id);
+        _classes.Remove(dmclass);
+        await ApiService.RemoveEntity<DMClass>(dmclass.Id);
     }
 
     private async Task RefreshClasses()
     {
-        _classes = await ApiService.GetAllEntities<DMClassResponse>();
+        _classes = await ApiService.GetAllEntities<DMClass>();
         _loading = false;   
     }
 

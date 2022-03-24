@@ -14,13 +14,12 @@ namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class EncountersController : BaseEntityController<Encounter, EncounterResponse, EncounterRequest>
+    public class EncountersController : BaseEntityController<Encounter>
     {
-        public EncountersController(IRepository repository,
+        public EncountersController(DMContext context,
             ILogger<EncountersController> logger,
-            IMapper mapper,
             UserManager<User> userManager)
-            : base(repository, logger, mapper, userManager)
+            : base(context, logger, userManager)
         {
         }
 
@@ -38,79 +37,15 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewEncounter([FromBody] EncounterRequest request)
+        public async Task<IActionResult> CreateNewEncounter([FromBody] Encounter request)
         {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    var character = await CreateNewEncounterInContext(request);
-                    if (_repository.SaveAll())
-                    {
-                        return Created($"/api/encounters/{character.Id}", _mapper.Map<EncounterResponse>(character));
-                    }
-                }
-                else
-                {
-                    _logger.LogError($"Invalid ModelState: {ModelState}");
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to save new entity: {ex}");
-            }
-
-            return BadRequest("Failed to save new entity.");
+            return await CreateNewEntity(request);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateEncounterById(Guid id, [FromBody] EncounterRequest request)
+        public async Task<IActionResult> UpdateEncounterById(Guid id, [FromBody] Encounter request)
         {
-            try
-            {
-                var username = User.Identity?.Name;
-                if (username == null)
-                    throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
-
-                var entityFromRepo = _repository.Context.Encounters
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
-
-                if (entityFromRepo == null)
-                {
-                    var encounter = await CreateNewEncounterInContext(request);
-
-                    return Created($"/api/encounters/{encounter.Id}", _mapper.Map<EncounterResponse>(encounter));
-                }
-
-                await CreateNewEncounterInContext(request, entityFromRepo);
-                _repository.SaveAll();
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to update entity: {ex}");
-            }
-
-            return BadRequest("Failed to update entity.");
-        }
-
-        private async Task<Encounter> CreateNewEncounterInContext(EncounterRequest request, Encounter? encounter = null)
-        {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
-
-            if (currentUser == null)
-                throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
-
-            EntityEntry<Encounter> entry;
-            if (encounter == null)
-                entry = _repository.Context.Add(new Encounter());
-            else
-                entry = _repository.Context.Entry(encounter);
-            entry.Entity.User = currentUser;
-            entry.CurrentValues.SetValues(request);
-            entry.Entity.DataCache = JsonSerializer.Serialize(request.Data);
-            entry.Entity.ConcentrationCache = JsonSerializer.Serialize(request.ConcentrationPowers);
-            return entry.Entity;
+            return await UpdateEntityById(id, request);
         }
 
         [HttpDelete("{id:guid}")]

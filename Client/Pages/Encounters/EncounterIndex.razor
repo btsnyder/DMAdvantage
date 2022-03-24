@@ -44,24 +44,24 @@ else
 
 @code {
     private bool loading;
-    private List<EncounterResponse>? encounters;
+    private List<Encounter>? encounters;
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshEncounters();   
     }
 
-    private async Task RemoveEncounter(EncounterResponse encounter)
+    private async Task RemoveEncounter(Encounter encounter)
     {
         if (encounters == null) return;
         encounters.Remove(encounter);
-        await ApiService.RemoveEntity<EncounterResponse>(encounter.Id);
+        await ApiService.RemoveEntity<Encounter>(encounter.Id);
     }
 
     private async Task RefreshEncounters()
     {
         loading = true;
-        encounters = await ApiService.GetAllEntities<EncounterResponse>();
+        encounters = await ApiService.GetAllEntities<Encounter>();
         loading = false;   
     }
 }

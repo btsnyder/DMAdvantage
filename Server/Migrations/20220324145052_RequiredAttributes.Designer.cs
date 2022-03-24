@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMAdvantage.Server.Migrations
 {
     [DbContext(typeof(DMContext))]
-    [Migration("20220304155333_HitDice")]
-    partial class HitDice
+    [Migration("20220324145052_RequiredAttributes")]
+    partial class RequiredAttributes
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -39,6 +39,36 @@ namespace DMAdvantage.Server.Migrations
                     b.ToTable("AbilityCharacter");
                 });
 
+            modelBuilder.Entity("CharacterForcePower", b =>
+                {
+                    b.Property<Guid>("CharactersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ForcePowersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CharactersId", "ForcePowersId");
+
+                    b.HasIndex("ForcePowersId");
+
+                    b.ToTable("CharacterForcePower");
+                });
+
+            modelBuilder.Entity("CreatureForcePower", b =>
+                {
+                    b.Property<Guid>("CreaturesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ForcePowersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CreaturesId", "ForcePowersId");
+
+                    b.HasIndex("ForcePowersId");
+
+                    b.ToTable("CreatureForcePower");
+                });
+
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Ability", b =>
                 {
                     b.Property<Guid>("Id")
@@ -49,6 +79,7 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -88,8 +119,8 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<bool?>("CharismaSave")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Class")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("ClassId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("Constitution")
                         .HasColumnType("int");
@@ -114,9 +145,6 @@ namespace DMAdvantage.Server.Migrations
 
                     b.Property<int>("ForcePoints")
                         .HasColumnType("int");
-
-                    b.Property<string>("ForcePowerIds")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("HitDice")
                         .HasColumnType("int");
@@ -155,6 +183,7 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool?>("Nature")
@@ -199,9 +228,6 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<int>("TechPoints")
                         .HasColumnType("int");
 
-                    b.Property<string>("TechPowerIds")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool?>("Technology")
                         .HasColumnType("bit");
 
@@ -224,6 +250,8 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClassId");
 
                     b.HasIndex("UserId");
 
@@ -266,9 +294,6 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<int>("ForcePoints")
                         .HasColumnType("int");
 
-                    b.Property<string>("ForcePowerIds")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("HitPoints")
                         .HasColumnType("int");
 
@@ -285,6 +310,7 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Resistances")
@@ -301,9 +327,6 @@ namespace DMAdvantage.Server.Migrations
 
                     b.Property<int>("TechPoints")
                         .HasColumnType("int");
-
-                    b.Property<string>("TechPowerIds")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TotalForcePowers")
                         .HasColumnType("int");
@@ -325,6 +348,29 @@ namespace DMAdvantage.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Creatures");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.DMClass", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("HitDice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("DMClasses");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Encounter", b =>
@@ -389,6 +435,7 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Potency")
@@ -425,8 +472,14 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<int>("CastingPeriod")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("CharacterId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("Concentration")
                         .HasColumnType("bit");
+
+                    b.Property<Guid?>("CreatureId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -444,6 +497,7 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Overcharge")
@@ -459,6 +513,10 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CharacterId");
+
+                    b.HasIndex("CreatureId");
 
                     b.HasIndex("UserId");
 
@@ -684,6 +742,36 @@ namespace DMAdvantage.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CharacterForcePower", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.Character", null)
+                        .WithMany()
+                        .HasForeignKey("CharactersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.ForcePower", null)
+                        .WithMany()
+                        .HasForeignKey("ForcePowersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CreatureForcePower", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.Creature", null)
+                        .WithMany()
+                        .HasForeignKey("CreaturesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.ForcePower", null)
+                        .WithMany()
+                        .HasForeignKey("ForcePowersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Ability", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.User", "User")
@@ -695,6 +783,21 @@ namespace DMAdvantage.Server.Migrations
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Character", b =>
                 {
+                    b.HasOne("DMAdvantage.Shared.Entities.DMClass", "Class")
+                        .WithMany("Characters")
+                        .HasForeignKey("ClassId");
+
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.Creature", b =>
+                {
                     b.HasOne("DMAdvantage.Shared.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
@@ -702,7 +805,7 @@ namespace DMAdvantage.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.Creature", b =>
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.DMClass", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.User", "User")
                         .WithMany()
@@ -731,6 +834,14 @@ namespace DMAdvantage.Server.Migrations
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.TechPower", b =>
                 {
+                    b.HasOne("DMAdvantage.Shared.Entities.Character", null)
+                        .WithMany("TechPowers")
+                        .HasForeignKey("CharacterId");
+
+                    b.HasOne("DMAdvantage.Shared.Entities.Creature", null)
+                        .WithMany("TechPowers")
+                        .HasForeignKey("CreatureId");
+
                     b.HasOne("DMAdvantage.Shared.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
@@ -787,6 +898,21 @@ namespace DMAdvantage.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.Character", b =>
+                {
+                    b.Navigation("TechPowers");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.Creature", b =>
+                {
+                    b.Navigation("TechPowers");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.DMClass", b =>
+                {
+                    b.Navigation("Characters");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,6 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
-using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -8,13 +8,13 @@ namespace DMAdvantage.Client.Pages.TechPowers
 {
     public partial class TechEditForm
     {
-        private TechPowerRequest _model = new();
+        private TechPower _model = new();
         private bool _loading;
-        private List<TechPowerResponse> _techPowers;
+        private List<TechPower> _techPowers;
         private IEnumerable<string> _durations = Array.Empty<string>();
         private List<string> _startingDurations = new();
         private MudForm _form;
-        private readonly TechPowerRequestFluentValidator _techPowerValidator = new();
+        private readonly TechPowerValidator _techPowerValidator = new();
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -24,11 +24,11 @@ namespace DMAdvantage.Client.Pages.TechPowers
 
         protected override async Task OnInitializedAsync()
         {
-            _techPowers = await ApiService.GetAllEntities<TechPowerResponse>() ?? new List<TechPowerResponse>();
+            _techPowers = await ApiService.GetAllEntities<TechPower>() ?? new List<TechPower>();
             _startingDurations = _techPowers.Select(x => x.Duration ?? string.Empty).Distinct().ToList();
 
             if (Id != null)
-                _model = await ApiService.GetEntityById<TechPowerResponse>(Guid.Parse(Id)) ?? new TechPowerResponse();
+                _model = await ApiService.GetEntityById<TechPower>(Guid.Parse(Id)) ?? new TechPower();
 
             await base.OnInitializedAsync();
         }

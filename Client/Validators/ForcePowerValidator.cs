@@ -1,14 +1,14 @@
-using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Entities;
 using FluentValidation;
 using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class TechPowerRequestFluentValidator : AbstractValidator<TechPowerRequest>
+    public class ForcePowerValidator : AbstractValidator<ForcePower>
     {
         public ISnackbar? Snackbar { get; set; }
 
-        public TechPowerRequestFluentValidator()
+        public ForcePowerValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.Description).NotEmpty();
@@ -18,16 +18,14 @@ namespace DMAdvantage.Client.Validators
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<TechPowerRequest>.CreateWithOptions((TechPowerRequest)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<ForcePower>.CreateWithOptions((ForcePower)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
-            if (Snackbar != null)
+            if (Snackbar == null) return errors;
+            foreach (var error in errors)
             {
-                foreach (var error in errors)
-                {
-                    Snackbar.Add(error, MudBlazor.Severity.Error);
-                }
+                Snackbar.Add(error, MudBlazor.Severity.Error);
             }
             return errors;
         };

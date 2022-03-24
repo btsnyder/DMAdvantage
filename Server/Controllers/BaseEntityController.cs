@@ -6,25 +6,23 @@ using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DMAdvantage.Server.Controllers
 {
-    public class BaseEntityController<TEntity, TResponse, TRequest> : Controller where TEntity : BaseEntity, new()
+    public class BaseEntityController<TEntity> : Controller where TEntity : BaseEntity, new()
     {
-        protected readonly IRepository _repository;
-        protected readonly ILogger<BaseEntityController<TEntity, TResponse, TRequest>> _logger;
-        protected readonly IMapper _mapper;
+        protected readonly DMContext _context;
+        protected readonly ILogger<BaseEntityController<TEntity>> _logger;
         protected readonly UserManager<User> _userManager;
         protected string apiPath { get; set; }
 
-        public BaseEntityController(IRepository repository,
-            ILogger<BaseEntityController<TEntity, TResponse, TRequest>> logger,
-            IMapper mapper,
+        public BaseEntityController(DMContext context,
+            ILogger<BaseEntityController<TEntity>> logger,
             UserManager<User> userManager)
         {
-            _repository = repository;
+            _context = context;
             _logger = logger;
-            _mapper = mapper;
             _userManager = userManager;
             apiPath = typeof(TEntity).Name.ToLower() + "s";
         }
@@ -35,15 +33,15 @@ namespace DMAdvantage.Server.Controllers
             {
                 var username = User.Identity?.Name ?? string.Empty;
 
-                DbSet<TEntity> dbSet = _repository.Context.Set<TEntity>();
+                DbSet<TEntity> dbSet = _context.Set<TEntity>();
                 var entities = dbSet.Where(c => c.User != null && c.User.UserName == username).AsNoTracking().OrderBy(c => c.OrderBy());
 
                 if (paging == null)
-                    return Ok(_mapper.Map<IEnumerable<TResponse>>(entities));
+                    return Ok(entities);
                 
                 var pagedResults = PagedList<TEntity>.ToPagedList(entities.ToList(), paging);
                 Response.SetPagedHeader(pagedResults);
-                return Ok(_mapper.Map<IEnumerable<TResponse>>(pagedResults));
+                return Ok(pagedResults);
             }
             catch (Exception ex)
             {
@@ -59,7 +57,7 @@ namespace DMAdvantage.Server.Controllers
                 var username = User.Identity?.Name ?? string.Empty;
                 var search = searching.Search;
 
-                var dbSet = _repository.Context.Set<T>();
+                var dbSet = _context.Set<T>();
                 IQueryable<T> query;
                 if (search == null)
                     query = dbSet
@@ -73,11 +71,11 @@ namespace DMAdvantage.Server.Controllers
                 var entities = query.ToList().OrderBy(c => c.OrderBy());
 
                 if (paging == null)
-                    return Ok(_mapper.Map<IEnumerable<TResponse>>(entities));
+                    return Ok(entities);
 
                 var pagedResults = PagedList<T>.ToPagedList(entities, paging);
                 Response.SetPagedHeader(pagedResults);
-                return Ok(_mapper.Map<IEnumerable<TResponse>>(pagedResults));
+                return Ok(pagedResults);
             }
             catch (Exception ex)
             {
@@ -92,12 +90,12 @@ namespace DMAdvantage.Server.Controllers
             {
                 var username = User.Identity?.Name ?? string.Empty;
 
-                DbSet<TEntity> dbSet = _repository.Context.Set<TEntity>();
+                DbSet<TEntity> dbSet = _context.Set<TEntity>();
                 var entity = dbSet.AsNoTracking()
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entity == null) return NotFound();
-                return Ok(_mapper.Map<TResponse>(entity));
+                return Ok(entity);
             }
             catch (Exception ex)
             {
@@ -106,7 +104,7 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
-        protected async Task<IActionResult> CreateNewEntity([FromBody] TRequest request)
+        protected async Task<IActionResult> CreateNewEntity([FromBody] TEntity request)
         {
             try
             {
@@ -116,9 +114,9 @@ namespace DMAdvantage.Server.Controllers
                 if (ModelState.IsValid)
                 {
                     var entity = await CreateNewEntityInContext(request);
-                    if (_repository.SaveAll())
+                    if (_context.SaveAll())
                     {
-                        return Created($"/api/{apiPath}/{entity.Id}", _mapper.Map<TResponse>(entity));
+                        return Created($"/api/{apiPath}/{entity.Id}", entity);
                     }
                 }
                 else
@@ -134,7 +132,7 @@ namespace DMAdvantage.Server.Controllers
             return BadRequest("Failed to save new entity.");
         }
 
-        protected async Task<IActionResult> UpdateEntityById(Guid id, [FromBody] TRequest request)
+        protected async Task<IActionResult> UpdateEntityById(Guid id, [FromBody] TEntity request)
         {
             try
             {
@@ -144,19 +142,19 @@ namespace DMAdvantage.Server.Controllers
                 if (request == null)
                     throw new ArgumentNullException("Request cannot be null!");
 
-                DbSet<TEntity> dbSet = _repository.Context.Set<TEntity>();
-                var entityFromRepo = dbSet
+                DbSet<TEntity> dbSet = _context.Set<TEntity>();
+                var entityFromRepo = dbSet.AsNoTracking()
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
+                request.Id = id;
                 if (entityFromRepo == null)
                 {
                     var entity = await CreateNewEntityInContext(request);
-                    return Created($"/api/{apiPath}/{entity.Id}", _mapper.Map<TResponse>(entity));
+                    return Created($"/api/{apiPath}/{entity.Id}", entity);
                 }
 
-                var entry = _repository.Context.Entry(entityFromRepo);
-                entry.CurrentValues.SetValues(request);
-                _repository.SaveAll();
+                await CreateNewEntityInContext(request);
+                _context.SaveAll();
                 return NoContent();
             }
             catch (Exception ex)
@@ -175,7 +173,7 @@ namespace DMAdvantage.Server.Controllers
                 if (username == null)
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-                DbSet<TEntity> dbSet = _repository.Context.Set<TEntity>();
+                DbSet<TEntity> dbSet = _context.Set<TEntity>();
                 var entityFromRepo = dbSet.FirstOrDefault(x => x.Id == id && x.User != null && x.User.UserName == username);
 
                 if (entityFromRepo == null)
@@ -183,8 +181,8 @@ namespace DMAdvantage.Server.Controllers
                     return NotFound();
                 }
 
-                _repository.RemoveEntity(entityFromRepo);
-                _repository.SaveAll();
+                _context.Remove(entityFromRepo);
+                _context.SaveAll();
                 return NoContent();
             }
             catch (Exception ex)
@@ -195,16 +193,15 @@ namespace DMAdvantage.Server.Controllers
             return BadRequest("Failed to delete entity.");
         }
 
-        protected async Task<TEntity> CreateNewEntityInContext(object request)
+        protected async Task<TEntity> CreateNewEntityInContext(TEntity request)
         {
             var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
 
             if (currentUser == null)
                 throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-            var entry = _repository.Context.Add(new TEntity());
-            entry.Entity.User = currentUser;
-            entry.CurrentValues.SetValues(request);
+            request.User = currentUser;
+            var entry = _context.Update(request);
             return entry.Entity;
         }
     }

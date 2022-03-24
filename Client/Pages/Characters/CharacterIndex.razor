@@ -44,7 +44,7 @@ else
 
 @code {
     private bool _loading = true; 
-    private List<CharacterResponse>? _characters;
+    private List<Character>? _characters;
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,17 +52,17 @@ else
         await base.OnInitializedAsync();
     }
 
-    private async Task RemoveCharacter(CharacterResponse character)
+    private async Task RemoveCharacter(Character character)
     {
         if (_characters == null)
             return;
         _characters.Remove(character);
-        await ApiService.RemoveEntity<CharacterResponse>(character.Id);
+        await ApiService.RemoveEntity<Character>(character.Id);
     }
 
     private async Task RefreshCharacters()
     {
-        _characters = await ApiService.GetAllEntities<CharacterResponse>();
+        _characters = await ApiService.GetAllEntities<Character>();
         _loading = false;   
     }
 

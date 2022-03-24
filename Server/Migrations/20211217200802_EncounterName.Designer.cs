@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DMAdvantage.Server.Migrations
 {
-    [DbContext(typeof(Context))]
+    [DbContext(typeof(DMContext))]
     [Migration("20211217200802_EncounterName")]
     partial class EncounterName
     {

@@ -41,8 +41,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync("/api/classes");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var classes = await response.ParseEntityList<DMClassResponse>();
-            var classesFromDb = await client.GetAllEntities<DMClassResponse>();
+            var classes = await response.ParseEntityList<DMClass>();
+            var classesFromDb = await client.GetAllEntities<DMClass>();
             classes.Should().HaveCount(classesFromDb.Count);
         }
 
@@ -50,14 +50,14 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllClassesWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var classes = new List<DMClassResponse>();
+            var classes = new List<DMClass>();
 
             for (var i = 0; i < 25; i++)
             {
-                var dmclass = Generation.DMClassRequest();
+                var dmclass = Generation.DMClass();
                 dmclass.Name = $"{i:00000} - DMClass";
-                var dmclassResponse = await client.CreateDMClass(dmclass);
-                classes.Add(dmclassResponse);
+                var dMClass = await client.CreateDMClass(dmclass);
+                classes.Add(dMClass);
             }
 
             var paging = new PagingParameters
@@ -69,7 +69,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/classes?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var classesResponse = await response.ParseEntityList<DMClassResponse>();
+            var classesResponse = await response.ParseEntityList<DMClass>();
 
             classesResponse.Should().HaveCount(paging.PageSize);
             classesResponse[0].Id.Should().Be(classes[0 + paging.PageSize].Id);
@@ -79,16 +79,16 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllClassesWithSearching_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var classes = new List<DMClassResponse>();
+            var classes = new List<DMClass>();
 
             for (var i = 0; i < 25; i++)
             {
-                var dmclass = Generation.DMClassRequest();
+                var dmclass = Generation.DMClass();
                 dmclass.Name = $"{i:00000} - DMClass";
                 if (Faker.Boolean.Random())
                     dmclass.Name += "Found";
-                var dmclassResponse = await client.CreateDMClass(dmclass);
-                classes.Add(dmclassResponse);
+                var dMClass = await client.CreateDMClass(dmclass);
+                classes.Add(dMClass);
             }
 
             var search = new NamedSearchParameters<DMClass>()
@@ -99,7 +99,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/classes?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var classesResponse = await response.ParseEntityList<DMClassResponse>();
+            var classesResponse = await response.ParseEntityList<DMClass>();
 
             classesResponse.Should().BeEquivalentTo(classes.Where(x => x.Name?.ToLower().Contains("found") == true));
         }
@@ -111,8 +111,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var dmclass = await client.CreateDMClass();
 
-            var addedDMClass = await client.GetEntity<DMClassResponse>(dmclass.Id);
-            Validation.CompareResponses(dmclass, addedDMClass);
+            var addedDMClass = await client.GetEntity<DMClass>(dmclass.Id);
+            Validation.CompareEntities(dmclass, addedDMClass);
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
 
-            var dmclass = Generation.DMClassRequest();
+            var dmclass = Generation.DMClass();
             dmclass.Name = null;
             var response = await client.PostAsync("/api/classes", dmclass);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -136,8 +136,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/classes/{dmclass.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var addedDMClass = await response.ParseEntity<DMClassResponse>();
-            Validation.CompareResponses(dmclass, addedDMClass);
+            var addedDMClass = await response.ParseEntity<DMClass>();
+            Validation.CompareEntities(dmclass, addedDMClass);
         }
 
         [Fact]
@@ -145,13 +145,14 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
             var dmclass = await client.CreateDMClass();
-            var dmclassEdit = Generation.DMClassRequest();
+            var dmclassEdit = Generation.DMClass();
+            dmclassEdit.Id = dmclass.Id;
 
             var response = await client.PutAsync($"api/classes/{dmclass.Id}", dmclassEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var addedDMClass = await client.GetEntity<DMClassResponse>(dmclass.Id);
+            var addedDMClass = await client.GetEntity<DMClass>(dmclass.Id);
             addedDMClass.Should().NotBeNull();
-            Validation.CompareRequests(dmclassEdit, addedDMClass);
+            Validation.CompareEntities(dmclassEdit, addedDMClass);
         }
 
         [Fact]

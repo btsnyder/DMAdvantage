@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DMAdvantage.Data
 {
-    public class Context: IdentityDbContext<User>
+    public class DMContext: IdentityDbContext<User>
     {
         private readonly IConfiguration? _configuration;
 
-        public Context(DbContextOptions<Context> options, IConfiguration? configuration) : base(options)
+        public DMContext(DbContextOptions<DMContext> options, IConfiguration? configuration) : base(options)
         {
             _configuration = configuration;
         }
@@ -27,6 +27,11 @@ namespace DMAdvantage.Data
         public DbSet<TechPower> TechPowers => Set<TechPower>();
         public DbSet<Ability> Abilities => Set<Ability>();
         public DbSet<DMClass> DMClasses => Set<DMClass>();
+
+        public bool SaveAll()
+        {
+            return SaveChanges() > 0;
+        }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder bldr)

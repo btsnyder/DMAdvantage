@@ -1,6 +1,7 @@
-﻿using System.Reflection;
+﻿using DMAdvantage.Shared.Enums;
+using System.Reflection;
 
-namespace DMAdvantage.Shared.Enums
+namespace DMAdvantage.Shared.Extensions
 {
     public static class EnumExtensions
     {

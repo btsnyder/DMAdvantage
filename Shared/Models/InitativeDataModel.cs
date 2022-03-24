@@ -1,21 +1,23 @@
-﻿namespace DMAdvantage.Shared.Models
+﻿using DMAdvantage.Shared.Entities;
+
+namespace DMAdvantage.Shared.Models
 {
     public class InitativeDataModel : InitativeData
     {
-        public IBeingResponse Being;
+        public Being Being;
 
-        public InitativeDataModel(IBeingResponse being)
+        public InitativeDataModel(Being being)
         {
             Being = being;
             BeingId = being.Id;
             CurrentHP = being.HitPoints;
             CurrentFP = being.ForcePoints;
             CurrentTP = being.TechPoints;
-            CurrentHitDice = being is CharacterResponse character ? character.Level : 0;
+            CurrentHitDice = being is Character character ? character.Level : 0;
 
         }
 
-        public InitativeDataModel(IBeingResponse being, InitativeData data)
+        public InitativeDataModel(Being being, InitativeData data)
         {
             Initative = data.Initative;
             BeingId = data.BeingId;
@@ -27,9 +29,9 @@
         }
 
         public string Name => Being?.Name;
-        public string ArmorClass => Being is CharacterResponse character ? character.ArmorClass.ToString() : string.Empty;
-        public string ForcePoints => Being is CharacterResponse ? CurrentFP.ToString() : string.Empty;
-        public string TechPoints => Being is CharacterResponse ? CurrentTP.ToString() : string.Empty;
+        public string ArmorClass => Being is Character character ? character.ArmorClass.ToString() : string.Empty;
+        public string ForcePoints => Being is Character ? CurrentFP.ToString() : string.Empty;
+        public string TechPoints => Being is Character ? CurrentTP.ToString() : string.Empty;
 
         public void ApplyHP(int value)
         {
@@ -48,7 +50,7 @@
             {
                 case null:
                     return string.Empty;
-                case CharacterResponse:
+                case Character:
                     return CurrentHP.ToString();
             }
 

@@ -11,6 +11,7 @@ using FluentAssertions;
 using System.Linq;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Query;
+using System.Text.Json;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -43,8 +44,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync("/api/encounters");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var encounters = await response.ParseEntityList<EncounterResponse>();
-            var encountersFromDb = await client.GetAllEntities<EncounterResponse>();
+            var encounters = await response.ParseEntityList<Encounter>();
+            var encountersFromDb = await client.GetAllEntities<Encounter>();
             encounters.Should().HaveCount(encountersFromDb.Count);
         }
 
@@ -73,9 +74,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
                 data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
 
-                var encounter = new EncounterRequest
+                var encounter = new Encounter
                 {
-                    Data = data,
+                    DataCache = JsonSerializer.Serialize(data),
+                    ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
                 };
 
                 await client.CreateEncounter(encounter);
@@ -90,7 +92,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/encounters?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var encountersResponse = await response.ParseEntityList<EncounterResponse>();
+            var encountersResponse = await response.ParseEntityList<Encounter>();
 
             encountersResponse.Should().HaveCount(paging.PageSize);
         }
@@ -99,16 +101,16 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllCreaturesWithSearching_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var encounters = new List<EncounterResponse>();
+            var encounters = new List<Encounter>();
 
             for (var i = 0; i < 25; i++)
             {
-                var encounter = Generation.EncounterRequest();
+                var encounter = Generation.Encounter();
                 encounter.Name = $"{i:00000} - Encounter";
                 if (Faker.Boolean.Random())
                     encounter.Name += "Found";
-                var encounterResponse = await client.CreateEncounter(encounter);
-                encounters.Add(encounterResponse);
+                var addedEncounter = await client.CreateEncounter(encounter);
+                encounters.Add(addedEncounter);
             }
 
             var search = new NamedSearchParameters<Encounter>()
@@ -119,10 +121,15 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/encounters?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var encounterResponses = await response.ParseEntityList<EncounterResponse>();
+            var encoutnersResponse = await response.ParseEntityList<Encounter>();
+
+            foreach (var encounter in encoutnersResponse)
+            {
+                encounter.User = MockHttpContext.CurrentUser;
+            }
 
             var expected = encounters.Where(x => x.Name?.ToLower().Contains("found") == true);
-            encounterResponses.Should().BeEquivalentTo(expected);
+            encoutnersResponse.Should().BeEquivalentTo(expected);
         }
 
         [Fact]
@@ -132,7 +139,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var encounter = await client.CreateEncounter();
 
-            var encounters = await client.GetAllEntities<EncounterResponse>();
+            var encounters = await client.GetAllEntities<Encounter>();
             encounters.Where(e => e.Id == encounter.Id).Should().HaveCount(1);
         }
 
@@ -146,8 +153,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/encounters/{encounter.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var addedEncounter = await response.ParseEntity<EncounterResponse>();
-            Validation.CompareRequests(encounter, addedEncounter);
+            var addedEncounter = await response.ParseEntity<Encounter>();
+            Validation.CompareEntities(encounter, addedEncounter);
         }
 
         [Fact]
@@ -174,15 +181,17 @@ namespace DMAdvantage.IntegrationTests.Controllers
             data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
             data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
 
-            var encounterEdit = new EncounterRequest
+            var encounterEdit = new Encounter
             {
-                Data = data,
+                DataCache = JsonSerializer.Serialize(data),
+                ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
             };
+            encounterEdit.Id = encounter.Id;
             var response = await client.PutAsync($"api/encounters/{encounter.Id}", encounterEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var addedEncounter = await client.GetEntity<EncounterResponse>(encounter.Id);
+            var addedEncounter = await client.GetEntity<Encounter>(encounter.Id);
             addedEncounter.Should().NotBeNull();
-            Validation.CompareRequests(encounterEdit, addedEncounter);
+            Validation.CompareEntities(encounterEdit, addedEncounter);
         }
 
         [Fact]

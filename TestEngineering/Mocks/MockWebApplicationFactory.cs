@@ -33,11 +33,11 @@ namespace TestEngineering.Mocks
             builder.ConfigureServices(services =>
             {
                 var descriptor = services.Single(
-                    d => d.ServiceType == typeof(DbContextOptions<Context>));
+                    d => d.ServiceType == typeof(DbContextOptions<DMContext>));
 
                 services.Remove(descriptor);
 
-                services.AddDbContext<Context>(options =>
+                services.AddDbContext<DMContext>(options =>
                 {
                     options.UseInMemoryDatabase(DatabaseId);
                 });
@@ -46,7 +46,7 @@ namespace TestEngineering.Mocks
 
                 using var scope = sp.CreateScope();
                 var scopedServices = scope.ServiceProvider;
-                var db = scopedServices.GetRequiredService<Context>();
+                var db = scopedServices.GetRequiredService<DMContext>();
                 db.Database.EnsureCreated();
 
                 var userManager = scopedServices.GetRequiredService<UserManager<User>>();

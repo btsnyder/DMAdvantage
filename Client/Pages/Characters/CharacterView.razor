@@ -153,21 +153,24 @@ else if (_model != null)
         <hr class="mt-0" />
         <div class="row mb-2">
             <div class="d-flex flex-wrap">
-                @foreach (var power in _forcePowers.Where(x => x.Level == i && _model.ForcePowers.Contains(x)))
+                @if (_forcePowers != null)
                 {
-                    <MudButton Variant="Variant.Filled" Color="Color.Info" Class="px-2 py-1 ma-1" OnClick="@(() => ShowInfo(power))" Disabled="@IsDisabled(power)">
-                        <MudGrid>
-                            <MudItem xs="12" Class="d-flex pb-0">
-                                <MudText Class="pa-0">@power.Name</MudText>
-                            </MudItem>
-                            <MudItem xs="12" Class="d-flex pt-0">
-                                @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)
-                                {
-                                    <MudText Class="pa-0" style="font-size: 10px">Pre-Req: @GetPowerName(power.PrerequisiteId)</MudText>
-                                }
-                            </MudItem>
-                        </MudGrid>
-                    </MudButton>
+                    @foreach (var power in _forcePowers.Where(x => x.Level == i && _model.ForcePowers.Contains(x)))
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Info" Class="px-2 py-1 ma-1" OnClick="@(() => ShowInfo(power))" Disabled="@IsDisabled(power)">
+                            <MudGrid>
+                                <MudItem xs="12" Class="d-flex pb-0">
+                                    <MudText Class="pa-0">@power.Name</MudText>
+                                </MudItem>
+                                <MudItem xs="12" Class="d-flex pt-0">
+                                    @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)
+                                    {
+                                        <MudText Class="pa-0" style="font-size: 10px">Pre-Req: @GetPowerName(power.PrerequisiteId)</MudText>
+                                    }
+                                </MudItem>
+                            </MudGrid>
+                        </MudButton>
+                    }
                 }
             </div>
         </div>
@@ -180,14 +183,14 @@ else
 
 @code
 {
-    void ShowInfo(ForcePowerResponse power)
+    void ShowInfo(ForcePower power)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         var parameters = new DialogParameters {{"ForcePower", power}};
         DialogService.Show<ForceInfoDialog>(power.Name, parameters, options);
     }
 
-    void ShowAbility(AbilityResponse ability)
+    void ShowAbility(Ability ability)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         var parameters = new DialogParameters {{"Text", ability.Description}};

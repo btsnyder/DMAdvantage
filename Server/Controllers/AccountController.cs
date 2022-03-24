@@ -17,19 +17,16 @@ namespace DMAdvantage.Server.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
-        private readonly IMapper _mapper;
 
         public AccountController(ILogger<AccountController> logger,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
-            IConfiguration config,
-            IMapper mapper)
+            IConfiguration config)
         {
             _logger = logger;
             _signInManager = signInManager;
             _userManager = userManager;
             _config = config;
-            _mapper = mapper;
         }
 
         [Route("token")]
@@ -67,8 +64,12 @@ namespace DMAdvantage.Server.Controllers
                                 expires: DateTime.UtcNow.AddDays(7),
                                 signingCredentials: credentials);
 
-                            var userModel = _mapper.Map<LoginResponse>(user);
-                            userModel.Token = new JwtSecurityTokenHandler().WriteToken(token);
+                            var userModel = new LoginResponse
+                            {
+                                FirstName = user.FirstName,
+                                LastName = user.LastName,
+                                Token = new JwtSecurityTokenHandler().WriteToken(token)
+                            };
 
                             return Created("", userModel);
                         }

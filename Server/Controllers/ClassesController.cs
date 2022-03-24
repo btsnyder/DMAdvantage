@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using AutoMapper;
+﻿using AutoMapper;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
@@ -8,19 +7,17 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ClassesController : BaseEntityController<DMClass, DMClassResponse, DMClassRequest>
+    public class ClassesController : BaseEntityController<DMClass>
     {
-        public ClassesController(IRepository repository,
+        public ClassesController(DMContext context,
             ILogger<ClassesController> logger,
-            IMapper mapper,
             UserManager<User> userManager) : 
-            base(repository, logger, mapper, userManager)
+            base(context, logger, userManager)
         {
             apiPath = "classes";
         }
@@ -40,13 +37,13 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewClass([FromBody] DMClassRequest request)
+        public async Task<IActionResult> CreateNewClass([FromBody] DMClass request)
         {
             return await CreateNewEntity(request);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateClassById(Guid id, [FromBody] DMClassRequest request)
+        public async Task<IActionResult> UpdateClassById(Guid id, [FromBody] DMClass request)
         {
             return await UpdateEntityById(id, request);
         }

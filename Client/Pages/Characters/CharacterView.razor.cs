@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Client.Helpers;
 using DMAdvantage.Client.Services;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 
@@ -7,8 +8,8 @@ namespace DMAdvantage.Client.Pages.Characters
 {
     public partial class CharacterView
     {
-        private CharacterResponse? _model = new();
-        private List<ForcePowerResponse>? _forcePowers = new();
+        private Character? _model = new();
+        private List<ForcePower>? _forcePowers = new();
         private bool _loading;
         private string _skillSearch;
         private readonly string[] _strSkills = new string[] { "StrengthSave", "Athletics" };
@@ -30,7 +31,7 @@ namespace DMAdvantage.Client.Pages.Characters
             {
                 _model = await ApiService.GetCharacterViewFromPlayerName(PlayerName);
             }
-            _forcePowers = await ApiService.GetViews<ForcePowerResponse>();
+            _forcePowers = await ApiService.GetViews<ForcePower>();
             _filteredSkills = _startingSkills;
 
             await base.OnInitializedAsync();
@@ -44,7 +45,7 @@ namespace DMAdvantage.Client.Pages.Characters
             return _forcePowers?.First(x => x.Id == id).Name;
         }
 
-        private bool IsDisabled(ForcePowerResponse power)
+        private bool IsDisabled(ForcePower power)
         {
             if (_model!.ForcePowers.Contains(power))
                 return false;
@@ -60,7 +61,7 @@ namespace DMAdvantage.Client.Pages.Characters
         private string GetSkillBonus(string name)
         {
             if (_model == null) return string.Empty;
-            var proficiency = (bool?)typeof(CharacterResponse).GetProperty(name)?.GetValue(_model);
+            var proficiency = (bool?)typeof(Character).GetProperty(name)?.GetValue(_model);
             if (_strSkills.Contains(name))
                 return _model.SkillBonus(_model.StrengthBonus, proficiency).PrintInt();
             if (_dexSkills.Contains(name))

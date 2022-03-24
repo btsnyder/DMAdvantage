@@ -14,13 +14,12 @@ namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ForcePowersController : BaseEntityController<ForcePower, ForcePowerResponse, ForcePowerRequest>
+    public class ForcePowersController : BaseEntityController<ForcePower>
     {
-        public ForcePowersController(IRepository repository,
+        public ForcePowersController(DMContext context,
             ILogger<ForcePowersController> logger,
-            IMapper mapper,
             UserManager<User> userManager)
-            : base(repository, logger, mapper, userManager)
+            : base(context, logger, userManager)
         {
         }
 
@@ -35,11 +34,11 @@ namespace DMAdvantage.Server.Controllers
 
                 IQueryable<ForcePower> query;
                 if (search == null)
-                    query = _repository.Context.ForcePowers
+                    query = _context.ForcePowers
                         .Where(c => c.User != null && c.User.UserName == username)
                         .AsNoTracking();
                 else
-                    query = _repository.Context.ForcePowers
+                    query = _context.ForcePowers
                         .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search.ToLower()))
                         .AsNoTracking();
 
@@ -55,11 +54,11 @@ namespace DMAdvantage.Server.Controllers
                 var entities = query.ToList().OrderBy(c => c.OrderBy());
 
                 if (paging == null)
-                    return Ok(_mapper.Map<IEnumerable<ForcePowerResponse>>(entities));
+                    return Ok(entities);
 
                 var pagedResults = PagedList<ForcePower>.ToPagedList(entities, paging);
                 Response.SetPagedHeader(pagedResults);
-                return Ok(_mapper.Map<IEnumerable<ForcePowerResponse>>(pagedResults));
+                return Ok(pagedResults);
             }
             catch (Exception ex)
             {
@@ -75,13 +74,13 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewForcePower([FromBody] ForcePowerRequest request)
+        public async Task<IActionResult> CreateNewForcePower([FromBody] ForcePower request)
         {
             return await CreateNewEntity(request);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateForcePowerById(Guid id, [FromBody] ForcePowerRequest request)
+        public async Task<IActionResult> UpdateForcePowerById(Guid id, [FromBody] ForcePower request)
         {
             return await UpdateEntityById(id, request);
         }

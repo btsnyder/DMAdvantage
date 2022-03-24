@@ -9,6 +9,7 @@ using FluentAssertions;
 using System.Collections.Generic;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Query;
+using DMAdvantage.Shared.Entities;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -39,8 +40,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync("/api/techpowers");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var techPowers = await response.ParseEntityList<TechPowerResponse>();
-            var techPowersFromDb = await client.GetAllEntities<TechPowerResponse>();
+            var techPowers = await response.ParseEntityList<TechPower>();
+            var techPowersFromDb = await client.GetAllEntities<TechPower>();
             techPowers.Should().HaveCount(techPowersFromDb.Count);
         }
 
@@ -48,11 +49,11 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllTechPowersWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var techPowers = new List<TechPowerResponse>();
+            var techPowers = new List<TechPower>();
 
             for (var i = 0; i < 25; i++)
             {
-                var techPower = Generation.TechPowerRequest();
+                var techPower = Generation.TechPower();
                 techPower.Level = 0;
                 techPower.Name = $"{i:00000} - TechPower";
                 var techPowerResponse = await client.CreateTechPower(techPower);
@@ -68,7 +69,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/techpowers?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var techPowersResponse = await response.ParseEntityList<TechPowerResponse>();
+            var techPowersResponse = await response.ParseEntityList<TechPower>();
 
             techPowersResponse.Should().HaveCount(paging.PageSize);
             techPowersResponse[0].Id.Should().Be(techPowers[0 + paging.PageSize].Id);
@@ -81,7 +82,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             for (var i = 0; i < 25; i++)
             {
-                var techPower = Generation.TechPowerRequest();
+                var techPower = Generation.TechPower();
                 switch (i)
                 {
                     case < 5:
@@ -108,11 +109,11 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/techpowers?{searching.GetQuery()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var techPowerResponses = await response.ParseEntityList<TechPowerResponse>();
+            var techPowers = await response.ParseEntityList<TechPower>();
 
-            techPowerResponses.Should().HaveCount(5);
-            techPowerResponses.TrueForAll(x => x.Name == "search").Should().Be(true);
-            techPowerResponses.TrueForAll(x => x.CastingPeriod == CastingPeriod.Hour).Should().Be(true);
+            techPowers.Should().HaveCount(5);
+            techPowers.TrueForAll(x => x.Name == "search").Should().Be(true);
+            techPowers.TrueForAll(x => x.CastingPeriod == CastingPeriod.Hour).Should().Be(true);
         }
 
         [Fact]
@@ -122,8 +123,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var techPower = await client.CreateTechPower();
 
-            var addedTechPower = await client.GetEntity<TechPowerResponse>(techPower.Id);
-            Validation.CompareResponses(techPower, addedTechPower);
+            var addedTechPower = await client.GetEntity<TechPower>(techPower.Id);
+            Validation.CompareEntities(techPower, addedTechPower);
         }
 
         [Fact]
@@ -131,7 +132,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
 
-            var techPower = Generation.TechPowerRequest();
+            var techPower = Generation.TechPower();
             techPower.Name = null;
             var response = await client.PostAsync("/api/techpowers", techPower);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -147,8 +148,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/techpowers/{techPower.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var addedTechPower = await response.ParseEntity<TechPowerResponse>();
-            Validation.CompareResponses(techPower, addedTechPower);
+            var addedTechPower = await response.ParseEntity<TechPower>();
+            Validation.CompareEntities(techPower, addedTechPower);
         }
 
         [Fact]
@@ -156,13 +157,14 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
             var techPower = await client.CreateTechPower();
-            var techPowerEdit = Generation.TechPowerRequest();
+            var techPowerEdit = Generation.TechPower();
+            techPowerEdit.Id = techPower.Id;
 
             var response = await client.PutAsync($"api/techpowers/{techPower.Id}", techPowerEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var addedTechPower = await client.GetEntity<TechPowerResponse>(techPower.Id);
+            var addedTechPower = await client.GetEntity<TechPower>(techPower.Id);
             addedTechPower.Should().NotBeNull();
-            Validation.CompareRequests(techPowerEdit, addedTechPower);
+            Validation.CompareEntities(techPowerEdit, addedTechPower);
         }
 
         [Fact]

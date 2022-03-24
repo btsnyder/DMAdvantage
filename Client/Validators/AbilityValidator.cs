@@ -1,21 +1,21 @@
-using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Entities;
 using FluentValidation;
 using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class AbilityRequestFluentValidator : AbstractValidator<AbilityRequest>
+    public class AbilityValidator : AbstractValidator<Ability>
     {
         public ISnackbar? Snackbar { get; set; }
 
-        public AbilityRequestFluentValidator()
+        public AbilityValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
         }
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<AbilityRequest>.CreateWithOptions((AbilityRequest)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<Ability>.CreateWithOptions((Ability)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             var errors = result.Errors.Select(e => e.ErrorMessage).ToList();

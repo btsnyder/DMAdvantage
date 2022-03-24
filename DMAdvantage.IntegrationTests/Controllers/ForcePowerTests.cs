@@ -9,6 +9,7 @@ using FluentAssertions;
 using System.Collections.Generic;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Query;
+using DMAdvantage.Shared.Entities;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -39,8 +40,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync("/api/forcepowers");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var forcePowers = await response.ParseEntityList<ForcePowerResponse>();
-            var forcePowersFromDb = await client.GetAllEntities<ForcePowerResponse>();
+            var forcePowers = await response.ParseEntityList<ForcePower>();
+            var forcePowersFromDb = await client.GetAllEntities<ForcePower>();
             forcePowers.Should().HaveCount(forcePowersFromDb.Count);
         }
 
@@ -48,11 +49,11 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllForcePowersWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var forcePowers = new List<ForcePowerResponse>();
+            var forcePowers = new List<ForcePower>();
 
             for (var i = 0; i < 25; i++)
             {
-                var forcePower = Generation.ForcePowerRequest();
+                var forcePower = Generation.ForcePower();
                 forcePower.Level = 0;
                 forcePower.Name = $"{i:00000} - ForcePower";
                 var forcePowerResponse = await client.CreateForcePower(forcePower);
@@ -68,7 +69,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/forcepowers?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var forcePowersResponse = await response.ParseEntityList<ForcePowerResponse>();
+            var forcePowersResponse = await response.ParseEntityList<ForcePower>();
 
             forcePowersResponse.Should().HaveCount(paging.PageSize);
             forcePowersResponse[0].Id.Should().Be(forcePowers[0 + paging.PageSize].Id);
@@ -81,7 +82,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             for (var i = 0; i < 25; i++)
             {
-                var forcePower = Generation.ForcePowerRequest();
+                var forcePower = Generation.ForcePower();
                 switch (i)
                 {
                     case < 5:
@@ -108,7 +109,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/forcepowers?{searching.GetQuery()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var forcePowersResponse = await response.ParseEntityList<ForcePowerResponse>();
+            var forcePowersResponse = await response.ParseEntityList<ForcePower>();
 
             forcePowersResponse.Should().HaveCount(5);
             forcePowersResponse.TrueForAll(x => x.Name == "search").Should().Be(true);
@@ -122,8 +123,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var forcePower = await client.CreateForcePower();
 
-            var addedForcePower = await client.GetEntity<ForcePowerResponse>(forcePower.Id);
-            Validation.CompareResponses(forcePower, addedForcePower);
+            var addedForcePower = await client.GetEntity<ForcePower>(forcePower.Id);
+            Validation.CompareEntities(forcePower, addedForcePower);
         }
 
         [Fact]
@@ -131,7 +132,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
 
-            var forcePower = Generation.ForcePowerRequest();
+            var forcePower = Generation.ForcePower();
             forcePower.Name = null;
             var response = await client.PostAsync("/api/forcepowers", forcePower);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -147,8 +148,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/forcepowers/{forcePower.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var addedForcePower = await response.ParseEntity<ForcePowerResponse>();
-            Validation.CompareResponses(forcePower, addedForcePower);
+            var addedForcePower = await response.ParseEntity<ForcePower>();
+            Validation.CompareEntities(forcePower, addedForcePower);
         }
 
         [Fact]
@@ -156,13 +157,14 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
             var forcePower = await client.CreateForcePower();
-            var forcePowerEdit = Generation.ForcePowerRequest();
+            var forcePowerEdit = Generation.ForcePower();
+            forcePowerEdit.Id = forcePower.Id;
 
             var response = await client.PutAsync($"api/forcepowers/{forcePower.Id}", forcePowerEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var addedForcePower = await client.GetEntity<ForcePowerResponse>(forcePower.Id);
+            var addedForcePower = await client.GetEntity<ForcePower>(forcePower.Id);
             addedForcePower.Should().NotBeNull();
-            Validation.CompareRequests(forcePowerEdit, addedForcePower);
+            Validation.CompareEntities(forcePowerEdit, addedForcePower);
         }
 
         [Fact]

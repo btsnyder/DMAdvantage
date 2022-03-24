@@ -15,7 +15,7 @@ else
                 <MudTextField @bind-Value="_model.PlayerName" Label="Player" Variant="Variant.Outlined" For="() => _model.PlayerName"/>
             </MudItem>
             <MudItem xs="3">
-                <MudSelect T="DMClassResponse" @bind-Value="@_model.Class" Label="Class" Variant="Variant.Outlined" For="() => _model.Class">
+                <MudSelect T="DMClass" @bind-Value="@_model.Class" Label="Class" Variant="Variant.Outlined" For="() => _model.Class">
                     @foreach (var dmclass in _classes)
                     {
                         <MudSelectItem Value="@dmclass">@dmclass.Name</MudSelectItem>
@@ -140,7 +140,7 @@ else
             }
 
             <MudItem xs="12">
-                <MultipleEntityDropdown TEntity="AbilityResponse" @bind-SelectedEntities="_model.Abilities" Label="Abilities"/>
+                <MultipleEntityDropdown TEntity="Ability" @bind-SelectedEntities="_model.Abilities" Label="Abilities"/>
             </MudItem>
 
             <MudItem xs="4">
@@ -186,7 +186,7 @@ else
 
 @code
 {
-    void ShowInfo(ForcePowerResponse power)
+    void ShowInfo(ForcePower power)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         var parameters = new DialogParameters {{"ForcePower", power}};

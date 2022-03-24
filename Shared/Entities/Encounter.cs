@@ -16,5 +16,6 @@ namespace DMAdvantage.Shared.Entities
         {
             return Name ?? string.Empty;
         }
+        public new string Display => Name;
     }
 }

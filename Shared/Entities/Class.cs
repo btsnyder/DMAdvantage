@@ -14,5 +14,15 @@ namespace DMAdvantage.Shared.Entities
         {
             return Name ?? string.Empty;
         }
+
+        public override bool Equals(object o)
+        {
+            var other = o as DMClass;
+            return other?.Id == Id;
+        }
+
+        public override int GetHashCode() => Id.GetHashCode();
+
+        public override string ToString() => Name;
     }
 }

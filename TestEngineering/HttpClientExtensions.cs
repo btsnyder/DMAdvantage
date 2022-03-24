@@ -1,4 +1,5 @@
-﻿using DMAdvantage.Shared.Models;
+﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using System.Net;
 using System.Reflection;
@@ -56,43 +57,48 @@ namespace TestEngineering
             return path.ToLower();
         }
 
-        public static async Task<CharacterResponse> CreateCharacter(this HttpClient client, CharacterRequest? character = null)
+        public static async Task<Character> CreateCharacter(this HttpClient client, Character? character = null)
         {
             var random = new Random();
-            character ??= Generation.CharacterRequest();
+            character ??= Generation.Character();
+            character.User = null;
             var ability = await client.CreateAbility();
+            ability.User = null;
             character.Abilities.Add(ability);
-            var powers = new List<ForcePowerResponse>();
+            var powers = new List<ForcePower>();
             for (int i = 0; i < random.Next(0, 10); i++)
             {
                 var power = await client.CreateForcePower();
+                power.User = null;
                 powers.Add(power);
             }
             character.ForcePowers = powers;
             var response = await client.PostAsync("/api/characters", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<CharacterResponse>();
+            var created = await response.ParseEntity<Character>();
             return created;
         }
 
-        public static async Task<CreatureResponse> CreateCreature(this HttpClient client, CreatureRequest? creature = null)
+        public static async Task<Creature> CreateCreature(this HttpClient client, Creature? creature = null)
         {
             var random = new Random();
-            creature ??= Generation.CreatureRequest();
-            var powers = new List<ForcePowerResponse>();
+            creature ??= Generation.Creature();
+            creature.User = null;
+            var powers = new List<ForcePower>();
             for (int i = 0; i < random.Next(0, 10); i++)
             {
                 var power = await client.CreateForcePower();
+                power.User = null;
                 powers.Add(power);
             }
             creature.ForcePowers = powers;
             var response = await client.PostAsync("/api/creatures", creature);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<CreatureResponse>();
+            var created = await response.ParseEntity<Creature>();
             return created;
         }
 
-        public static async Task<EncounterResponse> CreateEncounter(this HttpClient client, EncounterRequest? encounter = null)
+        public static async Task<Encounter> CreateEncounter(this HttpClient client, Encounter? encounter = null)
         {
             if (encounter == null)
             { 
@@ -114,50 +120,51 @@ namespace TestEngineering
                 data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
                 data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
 
-                encounter = new EncounterRequest
+                encounter = new Encounter
                 {
-                    Data = data,
+                    DataCache = JsonSerializer.Serialize(data),
+                    ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
                 };
             }
             var response = await client.PostAsync("/api/encounters", encounter);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<EncounterResponse>();
+            var created = await response.ParseEntity<Encounter>();
             return created;
         }
 
-        public static async Task<ForcePowerResponse> CreateForcePower(this HttpClient client, ForcePowerRequest? forcePower = null)
+        public static async Task<ForcePower> CreateForcePower(this HttpClient client, ForcePower? forcePower = null)
         {
-            forcePower ??= Generation.ForcePowerRequest();
+            forcePower ??= Generation.ForcePower();
             var response = await client.PostAsync("/api/forcepowers", forcePower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<ForcePowerResponse>();
+            var created = await response.ParseEntity<ForcePower>();
             return created;
         }
 
-        public static async Task<TechPowerResponse> CreateTechPower(this HttpClient client, TechPowerRequest? techPower = null)
+        public static async Task<TechPower> CreateTechPower(this HttpClient client, TechPower? techPower = null)
         {
-            techPower ??= Generation.TechPowerRequest();
+            techPower ??= Generation.TechPower();
             var response = await client.PostAsync("/api/techpowers", techPower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<TechPowerResponse>();
+            var created = await response.ParseEntity<TechPower>();
             return created;
         }
 
-        public static async Task<AbilityResponse> CreateAbility(this HttpClient client, AbilityRequest? ability = null)
+        public static async Task<Ability> CreateAbility(this HttpClient client, Ability? ability = null)
         {
-            ability ??= Generation.AbilityRequest();
+            ability ??= Generation.Ability();
             var response = await client.PostAsync("/api/abilities", ability);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<AbilityResponse>();
+            var created = await response.ParseEntity<Ability>();
             return created;
         }
 
-        public static async Task<DMClassResponse> CreateDMClass(this HttpClient client, DMClassRequest? dmclass = null)
+        public static async Task<DMClass> CreateDMClass(this HttpClient client, DMClass? dmclass = null)
         {
-            dmclass ??= Generation.DMClassRequest();
+            dmclass ??= Generation.DMClass();
             var response = await client.PostAsync("/api/classes", dmclass);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
-            var created = await response.ParseEntity<DMClassResponse>();
+            var created = await response.ParseEntity<DMClass>();
             return created;
         }
 

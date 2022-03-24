@@ -1,7 +1,10 @@
-﻿namespace DMAdvantage.Shared.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DMAdvantage.Shared.Entities
 {
     public class Ability : BaseEntity, INamedEntity
     {
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
 
@@ -11,5 +14,17 @@
         {
             return Name ?? string.Empty;
         }
+
+        public new string Display => Name;
+
+        public override bool Equals(object o)
+        {
+            var other = o as Ability;
+            return other?.Id == Id;
+        }
+
+        public override int GetHashCode() => Id.GetHashCode();
+
+        public override string ToString() => Name;
     }
 }

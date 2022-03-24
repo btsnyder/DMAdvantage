@@ -30,7 +30,7 @@
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    [Parameter] public ForcePowerResponse ForcePower { get; set; }
+    [Parameter] public ForcePower ForcePower { get; set; }
 
     void Submit() => MudDialog.Close(DialogResult.Ok(true));
 }

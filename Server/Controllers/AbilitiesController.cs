@@ -13,13 +13,12 @@ namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AbilitiesController : BaseEntityController<Ability, AbilityResponse, AbilityRequest>
+    public class AbilitiesController : BaseEntityController<Ability>
     {
-        public AbilitiesController(IRepository repository,
+        public AbilitiesController(DMContext context,
             ILogger<AbilitiesController> logger,
-            IMapper mapper,
             UserManager<User> userManager)
-            : base(repository, logger, mapper, userManager)
+            : base(context, logger, userManager)
         {
         }
 
@@ -37,13 +36,13 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewAbility([FromBody] AbilityRequest request)
+        public async Task<IActionResult> CreateNewAbility([FromBody] Ability request)
         {
             return await CreateNewEntity(request);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateAbilityById(Guid id, [FromBody] AbilityRequest request)
+        public async Task<IActionResult> UpdateAbilityById(Guid id, [FromBody] Ability request)
         {
             return await UpdateEntityById(id, request);
         }

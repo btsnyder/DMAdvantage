@@ -5,10 +5,10 @@ namespace DMAdvantage.Data
 {
     public class Seeder
     {
-        private readonly Context _ctx;
+        private readonly DMContext _ctx;
         private readonly UserManager<User> _userManager;
 
-        public Seeder(Context ctx, 
+        public Seeder(DMContext ctx, 
             UserManager<User> userManager)
         {
             _ctx = ctx;

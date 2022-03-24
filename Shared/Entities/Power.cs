@@ -1,9 +1,11 @@
 ﻿using DMAdvantage.Shared.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace DMAdvantage.Shared.Entities
 {
     public abstract class Power : BaseEntity
     {
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
         public int Level { get; set; }
@@ -13,7 +15,7 @@ namespace DMAdvantage.Shared.Entities
         public string RangeDescription { get; set; }
         public string Duration { get; set; }
         public bool Concentration { get; set; }
-        public HitOption? HitOption { get; set; }
+        public HitOption HitOption { get; set; }
         public string HitDescription { get; set; }
     }
 }

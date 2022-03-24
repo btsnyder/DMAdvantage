@@ -1,6 +1,8 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Enums;
+using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -10,10 +12,10 @@ namespace DMAdvantage.Client.Pages.Creatures
     public partial class CreatureEditForm
     {
         IEnumerable<string> _damageTypes = Array.Empty<string>();
-        private CreatureRequest _model = new();
+        private Creature _model = new();
         private bool _loading;
         private MudForm _form;
-        private readonly CreatureRequestFluentValidator _creatureValidator = new();
+        private readonly CreatureValidator _creatureValidator = new();
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -27,7 +29,7 @@ namespace DMAdvantage.Client.Pages.Creatures
             _damageTypes = Enum.GetNames<DamageType>();
             if (Id != null)
             {
-                _model = await ApiService.GetEntityById<CreatureResponse>(Guid.Parse(Id)) ?? new CreatureResponse();
+                _model = await ApiService.GetEntityById<Creature>(Guid.Parse(Id)) ?? new Creature();
             }
             await base.OnInitializedAsync();
         }
@@ -74,13 +76,13 @@ namespace DMAdvantage.Client.Pages.Creatures
             switch (prop)
             {
                 case nameof(_model.Vulnerabilities):
-                    _model.Vulnerabilities = EnumExtensions.GetEnumValues<DamageType>(val);
+                    _model.Vulnerabilities = EnumExtensions.GetEnumValues<DamageType>(val).ToList();
                     break;
                 case nameof(_model.Immunities):
-                    _model.Immunities = val;
+                    _model.Immunities = val.ToList();
                     break;
                 case nameof(_model.Resistances):
-                    _model.Resistances = val;
+                    _model.Resistances = val.ToList();
                     break;
                 default:
                     throw new NotImplementedException($"Unknown value type in CreateEditForm: {prop}");

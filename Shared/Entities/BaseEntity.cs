@@ -5,5 +5,6 @@
         public Guid Id { get; set; }
         public User User { get; set; }
         public abstract string OrderBy();
+        public string Display => Id.ToString();
     }
 }

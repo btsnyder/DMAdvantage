@@ -12,31 +12,9 @@ namespace TestEngineering
 {
     public static class Validation
     {
-        private static readonly Mapper _mapper;
-
-        static Validation()
-        {
-            var config = new MapperConfiguration(cfg => {
-                cfg.AddProfile<MappingProfile>();
-            });
-            _mapper = new Mapper(config);
-        }
-
-        public static void CompareRequests<T>(T? expected, T? actual) where T : IEntityRequest
-        {
-            CompareData(expected, actual);
-        }
-
-        public static void CompareResponses<T>(T? expected, T? actual) where T : IEntityResponse
-        {
-            CompareData(expected, actual);
-        }
-
         public static void CompareEntities<T>(T? expected, T? actual) where T : BaseEntity
         {
             CompareData(expected, actual);
-            expected!.User?.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
-            actual!.User?.UserName.Should().Be(MockHttpContext.CurrentUser.UserName);
         }
 
 
@@ -55,13 +33,14 @@ namespace TestEngineering
                 if (actualProp == null)
                     continue;
                 var actualValue = actualProp.GetValue(actual);
-                if (expectedValue is ICollection)
+                if (expectedValue is User && actualValue == null)
+                    continue;
+                else if (expectedValue is ICollection)
                     actualValue.Should().BeEquivalentTo(expectedValue, $"{prop.Name} is equal");
                 else
                     actualValue.Should().Be(expectedValue, $"{prop.Name} is equal");
             }
         }
-
 
         public static void ValidateResponse<T>(TestAction action, IActionResult result, ControllerUnitTestData<T> testData) where T: BaseEntity
         {
@@ -74,10 +53,11 @@ namespace TestEngineering
                     break;
                 case TestAction.Create:
                     var createdResult = result.Should().BeOfType<CreatedResult>();
-                    var mappedResult = _mapper.Map<T>(createdResult.Subject.Value);
+                    var parsedResult = (T?)createdResult.Subject.Value;
                     testData.Expected ??= testData.Entity;
-                    testData.RepositoryEntities.Should().Contain(x => x.Id == mappedResult.Id);
-                    CompareData(testData.Expected, mappedResult);
+                    parsedResult.Should().NotBeNull();
+                    testData.RepositoryEntities.Should().Contain(x => x.Id == parsedResult!.Id);
+                    CompareData(testData.Expected, parsedResult);
                     break;
                 case TestAction.Update:
                     result.Should().BeOfType<NoContentResult>();
@@ -104,23 +84,22 @@ namespace TestEngineering
 
         private static void ValidateGetResponse<T>(OkObjectResult result, ControllerUnitTestData<T> testData) where T : BaseEntity
         {
-            if (result.Value is IList list)
+            if (result.Value is IList<T> list)
             {
                 testData.ExpectedList ??= testData.RepositoryEntities;
                 testData.ExpectedList.Should().HaveCount(list.Count);
                 for (var i = 0; i < list.Count; i++)
                 {
-                    var mappedResult = _mapper.Map<T>(list[i]);
-                    mappedResult.User = testData.ExpectedList[i].User;
-                    CompareData(testData.ExpectedList[i], mappedResult);
+                    list[i].User = testData.ExpectedList[i].User;
+                    CompareData(testData.ExpectedList[i], list[i]);
                 }
             }
             else
             {
                 testData.Expected.Should().NotBeNull();
-                var mappedResult = _mapper.Map<T>(result.Value);
-                mappedResult.User = testData.Expected!.User;
-                CompareData(testData.Expected, mappedResult);
+                var parsedAssumption = result.Value.Should().BeOfType<T>();
+                parsedAssumption.Subject.User = testData.Expected!.User;
+                CompareData(testData.Expected, parsedAssumption.Subject);
             }
         }
     }

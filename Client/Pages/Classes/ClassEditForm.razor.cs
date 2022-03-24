@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -8,10 +9,10 @@ namespace DMAdvantage.Client.Pages.Classes
 {
     public partial class ClassEditForm
     {
-        private DMClassRequest _model = new();
+        private DMClass _model = new();
         private MudForm _form;
         private bool _loading;
-        private readonly ClassRequestFluentValidator _classValidator = new();
+        private readonly ClassValidator _classValidator = new();
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -24,7 +25,7 @@ namespace DMAdvantage.Client.Pages.Classes
             _loading = true;
             if (Id != null)
             {
-                _model = await ApiService.GetEntityById<DMClassResponse>(Guid.Parse(Id)) ?? new DMClassResponse();
+                _model = await ApiService.GetEntityById<DMClass>(Guid.Parse(Id)) ?? new DMClass();
             }
 
             await base.OnInitializedAsync();
@@ -48,7 +49,7 @@ namespace DMAdvantage.Client.Pages.Classes
                 }
                 NavigationManager.NavigateTo("classes");
             }
-            catch (Exception ex)
+            catch
             {
                 Snackbar.Add($"Error submitting change!", Severity.Error);
             }

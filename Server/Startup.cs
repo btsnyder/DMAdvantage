@@ -1,4 +1,3 @@
-using AutoMapper;
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Identity;
@@ -20,13 +19,15 @@ namespace DMAdvantage.Server
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            ); ;
 
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
                 cfg.User.RequireUniqueEmail = true;
             })
-            .AddEntityFrameworkStores<Context>();
+            .AddEntityFrameworkStores<DMContext>();
 
             services.AddAuthentication()
                 .AddCookie()
@@ -40,20 +41,9 @@ namespace DMAdvantage.Server
                     };
                 });
 
-            services.AddDbContext<Context>();
+            services.AddDbContext<DMContext>();
 
             services.AddTransient<Seeder>();
-
-            services.AddSingleton<IMapper>(_ =>
-            {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<MappingProfile>();
-                });
-                return new Mapper(config);
-            });
-
-            services.AddScoped<IRepository, Repository>();
 
             services.AddRazorPages();
         }

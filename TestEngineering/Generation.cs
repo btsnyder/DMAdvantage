@@ -1,10 +1,7 @@
 ﻿using System.Text.Json;
-using AutoMapper;
-using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
-using Moq;
 using TestEngineering.Mocks;
 
 namespace TestEngineering
@@ -12,20 +9,10 @@ namespace TestEngineering
     public static class Generation
     {
         private static readonly Random _random = new();
-        private static readonly Mapper _mapper;
 
-        static Generation()
+        public static Character Character()
         {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<MappingProfile>();
-            });
-            _mapper = new Mapper(config);
-        }
-
-        public static CharacterRequest CharacterRequest()
-        {
-            var characterRequest = new CharacterRequest
+            return new Character
             {
                 Name = Faker.Name.FullName(),
                 HitPoints = Faker.RandomNumber.Next(),
@@ -73,9 +60,9 @@ namespace TestEngineering
                 Intimidation = NullableBoolean(),
                 Performance = NullableBoolean(),
                 Persuasion = NullableBoolean(),
-                Weapons = RandomList(Weapon)
+                WeaponsCache =  JsonSerializer.Serialize(RandomList(Weapon)),
+                User = MockHttpContext.CurrentUser
             };
-            return characterRequest;
         }
 
         public static Weapon Weapon()
@@ -113,17 +100,9 @@ namespace TestEngineering
             };
         }
 
-        public static Character Character()
+        public static Creature Creature()
         {
-            var character = _mapper.Map<Character>(CharacterRequest());
-            character.Id = Guid.NewGuid();
-            character.User = MockHttpContext.CurrentUser;
-            return character;
-        }
-
-        public static CreatureRequest CreatureRequest()
-        {
-            var creatureRequest = new CreatureRequest
+            var creatureRequest = new Creature
             {
                 Name = Faker.Name.FullName(),
                 HitPoints = Faker.RandomNumber.Next(),
@@ -142,7 +121,7 @@ namespace TestEngineering
                 Charisma = Faker.RandomNumber.Next(),
                 CharismaBonus = Faker.RandomNumber.Next(),
                 ChallengeRating = Faker.RandomNumber.Next(),
-                Actions = RandomList(BaseAction),
+                ActionsCache = JsonSerializer.Serialize(RandomList(BaseAction)),
                 Vulnerabilities = RandomList(RandomEnum<DamageType>),
                 Immunities = RandomList(() => RandomEnum<DamageType>().ToString()),
                 Resistances = RandomList(() => RandomEnum<DamageType>().ToString()),
@@ -150,21 +129,14 @@ namespace TestEngineering
                 TotalForcePowers = Faker.RandomNumber.Next(),
                 MaxForcePowerLevel = Faker.RandomNumber.Next(),
                 TechPoints = Faker.RandomNumber.Next(),
+                User = MockHttpContext.CurrentUser
             };
             return creatureRequest;
         }
 
-        public static Creature Creature()
+        public static ForcePower ForcePower()
         {
-            var creature = _mapper.Map<Creature>(CreatureRequest());
-            creature.Id = Guid.NewGuid();
-            creature.User = MockHttpContext.CurrentUser;
-            return creature;
-        }
-
-        public static ForcePowerRequest ForcePowerRequest()
-        {
-            var forcePowerRequest = new ForcePowerRequest
+            var forcePowerRequest = new ForcePower
             {
                 Name = Nonsense(),
                 Description = Nonsense(50),
@@ -179,23 +151,16 @@ namespace TestEngineering
                 HitDescription = Nonsense(50),
                 Alignment = RandomEnum<ForceAlignment>(),
                 Potency = Nonsense(),
-                PrerequisiteId = Guid.NewGuid()
+                PrerequisiteId = Guid.NewGuid(),
+                User = MockHttpContext.CurrentUser
             };
 
             return forcePowerRequest;
         }
 
-        public static ForcePower ForcePower()
+        public static TechPower TechPower()
         {
-            var forcePower = _mapper.Map<ForcePower>(ForcePowerRequest());
-            forcePower.Id = Guid.NewGuid();
-            forcePower.User = MockHttpContext.CurrentUser;
-            return forcePower;
-        }
-
-        public static TechPowerRequest TechPowerRequest()
-        {
-            var techPowerRequest = new TechPowerRequest
+            var techPowerRequest = new TechPower
             {
                 Name = Nonsense(),
                 Description = Nonsense(50),
@@ -208,18 +173,11 @@ namespace TestEngineering
                 Concentration = Faker.Boolean.Random(),
                 HitOption = RandomEnum<HitOption>(),
                 HitDescription = Nonsense(50),
-                Overcharge = Nonsense()
+                Overcharge = Nonsense(),
+                User = MockHttpContext.CurrentUser
             };
 
             return techPowerRequest;
-        }
-
-        public static TechPower TechPower()
-        {
-            var techPower = _mapper.Map<TechPower>(TechPowerRequest());
-            techPower.Id = Guid.NewGuid();
-            techPower.User = MockHttpContext.CurrentUser;
-            return techPower;
         }
 
         public static T RandomEnum<T>() where T : struct, Enum
@@ -272,14 +230,6 @@ namespace TestEngineering
 
         public static Encounter Encounter()
         {
-            var encounter = _mapper.Map<Encounter>(EncounterRequest());
-            encounter.Id = Guid.NewGuid();
-            encounter.User = MockHttpContext.CurrentUser;
-            return encounter;
-        }
-
-        public static EncounterRequest EncounterRequest()
-        {
             var mockInitativeData = RandomList(InitativeData, 2);
             var mockConcentration = new Dictionary<string, Guid>();
             for (var i = 0; i < Faker.RandomNumber.Next(1, mockInitativeData.Count); i++)
@@ -287,47 +237,34 @@ namespace TestEngineering
                 mockConcentration[Nonsense()] = Guid.NewGuid();
             }
 
-            return new EncounterRequest
+            return new Encounter
             {
                 Name = Nonsense(),
                 CurrentPlayer = mockInitativeData[Faker.RandomNumber.Next(0, mockInitativeData.Count - 1)].BeingId,
-                Data = mockInitativeData,
-                ConcentrationPowers = mockConcentration
-            };
-        }
-
-        public static AbilityRequest AbilityRequest()
-        {
-            return new AbilityRequest
-            {
-                Name = Faker.Name.FullName(),
-                Description = Nonsense()
+                DataCache = JsonSerializer.Serialize(mockInitativeData),
+                ConcentrationCache = JsonSerializer.Serialize(mockConcentration),
+                User = MockHttpContext.CurrentUser
             };
         }
 
         public static Ability Ability()
         {
-            var ability = _mapper.Map<Ability>(AbilityRequest());
-            ability.Id = Guid.NewGuid();
-            ability.User = MockHttpContext.CurrentUser;
-            return ability;
-        }
-
-        public static DMClassRequest DMClassRequest()
-        {
-            return new DMClassRequest
+            return new Ability
             {
                 Name = Faker.Name.FullName(),
-                HitDice = Faker.RandomNumber.Next()
+                Description = Nonsense(),
+                User = MockHttpContext.CurrentUser
             };
         }
 
         public static DMClass DMClass()
         {
-            var dmclass = _mapper.Map<DMClass>(DMClassRequest());
-            dmclass.Id = Guid.NewGuid();
-            dmclass.User = MockHttpContext.CurrentUser;
-            return dmclass;
+            return new DMClass
+            {
+                Name = Faker.Name.FullName(),
+                HitDice = Faker.RandomNumber.Next(),
+                User = MockHttpContext.CurrentUser
+            };
         }
     }
 }

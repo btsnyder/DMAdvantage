@@ -13,13 +13,12 @@ namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class TechPowersController : BaseEntityController<TechPower, TechPowerResponse, TechPowerRequest>
+    public class TechPowersController : BaseEntityController<TechPower>
     {
-        public TechPowersController(IRepository repository,
+        public TechPowersController(DMContext context,
             ILogger<TechPowersController> logger,
-            IMapper mapper,
             UserManager<User> userManager)
-            : base(repository, logger, mapper, userManager)
+            : base(context, logger, userManager)
         {
         }
 
@@ -34,11 +33,11 @@ namespace DMAdvantage.Server.Controllers
 
                 IQueryable<TechPower> query;
                 if (search == null)
-                    query = _repository.Context.TechPowers
+                    query = _context.TechPowers
                         .Where(c => c.User != null && c.User.UserName == username)
                         .AsNoTracking();
                 else
-                    query = _repository.Context.TechPowers
+                    query = _context.TechPowers
                         .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search.ToLower()))
                         .AsNoTracking();
 
@@ -52,11 +51,11 @@ namespace DMAdvantage.Server.Controllers
                 var entities = query.ToList().OrderBy(c => c.OrderBy());
 
                 if (paging == null)
-                    return Ok(_mapper.Map<IEnumerable<TechPowerResponse>>(entities));
+                    return Ok(entities);
 
                 var pagedResults = PagedList<TechPower>.ToPagedList(entities, paging);
                 Response.SetPagedHeader(pagedResults);
-                return Ok(_mapper.Map<IEnumerable<TechPowerResponse>>(pagedResults));
+                return Ok(pagedResults);
             }
             catch (Exception ex)
             {
@@ -72,13 +71,13 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateNewTechPower([FromBody] TechPowerRequest request)
+        public async Task<IActionResult> CreateNewTechPower([FromBody] TechPower request)
         {
             return await CreateNewEntity(request);
         }
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateTechPowerById(Guid id, [FromBody] TechPowerRequest request)
+        public async Task<IActionResult> UpdateTechPowerById(Guid id, [FromBody] TechPower request)
         {
             return await UpdateEntityById(id, request);
         }

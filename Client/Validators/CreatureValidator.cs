@@ -1,14 +1,14 @@
-﻿using DMAdvantage.Shared.Models;
+﻿using DMAdvantage.Shared.Entities;
 using FluentValidation;
 using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class CreatureRequestFluentValidator : AbstractValidator<CreatureRequest>
+    public class CreatureValidator : AbstractValidator<Creature>
     {
         public ISnackbar? Snackbar { get; set; }
 
-        public CreatureRequestFluentValidator()
+        public CreatureValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.ChallengeRating).InclusiveBetween(0, 26);
@@ -34,7 +34,7 @@ namespace DMAdvantage.Client.Validators
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<CreatureRequest>.CreateWithOptions((CreatureRequest)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<Creature>.CreateWithOptions((Creature)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             var errors = result.Errors.Select(e => e.ErrorMessage).ToList();

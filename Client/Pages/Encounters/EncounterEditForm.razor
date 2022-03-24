@@ -24,7 +24,7 @@
                     <MudTabPanel Text="Character">  
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="CharacterResponse" SearchFunc="@CharacterSearch"
+                                <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="Character" SearchFunc="@CharacterSearch"
                                     @bind-Value=@_selectedCharacter Label="Search" Dense="true" ToStringFunc="@(character => character.Display)"/>
                             </MudItem>
 
@@ -102,7 +102,7 @@
                     <MudTabPanel Text="Creature">  
                         <MudGrid>
                             <MudItem xs="12">
-                                <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="CreatureResponse" SearchFunc="@CreatureSearch"
+                                <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="Creature" SearchFunc="@CreatureSearch"
                                     @bind-Value=@_selectedCreature Label="Search" Dense="true" ToStringFunc="@(creature => creature.Display)"/>
                             </MudItem>
 
@@ -535,7 +535,7 @@
         DialogService.ShowMessageBox(weapon.Name, description);
     }
 
-    void ShowAbility(AbilityResponse ability)
+    void ShowAbility(Ability ability)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         var parameters = new DialogParameters {{"Text", ability.Description}};

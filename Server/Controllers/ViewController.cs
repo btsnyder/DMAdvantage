@@ -10,17 +10,14 @@ namespace DMAdvantage.Server.Controllers
     [Route("api/[Controller]")]
     public class ViewController : Controller
     {
-        private readonly IRepository _repository;
+        private readonly DMContext _context;
         private readonly ILogger<ViewController> _logger;
-        private readonly IMapper _mapper;
 
-        public ViewController(IRepository repository,
-            ILogger<ViewController> logger,
-            IMapper mapper)
+        public ViewController(DMContext context,
+            ILogger<ViewController> logger)
         {
-            _repository = repository;
+            _context = context;
             _logger = logger;
-            _mapper = mapper;
         }
 
         [HttpGet("encounter/{id:guid}")]
@@ -28,9 +25,9 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var entity = _repository.GetEntityByIdWithoutUser<Encounter>(id);
+                var entity = _context.Encounters.FirstOrDefault(x => x.Id == id);
                 if (entity != null)
-                    return Ok(_mapper.Map<EncounterResponse>(entity));
+                    return Ok(entity);
                 return NotFound();
             }
             catch (Exception ex)
@@ -45,14 +42,14 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var results = _repository.Context.Characters
+                var results = _context.Characters
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
                     .Include(c => c.ForcePowers)
                     .AsNoTracking();
                 if (ids.Any())
                     results = results.Where(x => ids.Contains(x.Id));
-                return Ok(_mapper.Map<IEnumerable<CharacterResponse>>(results.ToList()));
+                return Ok(results);
             }
             catch (Exception ex)
             {
@@ -66,12 +63,12 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var result = _repository.Context.Characters
+                var result = _context.Characters
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
                     .Include(c => c.ForcePowers)
                     .FirstOrDefault(c => c.PlayerName == name);
-                return Ok(_mapper.Map<CharacterResponse>(result));
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -85,8 +82,9 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var results = _repository.GetEntitiesByIdsWithoutUser<Creature>(ids);
-                return Ok(_mapper.Map<IEnumerable<CreatureResponse>>(results));
+                if (ids.Any())
+                    return Ok(_context.Creatures.Where(x => ids.Contains(x.Id)));
+                return Ok(_context.Creatures);
             }
             catch (Exception ex)
             {
@@ -100,8 +98,9 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var results = _repository.GetEntitiesByIdsWithoutUser<ForcePower>(ids);
-                return Ok(_mapper.Map<IEnumerable<ForcePowerResponse>>(results));
+                if (ids.Any())
+                    return Ok(_context.ForcePowers.Where(x => ids.Contains(x.Id)));
+                return Ok(_context.ForcePowers);
             }
             catch (Exception ex)
             {
@@ -115,8 +114,9 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var results = _repository.GetEntitiesByIdsWithoutUser<Ability>(ids);
-                return Ok(_mapper.Map<IEnumerable<AbilityResponse>>(results));
+                if (ids.Any())
+                    return Ok(_context.Abilities.Where(x => ids.Contains(x.Id)));
+                return Ok(_context.Abilities);
             }
             catch (Exception ex)
             {

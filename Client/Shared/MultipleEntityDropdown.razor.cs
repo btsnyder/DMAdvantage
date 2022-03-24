@@ -1,19 +1,20 @@
 ﻿using DMAdvantage.Client.Services;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace DMAdvantage.Client.Shared
 {
-    public partial class MultipleEntityDropdown<TEntity> where TEntity : class, IEntityResponse
+    public partial class MultipleEntityDropdown<TEntity> where TEntity : BaseEntity
     {
         private List<TEntity> _data;
         private TEntity? _value;
 
         [Inject] private IApiService ApiService { get; set; }
 
-        private List<TEntity> _selectedEntities = new();
-        [Parameter] public List<TEntity> SelectedEntities
+        private ICollection<TEntity> _selectedEntities = new List<TEntity>();
+        [Parameter] public ICollection<TEntity> SelectedEntities
         {
             get => _selectedEntities;
             set
@@ -24,7 +25,7 @@ namespace DMAdvantage.Client.Shared
                 SelectedEntitiesChanged.InvokeAsync(value);
             }
         }
-        [Parameter] public EventCallback<List<TEntity>> SelectedEntitiesChanged { get; set; }
+        [Parameter] public EventCallback<ICollection<TEntity>> SelectedEntitiesChanged { get; set; }
         [Parameter] public string Label { get; set; }
 
         protected override async Task OnInitializedAsync()
@@ -38,7 +39,7 @@ namespace DMAdvantage.Client.Shared
             if (string.IsNullOrWhiteSpace(value)) return Array.Empty<TEntity>();
             await Task.Yield();
             return _data
-                .Where(x => x.Display.ToLower().Contains(value.ToLower()) && _selectedEntities.All(y => y.Id != x.Id));
+                .Where(x => x.ToString() != null &&  x.ToString()!.ToLower().Contains(value.ToLower()) && _selectedEntities.All(y => y.Id != x.Id));
         }
 
         private void Selected(TEntity? val)
@@ -50,7 +51,7 @@ namespace DMAdvantage.Client.Shared
 
         private void EntityRemoved(MudChip chip)
         {
-            var entityToRemove = _selectedEntities.FirstOrDefault(x => x.Display == chip.Text);
+            var entityToRemove = _selectedEntities.FirstOrDefault(x => x.ToString() == chip.Text);
             if (entityToRemove == null) return;
             _selectedEntities.Remove(entityToRemove);
         }

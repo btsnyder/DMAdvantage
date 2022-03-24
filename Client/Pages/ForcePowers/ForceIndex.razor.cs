@@ -1,5 +1,7 @@
 ﻿using DMAdvantage.Client.Services;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Enums;
+using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
@@ -10,7 +12,7 @@ namespace DMAdvantage.Client.Pages.ForcePowers
     {
         private bool _loading;
         private readonly ForcePowerSearchParameters _searching = new();
-        private List<ForcePowerResponse>? _forcePowers;
+        private List<ForcePower>? _forcePowers;
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -22,15 +24,15 @@ namespace DMAdvantage.Client.Pages.ForcePowers
 
         private async Task RefreshForcePowers()
         {
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>(_searching);
+            _forcePowers = await ApiService.GetAllEntities<ForcePower>(_searching);
             _loading = false;
         }
 
-        private async Task RemoveForcePower(ForcePowerResponse forcePower)
+        private async Task RemoveForcePower(ForcePower forcePower)
         {
             if (_forcePowers == null) return;
             _forcePowers.Remove(forcePower);
-            await ApiService.RemoveEntity<ForcePowerResponse>(forcePower.Id);
+            await ApiService.RemoveEntity<ForcePower>(forcePower.Id);
         }
 
         public async Task SearchChanged<T>(T value, string property)

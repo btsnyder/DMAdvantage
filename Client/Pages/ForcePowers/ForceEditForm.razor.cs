@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -8,14 +9,14 @@ namespace DMAdvantage.Client.Pages.ForcePowers
 {
     public partial class ForceEditForm
     {
-        private ForcePowerRequest _model = new();
+        private ForcePower _model = new();
         private bool _loading;
-        private List<ForcePowerResponse> _forcePowers;
-        private ForcePowerResponse? _selectedPrerequisite;
+        private List<ForcePower> _forcePowers;
+        private ForcePower? _selectedPrerequisite;
         private IEnumerable<string> _durations = Array.Empty<string>();
         private List<string> _startingDurations = new();
         private MudForm _form;
-        private readonly ForcePowerRequestFluentValidator _forcePowerValidator = new();
+        private readonly ForcePowerValidator _forcePowerValidator = new();
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -25,15 +26,15 @@ namespace DMAdvantage.Client.Pages.ForcePowers
 
         protected override async Task OnInitializedAsync()
         {
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new List<ForcePowerResponse>();
+            _forcePowers = await ApiService.GetAllEntities<ForcePower>() ?? new List<ForcePower>();
             _startingDurations = _forcePowers.Select(x => x.Duration ?? string.Empty).Distinct().ToList();
 
             if (Id != null)
-                _model = await ApiService.GetEntityById<ForcePowerResponse>(Guid.Parse(Id)) ?? new ForcePowerResponse();
+                _model = await ApiService.GetEntityById<ForcePower>(Guid.Parse(Id)) ?? new ForcePower();
             
             if (_model.PrerequisiteId != null)
             {
-                var prereq = await ApiService.GetEntityById<ForcePowerResponse>(_model.PrerequisiteId.Value);
+                var prereq = await ApiService.GetEntityById<ForcePower>(_model.PrerequisiteId.Value);
                 _selectedPrerequisite = prereq;
             }
 
@@ -77,7 +78,7 @@ namespace DMAdvantage.Client.Pages.ForcePowers
             }
         }
 
-        private void OnPrerequisiteChange(ForcePowerResponse? value)
+        private void OnPrerequisiteChange(ForcePower? value)
         {
             _selectedPrerequisite = value;
             _model.PrerequisiteId = value?.Id;
@@ -90,10 +91,10 @@ namespace DMAdvantage.Client.Pages.ForcePowers
                 .Where(x => x.ToLower().Contains(value.ToLower())));
         }
 
-        private Task<IEnumerable<ForcePowerResponse?>> PrerequisiteSearch(string value)
+        private Task<IEnumerable<ForcePower?>> PrerequisiteSearch(string value)
         {
-            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<ForcePowerResponse?>>(Array.Empty<ForcePowerResponse>());
-            return Task.FromResult<IEnumerable<ForcePowerResponse?>>(_forcePowers
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<ForcePower?>>(Array.Empty<ForcePower>());
+            return Task.FromResult<IEnumerable<ForcePower?>>(_forcePowers
                 .Where(x => x.Name?.ToLower().Contains(value.ToLower()) == true));
         }
     }

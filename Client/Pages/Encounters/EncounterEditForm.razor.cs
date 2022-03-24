@@ -1,4 +1,5 @@
 ﻿using DMAdvantage.Client.Services;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
@@ -12,19 +13,19 @@ namespace DMAdvantage.Client.Pages.Encounters
         private bool _loading;
         private List<InitativeDataModel> _initatives = new();
         private InitativeDataModel? _selectedInitative;
-        private CharacterResponse? _selectedInitativeCharacter => _selectedInitative?.Being as CharacterResponse;
-        private CreatureResponse? _selectedInitativeCreature => _selectedInitative?.Being as CreatureResponse;
+        private Character? _selectedInitativeCharacter => _selectedInitative?.Being as Character;
+        private Creature? _selectedInitativeCreature => _selectedInitative?.Being as Creature;
 
         private InitativeDataModel? _currentPlayer;
-        IList<ForcePowerResponse> SelectedForcePowers { get; set; } = new List<ForcePowerResponse>();
-        private List<CharacterResponse> _characters;
-        private List<CreatureResponse> _creatures;
-        private List<ForcePowerResponse> _forcePowers;
-        private CharacterResponse? _selectedCharacter;
-        private CreatureResponse? _selectedCreature;
+        IList<ForcePower> SelectedForcePowers { get; set; } = new List<ForcePower>();
+        private List<Character> _characters;
+        private List<Creature> _creatures;
+        private List<ForcePower> _forcePowers;
+        private Character? _selectedCharacter;
+        private Creature? _selectedCreature;
         private int _healthEdit;
         private bool _initativeEditing;
-        private Dictionary<string, ForcePowerResponse> _concentrationPowers = new();
+        private Dictionary<string, ForcePower> _concentrationPowers = new();
         private bool _autoSave = false;
         private bool _autoLoad = false;
         private Timer _timer;
@@ -32,7 +33,7 @@ namespace DMAdvantage.Client.Pages.Encounters
         private MudForm _form;
         private readonly object _saveLock = new();
 
-        private EncounterRequest _model = new();
+        private Encounter _model = new();
 
         [Parameter] public string? Id { get; set; }
         [Parameter] public bool IsView { get; set; }
@@ -46,9 +47,9 @@ namespace DMAdvantage.Client.Pages.Encounters
         {
             NavigationManager.LocationChanged += NavigationManager_LocationChanged;
 
-            _characters = await ApiService.GetAllEntities<CharacterResponse>() ?? new();
-            _creatures = await ApiService.GetAllEntities<CreatureResponse>() ?? new();
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new();
+            _characters = await ApiService.GetAllEntities<Character>() ?? new();
+            _creatures = await ApiService.GetAllEntities<Creature>() ?? new();
+            _forcePowers = await ApiService.GetAllEntities<ForcePower>() ?? new();
 
             if (Id != null)
             {
@@ -144,16 +145,16 @@ namespace DMAdvantage.Client.Pages.Encounters
             _healthEdit = 0;
         }
 
-        private Task<IEnumerable<CharacterResponse>> CharacterSearch(string value)
+        private Task<IEnumerable<Character>> CharacterSearch(string value)
         {
-            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<CharacterResponse>>(Array.Empty<CharacterResponse>());
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<Character>>(Array.Empty<Character>());
             return Task.FromResult(_characters
                 .Where(x => x.Display.ToLower().Contains(value.ToLower()) && x != _selectedCharacter));
         }
 
-        private Task<IEnumerable<CreatureResponse>> CreatureSearch(string value)
+        private Task<IEnumerable<Creature>> CreatureSearch(string value)
         {
-            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<CreatureResponse>>(Array.Empty<CreatureResponse>());
+            if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<Creature>>(Array.Empty<Creature>());
             return Task.FromResult(_creatures
                 .Where(x => x.Display.ToLower().Contains(value.ToLower()) && x != _selectedCreature));
         }
@@ -212,7 +213,7 @@ namespace DMAdvantage.Client.Pages.Encounters
             _currentPlayer = _initatives[--index];
         }
 
-        private void ForcePowerClicked(ForcePowerResponse? power)
+        private void ForcePowerClicked(ForcePower? power)
         {
             if (_selectedInitative == null || power == null || power.Level < 1)
                 return;
@@ -251,9 +252,9 @@ namespace DMAdvantage.Client.Pages.Encounters
 
             if (_model != null)
             {
-                List<IBeingResponse> beings = new();
-                var characters = await ApiService.GetViews<CharacterResponse>(_model.Data.Select(x => x.BeingId));
-                var creatures = await ApiService.GetViews<CreatureResponse>(_model.Data.Select(x => x.BeingId));
+                List<Being> beings = new();
+                var characters = await ApiService.GetViews<Character>(_model.Data.Select(x => x.BeingId));
+                var creatures = await ApiService.GetViews<Creature>(_model.Data.Select(x => x.BeingId));
                 if (characters != null)
                     beings.AddRange(characters);
                 if (creatures != null)
@@ -283,7 +284,7 @@ namespace DMAdvantage.Client.Pages.Encounters
                     }
                     else
                     {
-                        SelectedForcePowers = new List<ForcePowerResponse>();
+                        SelectedForcePowers = new List<ForcePower>();
                     }
                 }
 

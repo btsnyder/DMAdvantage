@@ -1,7 +1,10 @@
-﻿namespace DMAdvantage.Shared.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DMAdvantage.Shared.Entities
 {
     public abstract class Being : BaseEntity, INamedEntity
     {
+        [Required]
         public string Name { get; set; }
         public int HitPoints { get; set; }
         public int ArmorClass { get; set; }
@@ -23,7 +26,8 @@
         public int TotalForcePowers { get; set; }
         public int MaxForcePowerLevel { get; set; }
         public ICollection<TechPower> TechPowers { get; set; } = new List<TechPower>();
-
         public int TechPoints { get; set; }
+
+        public new string Display => Name;
     }
 }

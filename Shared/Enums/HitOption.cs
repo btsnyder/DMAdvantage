@@ -6,6 +6,7 @@
         Range,
         [EnumString("Saving Throw")]
         SavingThrow,
-        Other
+        Other,
+        None
     }
 }

@@ -45,24 +45,24 @@ else
 
 @code {
     private bool loading;
-    private List<CreatureResponse>? creatures;
+    private List<Creature>? creatures;
 
     protected override async Task OnInitializedAsync()
     {
         await RefreshCreatures();   
     }
 
-    private async Task RemoveCharacter(CreatureResponse creature)
+    private async Task RemoveCharacter(Creature creature)
     {
         if (creatures == null) return;
         creatures.Remove(creature);
-        await ApiService.RemoveEntity<CreatureResponse>(creature.Id);
+        await ApiService.RemoveEntity<Creature>(creature.Id);
     }
 
     private async Task RefreshCreatures()
     {
         loading = true;
-        creatures = await ApiService.GetAllEntities<CreatureResponse>();
+        creatures = await ApiService.GetAllEntities<Creature>();
         loading = false;   
     }
 

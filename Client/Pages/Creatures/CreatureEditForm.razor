@@ -108,13 +108,13 @@
         </MudItem>
 
         <MudItem xs="5">
-            <MultipleEntityDropdown TEntity="ForcePowerResponse" @bind-SelectedEntities="_model.ForcePowers" Label="Force Powers"/>
+            <MultipleEntityDropdown TEntity="ForcePower" @bind-SelectedEntities="_model.ForcePowers" Label="Force Powers"/>
         </MudItem>
         <MudItem xs="1">
             <MudNumericField @bind-Value="@_model.ForcePoints" Label="FP" For="() => _model.ForcePoints" Validation="@(_creatureValidator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="5">
-            <MultipleEntityDropdown TEntity="TechPowerResponse" @bind-SelectedEntities="_model.TechPowers" Label="Tech Powers"/>
+            <MultipleEntityDropdown TEntity="TechPower" @bind-SelectedEntities="_model.TechPowers" Label="Tech Powers"/>
         </MudItem>
         <MudItem xs="1">
             <MudNumericField @bind-Value="@_model.TechPoints" Label="TP" For="() => _model.TechPoints" Validation="@(_creatureValidator.ValidateValue)"/>

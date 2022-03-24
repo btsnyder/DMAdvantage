@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
@@ -10,12 +11,12 @@ namespace DMAdvantage.Client.Pages.Characters
     public partial class CharacterEditForm
     {
         private IEnumerable<string> _weaponProperties = Array.Empty<string>();
-        private CharacterRequest _model = new();
-        private List<ForcePowerResponse> _forcePowers = new();
-        private List<DMClassResponse> _classes = new();
+        private Character _model = new();
+        private List<ForcePower> _forcePowers = new();
+        private List<DMClass> _classes = new();
         private MudForm _form;
         private bool _loading;
-        private readonly CharacterRequestFluentValidator _characterValidator = new();
+        private readonly CharacterValidator _characterValidator = new();
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -29,10 +30,10 @@ namespace DMAdvantage.Client.Pages.Characters
             _weaponProperties = Enum.GetNames<WeaponProperty>();
             if (Id != null)
             {
-                _model = await ApiService.GetEntityById<CharacterResponse>(Guid.Parse(Id)) ?? new CharacterResponse();
+                _model = await ApiService.GetEntityById<Character>(Guid.Parse(Id)) ?? new Character();
             }
-            _forcePowers = await ApiService.GetAllEntities<ForcePowerResponse>() ?? new List<ForcePowerResponse>();
-            _classes = await ApiService.GetAllEntities<DMClassResponse>() ?? new List<DMClassResponse>();
+            _forcePowers = await ApiService.GetAllEntities<ForcePower>() ?? new List<ForcePower>();
+            _classes = await ApiService.GetAllEntities<DMClass>() ?? new List<DMClass>();
 
             await base.OnInitializedAsync();
             _loading = false;
@@ -55,7 +56,7 @@ namespace DMAdvantage.Client.Pages.Characters
                 }
                 NavigationManager.NavigateTo("characters");
             }
-            catch (Exception ex)
+            catch
             {
                 Snackbar.Add($"Error submitting change!", Severity.Error);
             }
@@ -75,16 +76,16 @@ namespace DMAdvantage.Client.Pages.Characters
             }
         }
 
-        private Color ForceColor(ForcePowerResponse power)
+        private Color ForceColor(ForcePower power)
         {
-            return _model.ForcePowers.Any(f => f.Id == power.Id) ? Color.Primary : Color.Dark;
+            return _model.ForcePowers.Contains(power) ? Color.Primary : Color.Dark;
         }
 
-        private void UpdateForcePower(ForcePowerResponse power)
+        private void UpdateForcePower(ForcePower power)
         {
             if (_model.ForcePowers.Contains(power))
             {
-                _model.ForcePowers.Contains(power);
+                _model.ForcePowers.Remove(power);
             }
             else
             {
@@ -99,7 +100,7 @@ namespace DMAdvantage.Client.Pages.Characters
             return _forcePowers.First(x => x.Id == id).Name;
         }
 
-        private bool IsDisabled(ForcePowerResponse power)
+        private bool IsDisabled(ForcePower power)
         {
             if (_model.ForcePowers.Contains(power))
                 return false;

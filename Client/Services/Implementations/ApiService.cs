@@ -2,6 +2,7 @@
 using DMAdvantage.Client.Helpers;
 using DMAdvantage.Shared.Query;
 using System.Text.Json;
+using DMAdvantage.Shared.Entities;
 
 namespace DMAdvantage.Client.Services.Implementations
 {
@@ -81,9 +82,9 @@ namespace DMAdvantage.Client.Services.Implementations
             await _httpService.Delete($"/api/{typeof(T).GetPath()}/{id}");
         }
 
-        public async Task<EncounterResponse?> GetEncounterView(Guid id)
+        public async Task<Encounter?> GetEncounterView(Guid id)
         {
-            return await _httpService.Get<EncounterResponse>($"/api/view/encounter/{id}");
+            return await _httpService.Get<Encounter>($"/api/view/encounter/{id}");
         }
 
         public async Task<List<T>?> GetViews<T>(IEnumerable<Guid>? ids = null)
@@ -101,10 +102,10 @@ namespace DMAdvantage.Client.Services.Implementations
             return await _httpService.Get<List<T>>(uri);
         }
 
-        public async Task<CharacterResponse?> GetCharacterViewFromPlayerName(string name)
+        public async Task<Character?> GetCharacterViewFromPlayerName(string name)
         {
             var uri = $"/api/view/characters/player/{name}";
-            return await _httpService.Get<CharacterResponse>(uri);
+            return await _httpService.Get<Character>(uri);
         }
     }
 }

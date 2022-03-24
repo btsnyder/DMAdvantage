@@ -40,7 +40,7 @@
             <ToggledText @bind-Value="@_model.Concentration" Text="Concentration" />
         </MudItem>
         <MudItem xs="2">
-            <MudSelect T="HitOption" @bind-Value="@_model.HitOption" Label="Hit Option" Variant="Variant.Outlined" For="() => _model.HitOption">
+            <MudSelect T="HitOption"  @bind-Value="@_model.HitOption" Label="Hit Option" Variant="Variant.Outlined" For="() => _model.HitOption">
                 @foreach (var hit in Enum.GetValues<HitOption>())
                 {
                     <MudSelectItem Value="@hit">@hit.GetStringValue()</MudSelectItem>

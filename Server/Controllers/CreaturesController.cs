@@ -7,77 +7,81 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace DMAdvantage.Server.Controllers
 {
     [Route("api/[Controller]")]
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class CreaturesController : BaseEntityController<Creature, CreatureResponse, CreatureRequest>
+    public class CreaturesController : BaseEntityController<Creature>
     {
-        public CreaturesController(IRepository repository,
+        public CreaturesController(DMContext context,
             ILogger<CreaturesController> logger,
-            IMapper mapper,
             UserManager<User> userManager)
-            : base(repository, logger, mapper, userManager)
+            : base(context, logger, userManager)
         {
         }
 
         [HttpGet]
         public IActionResult GetAllCreatures([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Creature>? searching = null)
         {
-            if (searching == null) return GetAllEntities(paging);
-            return GetAllEntities(searching, paging);
+            try
+            {
+                var username = User.Identity?.Name ?? string.Empty;
+                var search = searching?.Search ?? string.Empty;
+
+                var creatures = _context.Creatures
+                    .Include(c => c.ForcePowers)
+                    .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search))
+                    .AsNoTracking().ToList()
+                    .OrderBy(c => c.OrderBy());
+
+                if (paging == null)
+                    return Ok(creatures);
+
+                var pagedResults = PagedList<Creature>.ToPagedList(creatures, paging);
+                Response.SetPagedHeader(pagedResults);
+                return Ok(pagedResults);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return entities: {ex}");
+                return BadRequest("Failed to return entities");
+            }
         }
 
         [HttpGet("{id:guid}")]
         public IActionResult GetCreatureById(Guid id)
         {
-            return GetEntityById(id);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> CreateNewCreature([FromBody] CreatureRequest request)
-        {
             try
             {
-                if (ModelState.IsValid)
-                {
-                    var creature = await CreateNewCreatureInContext(request);
-                    if (_repository.SaveAll())
-                    {
-                        return Created($"/api/creatures/{creature.Id}", _mapper.Map<CreatureResponse>(creature));
-                    }
-                }
-                else
-                {
-                    _logger.LogError($"Invalid ModelState: {ModelState}");
-                }
+                var username = User.Identity?.Name ?? string.Empty;
+
+                var creature = _context.Creatures
+                    .Include(c => c.ForcePowers)
+                    .AsNoTracking()
+                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+
+                if (creature == null) return NotFound();
+                return Ok(creature);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Failed to save new entity: {ex}");
+                _logger.LogError($"Failed to return entity: {ex}");
+                return BadRequest("Failed to return entity");
             }
-
-            return BadRequest("Failed to save new entity.");
         }
 
-        private async Task<Creature> CreateNewCreatureInContext(CreatureRequest request)
+        [HttpPost]
+        public async Task<IActionResult> CreateNewCreature([FromBody] Creature request)
         {
-            var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
-
-            if (currentUser == null)
-                throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
-
-            var entry = _repository.Context.Add(new Creature());
-            entry.Entity.User = currentUser;
-            entry.CurrentValues.SetValues(request);
-            entry.Entity.ActionsCache = JsonSerializer.Serialize(request.Actions);
-            return entry.Entity;
+            return await CreateNewEntity(request);
         }
+       
 
         [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateCreatureById(Guid id, [FromBody] CreatureRequest request)
+        public async Task<IActionResult> UpdateCreatureById(Guid id, [FromBody] Creature request)
         {
             try
             {
@@ -85,20 +89,18 @@ namespace DMAdvantage.Server.Controllers
                 if (username == null)
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-                var entityFromRepo = _repository.Context.Creatures
+                var entityFromRepo = _context.Creatures
+                    .Include(c => c.ForcePowers)
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entityFromRepo == null)
                 {
-                    var creature = await CreateNewCreatureInContext(request);
-
-                    return Created($"/api/creatures/{creature.Id}", _mapper.Map<CreatureResponse>(creature));
+                    request.Id = id;
+                    return await CreateNewEntity(request);
                 }
 
-                var entry = _repository.Context.Entry(entityFromRepo);
-                entry.CurrentValues.SetValues(request);
-                entry.Entity.ActionsCache = JsonSerializer.Serialize(request.Actions);
-                _repository.SaveAll();
+                await UpdateCreature(entityFromRepo, request);
+                _context.SaveAll();
                 return NoContent();
             }
             catch (Exception ex)
@@ -107,6 +109,23 @@ namespace DMAdvantage.Server.Controllers
             }
 
             return BadRequest("Failed to update entity.");
+        }
+
+        private async Task<Creature> UpdateCreature(Creature creatureFromRepo, Creature request)
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
+
+            if (currentUser == null)
+                throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
+
+            var entity = _context.Entry(creatureFromRepo);
+            request.Id = entity.Entity.Id;
+            entity.CurrentValues.SetValues(request);
+            entity.Entity.User = currentUser;
+            var forcePowers = _context.ForcePowers
+                .Where(x => request.ForcePowers.Select(f => f.Id).Contains(x.Id)).ToList();
+            entity.Entity.ForcePowers = forcePowers;
+            return entity.Entity;
         }
 
         [HttpDelete("{id:guid}")]

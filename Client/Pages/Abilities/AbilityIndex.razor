@@ -40,7 +40,7 @@ else
 
 @code {
     private bool _loading = true; 
-    private List<AbilityResponse>? _abilities;
+    private List<Ability>? _abilities;
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,17 +48,17 @@ else
         await base.OnInitializedAsync();
     }
 
-    private async Task RemoveAbility(AbilityResponse ability)
+    private async Task RemoveAbility(Ability ability)
     {
         if (_abilities == null)
             return;
         _abilities.Remove(ability);
-        await ApiService.RemoveEntity<AbilityResponse>(ability.Id);
+        await ApiService.RemoveEntity<Ability>(ability.Id);
     }
 
     private async Task RefreshAbilities()
     {
-        _abilities = await ApiService.GetAllEntities<AbilityResponse>();
+        _abilities = await ApiService.GetAllEntities<Ability>();
         _loading = false;   
     }
 

@@ -1,6 +1,6 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
-using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -8,10 +8,10 @@ namespace DMAdvantage.Client.Pages.Abilities
 {
     public partial class AbilityEditForm
     {
-        private AbilityRequest _model = new();
+        private Ability _model = new();
         private MudForm _form;
         private bool _loading;
-        private readonly AbilityRequestFluentValidator _abilityValidator = new();
+        private readonly AbilityValidator _abilityValidator = new();
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -24,7 +24,7 @@ namespace DMAdvantage.Client.Pages.Abilities
             _loading = true;
             if (Id != null)
             {
-                _model = await ApiService.GetEntityById<AbilityResponse>(Guid.Parse(Id)) ?? new AbilityResponse();
+                _model = await ApiService.GetEntityById<Ability>(Guid.Parse(Id)) ?? new Ability();
             }
 
             await base.OnInitializedAsync();

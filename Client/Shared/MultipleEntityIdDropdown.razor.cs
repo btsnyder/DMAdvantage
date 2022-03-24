@@ -1,11 +1,12 @@
 ﻿using DMAdvantage.Client.Services;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace DMAdvantage.Client.Shared
 {
-    public partial class MultipleEntityIdDropdown<TEntity> where TEntity : class, IEntityResponse
+    public partial class MultipleEntityIdDropdown<TEntity> where TEntity : BaseEntity
     {
         private List<TEntity> _data;
         private string _value;

@@ -41,8 +41,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync("/api/abilities");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var abilities = await response.ParseEntityList<AbilityResponse>();
-            var abilitiesFromDb = await client.GetAllEntities<AbilityResponse>();
+            var abilities = await response.ParseEntityList<Ability>();
+            var abilitiesFromDb = await client.GetAllEntities<Ability>();
             abilities.Should().HaveCount(abilitiesFromDb.Count);
         }
 
@@ -50,11 +50,11 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllAbilitiesWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var abilities = new List<AbilityResponse>();
+            var abilities = new List<Ability>();
 
             for (var i = 0; i < 25; i++)
             {
-                var ability = Generation.AbilityRequest();
+                var ability = Generation.Ability();
                 ability.Name = $"{i:00000} - Ability";
                 var abilityResponse = await client.CreateAbility(ability);
                 abilities.Add(abilityResponse);
@@ -69,7 +69,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/abilities?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var abilitiesResponse = await response.ParseEntityList<AbilityResponse>();
+            var abilitiesResponse = await response.ParseEntityList<Ability>();
 
             abilitiesResponse.Should().HaveCount(paging.PageSize);
             abilitiesResponse[0].Id.Should().Be(abilities[0 + paging.PageSize].Id);
@@ -79,11 +79,11 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllAbilitiesWithSearching_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var abilities = new List<AbilityResponse>();
+            var abilities = new List<Ability>();
 
             for (var i = 0; i < 25; i++)
             {
-                var ability = Generation.AbilityRequest();
+                var ability = Generation.Ability();
                 ability.Name = $"{i:00000} - Ability";
                 if (Faker.Boolean.Random())
                     ability.Name += "Found";
@@ -99,7 +99,12 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/abilities?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var abilitiesResponse = await response.ParseEntityList<AbilityResponse>();
+            var abilitiesResponse = await response.ParseEntityList<Ability>();
+
+            foreach (var ability in abilitiesResponse)
+            {
+                ability.User = MockHttpContext.CurrentUser;
+            }
 
             abilitiesResponse.Should().BeEquivalentTo(abilities.Where(x => x.Name?.ToLower().Contains("found") == true));
         }
@@ -111,8 +116,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var ability = await client.CreateAbility();
 
-            var addedAbility = await client.GetEntity<AbilityResponse>(ability.Id);
-            Validation.CompareResponses(ability, addedAbility);
+            var addedAbility = await client.GetEntity<Ability>(ability.Id);
+            Validation.CompareEntities(ability, addedAbility);
         }
 
         [Fact]
@@ -120,7 +125,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
 
-            var ability = Generation.AbilityRequest();
+            var ability = Generation.Ability();
             ability.Name = null;
             var response = await client.PostAsync("/api/abilities", ability);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -136,8 +141,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/abilities/{ability.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var addedAbility = await response.ParseEntity<AbilityResponse>();
-            Validation.CompareResponses(ability, addedAbility);
+            var addedAbility = await response.ParseEntity<Ability>();
+            Validation.CompareEntities(ability, addedAbility);
         }
 
         [Fact]
@@ -145,13 +150,14 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
             var ability = await client.CreateAbility();
-            var abilityEdit = Generation.AbilityRequest();
+            var abilityEdit = Generation.Ability();
 
             var response = await client.PutAsync($"api/abilities/{ability.Id}", abilityEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var addedAbility = await client.GetEntity<AbilityResponse>(ability.Id);
+            var addedAbility = await client.GetEntity<Ability>(ability.Id);
             addedAbility.Should().NotBeNull();
-            Validation.CompareRequests(abilityEdit, addedAbility);
+            abilityEdit.Id = ability.Id;
+            Validation.CompareEntities(abilityEdit, addedAbility);
         }
 
         [Fact]

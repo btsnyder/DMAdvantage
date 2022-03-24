@@ -1,8 +1,9 @@
 ﻿using DMAdvantage.Shared.Enums;
-using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using DMAdvantage.Client.Services;
 using Microsoft.AspNetCore.Components;
+using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Extensions;
 
 namespace DMAdvantage.Client.Pages.TechPowers
 {
@@ -10,7 +11,7 @@ namespace DMAdvantage.Client.Pages.TechPowers
     {
         private bool _loading;
         private readonly TechPowerSearchParameters _searching = new();
-        private List<TechPowerResponse>? _techPowers;
+        private List<TechPower>? _techPowers;
 
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
@@ -22,15 +23,15 @@ namespace DMAdvantage.Client.Pages.TechPowers
 
         private async Task RefreshTechPowers()
         {
-            _techPowers = await ApiService.GetAllEntities<TechPowerResponse>(_searching);
+            _techPowers = await ApiService.GetAllEntities<TechPower>(_searching);
             _loading = false;
         }
 
-        private async Task RemoveTechPower(TechPowerResponse techPower)
+        private async Task RemoveTechPower(TechPower techPower)
         {
             if (_techPowers == null) return;
             _techPowers.Remove(techPower);
-            await ApiService.RemoveEntity<TechPowerResponse>(techPower.Id);
+            await ApiService.RemoveEntity<TechPower>(techPower.Id);
         }
 
         public async Task SearchChanged<T>(T value, string property)

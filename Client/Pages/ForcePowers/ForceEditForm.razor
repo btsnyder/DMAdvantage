@@ -48,7 +48,7 @@
             <ToggledText @bind-Value="@_model.Concentration" Text="Concentration" />
         </MudItem>
         <MudItem xs="2">
-            <MudSelect T="HitOption" @bind-Value="@_model.HitOption" Label="Hit Option" Variant="Variant.Outlined" For="() => _model.HitOption">
+            <MudSelect @bind-Value="@_model.HitOption" Label="Hit Option" Variant="Variant.Outlined" For="() => _model.HitOption">
                 @foreach (var hit in Enum.GetValues<HitOption>())
                 {
                     <MudSelectItem Value="@hit">@hit.GetStringValue()</MudSelectItem>
@@ -60,7 +60,7 @@
         </MudItem>
 
         <MudItem xs="6">
-            <MudAutocomplete T="ForcePowerResponse" Label="Prerequisite" Variant="Variant.Outlined" ResetValueOnEmptyText="true" 
+            <MudAutocomplete T="ForcePower" Label="Prerequisite" Variant="Variant.Outlined" ResetValueOnEmptyText="true" 
                 Value="@_selectedPrerequisite" ValueChanged="@OnPrerequisiteChange" SearchFunc="@PrerequisiteSearch" 
                 ToStringFunc="@(power => power == null ? string.Empty : $"{power.Level} - {power.Name}")"/>
         </MudItem>

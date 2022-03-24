@@ -1,15 +1,15 @@
-﻿using DMAdvantage.Shared.Models;
+﻿using DMAdvantage.Shared.Entities;
 using FluentValidation;
 using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class CharacterRequestFluentValidator : AbstractValidator<CharacterRequest>
+    public class CharacterValidator : AbstractValidator<Character>
     {
         private int[] _possibleHitDice = new int[] { 6, 8, 10, 12 };
         public ISnackbar? Snackbar { get; set; }
 
-        public CharacterRequestFluentValidator()
+        public CharacterValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.HitDice).Must(x => _possibleHitDice.Contains(x));
@@ -36,7 +36,7 @@ namespace DMAdvantage.Client.Validators
 
         public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
         {
-            var result = await ValidateAsync(ValidationContext<CharacterRequest>.CreateWithOptions((CharacterRequest)model, x => x.IncludeProperties(propertyName)));
+            var result = await ValidateAsync(ValidationContext<Character>.CreateWithOptions((Character)model, x => x.IncludeProperties(propertyName)));
             if (result.IsValid)
                 return Array.Empty<string>();
             var errors = result.Errors.Select(e => e.ErrorMessage).ToList();

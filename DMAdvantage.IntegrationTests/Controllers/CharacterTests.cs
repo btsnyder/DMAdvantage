@@ -42,8 +42,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync("/api/characters");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var characters = await response.ParseEntityList<CharacterResponse>();
-            var charactersFromDb = await client.GetAllEntities<CharacterResponse>();
+            var characters = await response.ParseEntityList<Character>();
+            var charactersFromDb = await client.GetAllEntities<Character>();
             characters.Should().BeEquivalentTo(charactersFromDb);
         }
 
@@ -51,11 +51,11 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllCharactersWithPaging_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var characters = new List<CharacterResponse>();
+            var characters = new List<Character>();
 
             for (var i = 0; i < 25; i++)
             {
-                var character = Generation.CharacterRequest();
+                var character = Generation.Character();
                 character.Name = $"{i:00000} - Character";
                 var characterResponse = await client.CreateCharacter(character);
                 characters.Add(characterResponse);
@@ -70,7 +70,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/characters?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var charactersResponse = await response.ParseEntityList<CharacterResponse>();
+            var charactersResponse = await response.ParseEntityList<Character>();
 
             charactersResponse.Should().HaveCount(paging.PageSize);
             charactersResponse[0].Id.Should().Be(characters[0 + paging.PageSize].Id);
@@ -80,11 +80,11 @@ namespace DMAdvantage.IntegrationTests.Controllers
         public async Task Get_AllCharactersWithSearching_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
-            var characters = new List<CharacterResponse>();
+            var characters = new List<Character>();
 
             for (var i = 0; i < 25; i++)
             {
-                var character = Generation.CharacterRequest();
+                var character = Generation.Character();
                 character.Name = $"{i:00000} - Character";
                 if (Faker.Boolean.Random())
                     character.Name += "Found";
@@ -100,7 +100,12 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/characters?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var charactersResponse = await response.ParseEntityList<CharacterResponse>();
+            var charactersResponse = await response.ParseEntityList<Character>();
+
+            foreach (var character in charactersResponse)
+            {
+                character.User = MockHttpContext.CurrentUser;
+            }
 
             charactersResponse.Should().BeEquivalentTo(characters.Where(x => x.Name?.ToLower().Contains("found") == true));
         }
@@ -112,8 +117,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var character = await client.CreateCharacter();
 
-            var addedCharacter = await client.GetEntity<CharacterResponse>(character.Id);
-            Validation.CompareResponses(character, addedCharacter);
+            var addedCharacter = await client.GetEntity<Character>(character.Id);
+            Validation.CompareEntities(character, addedCharacter);
         }
 
         [Fact]
@@ -121,7 +126,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
 
-            var character = Generation.CharacterRequest();
+            var character = Generation.Character();
             character.Name = null;
             var response = await client.PostAsync("/api/characters", character);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -136,8 +141,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var response = await client.GetAsync($"/api/characters/{character.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
-            var addedCharacter = await response.ParseEntity<CharacterResponse>();
-            Validation.CompareResponses(character, addedCharacter);
+            var addedCharacter = await response.ParseEntity<Character>();
+            Validation.CompareEntities(character, addedCharacter);
         }
 
         [Fact]
@@ -145,15 +150,19 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
             var character = await client.CreateCharacter();
-            var newCharacter = Generation.CharacterRequest();
+            var newCharacter = Generation.Character();
+            newCharacter.Id = character.Id;
+            newCharacter.User = null;
             newCharacter.Abilities = character.Abilities;
             var newAbility = await client.CreateAbility();
+            newAbility.User = null;
+            newAbility.Characters = new List<Character>();
             newCharacter.Abilities.Add(newAbility);
 
             var response = await client.PutAsync($"api/characters/{character.Id}", newCharacter);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
-            var addedCharacter = await client.GetEntity<CharacterResponse>(character.Id);
-            Validation.CompareRequests(newCharacter, addedCharacter);
+            var addedCharacter = await client.GetEntity<Character>(character.Id);
+            Validation.CompareEntities(newCharacter, addedCharacter);
         }
 
         [Fact]
