@@ -27,6 +27,9 @@ namespace DMAdvantage.Data
         public DbSet<TechPower> TechPowers => Set<TechPower>();
         public DbSet<Ability> Abilities => Set<Ability>();
         public DbSet<DMClass> DMClasses => Set<DMClass>();
+        public DbSet<Weapon> Weapons => Set<Weapon>();
+        public DbSet<WeaponProperty> WeaponProperties => Set<WeaponProperty>();
+
 
         public bool SaveAll()
         {
@@ -37,6 +40,8 @@ namespace DMAdvantage.Data
         protected override void OnConfiguring(DbContextOptionsBuilder bldr)
         {
             base.OnConfiguring(bldr);
+
+            bldr.EnableSensitiveDataLogging();
 
             if (!bldr.IsConfigured)
                 bldr.UseSqlServer(_configuration.GetConnectionString("DbConnectionString"),
@@ -61,7 +66,6 @@ namespace DMAdvantage.Data
 
             modelBuilder.Ignore<BaseAction>();
             modelBuilder.Ignore<InitativeData>();
-            modelBuilder.Ignore<Weapon>();
 
             AddPropertyList(modelBuilder, (Creature c) => c.Vulnerabilities);
             AddPropertyList(modelBuilder, (Creature c) => c.Immunities);

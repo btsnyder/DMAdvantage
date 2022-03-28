@@ -1,6 +1,5 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -30,7 +29,7 @@ namespace DMAdvantage.Client.Shared
 
         protected override async Task OnInitializedAsync()
         {
-            _data = await ApiService.GetViews<TEntity>() ?? new List<TEntity>();
+            _data = await ApiService.GetAllEntities<TEntity>() ?? new List<TEntity>();
             await base.OnInitializedAsync();
         }
 

@@ -3,6 +3,7 @@ using DMAdvantage.Client.Helpers;
 using DMAdvantage.Shared.Query;
 using System.Text.Json;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Extensions;
 
 namespace DMAdvantage.Client.Services.Implementations
 {

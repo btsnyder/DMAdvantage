@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using AutoMapper;
-using DMAdvantage.Data;
+﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
@@ -9,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -26,56 +23,24 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet]
         public IActionResult GetAllCharacters([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Character>? searching = null)
         {
-            try
-            {
-                var username = User.Identity?.Name ?? string.Empty;
-                var search = searching?.Search ?? string.Empty;
-
-                var characters = _context.Characters
-                    .Include(c => c.Abilities)
-                    .Include(c => c.Class)
-                    .Include(c => c.ForcePowers)
-                    .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search))
-                    .AsNoTracking().ToList()
-                    .OrderBy(c => c.OrderBy());
-                
-                if (paging == null)
-                    return Ok(characters);
-
-                var pagedResults = PagedList<Character>.ToPagedList(characters, paging);
-                Response.SetPagedHeader(pagedResults);
-                return Ok(pagedResults);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest("Failed to return entities");
-            }
+            if (searching == null) return GetAllEntities(paging, GetQuery());
+            return GetAllEntities(searching, paging, GetQuery());
         }
-
 
         [HttpGet("{id:guid}")]
         public IActionResult GetCharacterById(Guid id)
         {
-            try
-            {
-                var username = User.Identity?.Name ?? string.Empty;
+            return GetEntityById(id, GetQuery());
+        }
 
-                var character = _context.Characters
-                    .Include(c => c.Abilities)
-                    .Include(c => c.Class)
-                    .Include(c => c.ForcePowers)
-                    .AsNoTracking()
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
-
-                if (character == null) return NotFound();
-                return Ok(character);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to return entity: {ex}");
-                return BadRequest("Failed to return entity");
-            }
+        private IQueryable<Character> GetQuery()
+        {
+            return _context.Characters
+                .Include(c => c.Abilities)
+                .Include(c => c.Class)
+                .Include(c => c.ForcePowers)
+                .Include(c => c.Weapons).ThenInclude(w => w.Properties)
+                .AsNoTracking();
         }
 
         [HttpPost]
@@ -97,6 +62,7 @@ namespace DMAdvantage.Server.Controllers
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
                     .Include(c => c.ForcePowers)
+                    .Include(c => c.Weapons).ThenInclude(c => c.Properties)
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entityFromRepo == null)
@@ -137,6 +103,9 @@ namespace DMAdvantage.Server.Controllers
             var dmclass = _context.DMClasses
                 .FirstOrDefault(x => request.Class != null && request.Class.Id == x.Id);
             entity.Entity.Class = dmclass;
+            var weapons = _context.Weapons
+                .Where(x => request.Weapons.Select(f => f.Id).Contains(x.Id)).ToList();
+            entity.Entity.Weapons = weapons;
             return entity.Entity;
         }
 

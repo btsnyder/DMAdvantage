@@ -52,6 +52,21 @@ namespace DMAdvantage.Server.Migrations
                     b.ToTable("CharacterForcePower");
                 });
 
+            modelBuilder.Entity("CharacterWeapon", b =>
+                {
+                    b.Property<Guid>("CharactersId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WeaponsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CharactersId", "WeaponsId");
+
+                    b.HasIndex("WeaponsId");
+
+                    b.ToTable("CharacterWeapon");
+                });
+
             modelBuilder.Entity("CreatureForcePower", b =>
                 {
                     b.Property<Guid>("CreaturesId")
@@ -235,9 +250,6 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("WeaponsCache")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Wisdom")
                         .HasColumnType("int");
 
@@ -387,6 +399,7 @@ namespace DMAdvantage.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -426,7 +439,7 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<string>("HitDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("HitOption")
+                    b.Property<int>("HitOption")
                         .HasColumnType("int");
 
                     b.Property<int>("Level")
@@ -488,7 +501,7 @@ namespace DMAdvantage.Server.Migrations
                     b.Property<string>("HitDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("HitOption")
+                    b.Property<int>("HitOption")
                         .HasColumnType("int");
 
                     b.Property<int>("Level")
@@ -590,6 +603,70 @@ namespace DMAdvantage.Server.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.Weapon", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Damage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DamageType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Melee")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyDescription")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Weapons");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.WeaponProperty", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Modifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("WeaponProperties");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -725,6 +802,21 @@ namespace DMAdvantage.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("WeaponWeaponProperty", b =>
+                {
+                    b.Property<Guid>("PropertiesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WeaponsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PropertiesId", "WeaponsId");
+
+                    b.HasIndex("WeaponsId");
+
+                    b.ToTable("WeaponWeaponProperty");
+                });
+
             modelBuilder.Entity("AbilityCharacter", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.Ability", null)
@@ -751,6 +843,21 @@ namespace DMAdvantage.Server.Migrations
                     b.HasOne("DMAdvantage.Shared.Entities.ForcePower", null)
                         .WithMany()
                         .HasForeignKey("ForcePowersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CharacterWeapon", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.Character", null)
+                        .WithMany()
+                        .HasForeignKey("CharactersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.Weapon", null)
+                        .WithMany()
+                        .HasForeignKey("WeaponsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -847,6 +954,24 @@ namespace DMAdvantage.Server.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.Weapon", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.WeaponProperty", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -894,6 +1019,21 @@ namespace DMAdvantage.Server.Migrations
                     b.HasOne("DMAdvantage.Shared.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("WeaponWeaponProperty", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.WeaponProperty", null)
+                        .WithMany()
+                        .HasForeignKey("PropertiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.Weapon", null)
+                        .WithMany()
+                        .HasForeignKey("WeaponsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

@@ -14,9 +14,5 @@ namespace DMAdvantage.Shared.Entities
         public List<DamageType> Vulnerabilities { get; set; } = new();
         public List<string> Immunities { get; set; } = new();
         public List<string> Resistances { get; set; } = new();
-        public override string OrderBy()
-        {
-            return Name ?? string.Empty;
-        }
     }
 }

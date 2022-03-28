@@ -8,10 +8,5 @@ namespace DMAdvantage.Shared.Entities
         public int HitDice { get; set; }
 
         public ICollection<Character> Characters { get; set; }
-
-        public override string OrderBy()
-        {
-            return Name ?? string.Empty;
-        }
     }
 }

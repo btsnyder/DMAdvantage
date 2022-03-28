@@ -1,8 +1,8 @@
 ﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using System.Net;
-using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using TestEngineering.Mocks;
@@ -32,29 +32,16 @@ namespace TestEngineering
 
         public static async Task<T> GetEntity<T>(this HttpClient client, Guid id)
         {
-            var response = await client.GetAsync($"/api/{GetPath(typeof(T))}/{id}");
+            var response = await client.GetAsync($"/api/{typeof(T).GetPath()}/{id}");
             var entity = await response.ParseEntity<T>();
             return entity;
         }
 
         public static async Task<List<T>> GetAllEntities<T>(this HttpClient client)
         {
-            var response = await client.GetAsync($"/api/{GetPath(typeof(T))}");
+            var response = await client.GetAsync($"/api/{typeof(T).GetPath()}");
             var entities = await response.ParseEntityList<T>();
             return entities;
-        }
-
-        private static string GetPath(MemberInfo t)
-        {
-            var path = t.Name;
-            if (path.Contains("Ability"))
-                return "abilities";
-            if (path.Contains("Class"))
-                return "classes";
-            path = path.Replace("Response", "");
-            path = path.Replace("Request", "");
-            path += "s";
-            return path.ToLower();
         }
 
         public static async Task<Character> CreateCharacter(this HttpClient client, Character? character = null)
@@ -73,6 +60,9 @@ namespace TestEngineering
                 powers.Add(power);
             }
             character.ForcePowers = powers;
+            var weapon = await client.CreateWeapon();
+            weapon.User = null;
+            character.Weapons.Add(weapon);
             var response = await client.PostAsync("/api/characters", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<Character>();
@@ -122,6 +112,7 @@ namespace TestEngineering
 
                 encounter = new Encounter
                 {
+                    Name = Faker.Name.FullName(),
                     DataCache = JsonSerializer.Serialize(data),
                     ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
                 };
@@ -165,6 +156,34 @@ namespace TestEngineering
             var response = await client.PostAsync("/api/classes", dmclass);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<DMClass>();
+            return created;
+        }
+
+        public static async Task<Weapon> CreateWeapon(this HttpClient client, Weapon? weapon = null)
+        {
+            var random = new Random();
+            weapon ??= Generation.Weapon();
+            weapon.User = null;
+            //var properties = new List<WeaponProperty>();
+            //for (int i = 0; i < random.Next(0, 10); i++)
+            //{
+            //    var prop= await client.CreateWeaponProperty();
+            //    prop.User = null;
+            //    properties.Add(prop);
+            //}
+            //weapon.Properties = properties;
+            var response = await client.PostAsync("/api/weapons", weapon);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var created = await response.ParseEntity<Weapon>();
+            return created;
+        }
+
+        public static async Task<WeaponProperty> CreateWeaponProperty(this HttpClient client, WeaponProperty? property = null)
+        {
+            property ??= Generation.WeaponProperty();
+            var response = await client.PostAsync("/api/weaponproperties", property);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var created = await response.ParseEntity<WeaponProperty>();
             return created;
         }
 

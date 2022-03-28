@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using DMAdvantage.Data;
-using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Models;
+﻿using DMAdvantage.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

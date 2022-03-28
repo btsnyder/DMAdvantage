@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DMAdvantage.Data;
+﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;

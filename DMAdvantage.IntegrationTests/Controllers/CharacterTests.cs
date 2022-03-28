@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Query;
+using DMAdvantage.Shared.Extensions;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -28,7 +29,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync("/api/characters");
+            var response = await client.GetAsync($"/api/{typeof(Character).GetPath()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -39,7 +40,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             await client.CreateCharacter();
 
-            var response = await client.GetAsync("/api/characters");
+            var response = await client.GetAsync($"/api/{typeof(Character).GetPath()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var characters = await response.ParseEntityList<Character>();
@@ -67,7 +68,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/characters?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{typeof(Character).GetPath()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var charactersResponse = await response.ParseEntityList<Character>();
@@ -97,7 +98,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/characters?search={search.Search}");
+            var response = await client.GetAsync($"/api/{typeof(Character).GetPath()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var charactersResponse = await response.ParseEntityList<Character>();
@@ -128,7 +129,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var character = Generation.Character();
             character.Name = null;
-            var response = await client.PostAsync("/api/characters", character);
+            var response = await client.PostAsync($"/api/{typeof(Character).GetPath()}", character);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -138,7 +139,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var character = await client.CreateCharacter();
 
-            var response = await client.GetAsync($"/api/characters/{character.Id}");
+            var response = await client.GetAsync($"/api/{typeof(Character).GetPath()}/{character.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedCharacter = await response.ParseEntity<Character>();
@@ -158,8 +159,12 @@ namespace DMAdvantage.IntegrationTests.Controllers
             newAbility.User = null;
             newAbility.Characters = new List<Character>();
             newCharacter.Abilities.Add(newAbility);
+            newCharacter.Weapons = character.Weapons;
+            var newWeapon = await client.CreateWeapon();
+            newWeapon.User = null;
+            newCharacter.Weapons.Add(newWeapon);
 
-            var response = await client.PutAsync($"api/characters/{character.Id}", newCharacter);
+            var response = await client.PutAsync($"api/{typeof(Character).GetPath()}/{character.Id}", newCharacter);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedCharacter = await client.GetEntity<Character>(character.Id);
             Validation.CompareEntities(newCharacter, addedCharacter);
@@ -171,10 +176,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var character = await client.CreateCharacter();
 
-            var response = await client.DeleteAsync($"api/characters/{character.Id}");
+            var response = await client.DeleteAsync($"api/{typeof(Character).GetPath()}/{character.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var characterLookup = await client.GetAsync($"api/characters/{character.Id}");
+            var characterLookup = await client.GetAsync($"api/{typeof(Character).GetPath()}/{character.Id}");
             characterLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

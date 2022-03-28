@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using DMAdvantage.Data;
+﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -51,7 +49,7 @@ namespace DMAdvantage.Server.Controllers
                 if (searching.Ranges.Any())
                     query = query.Where(c => searching.Ranges.Contains(c.Range));
 
-                var entities = query.ToList().OrderBy(c => c.OrderBy());
+                var entities = query.ToList().OrderBy(c => c.ToString());
 
                 if (paging == null)
                     return Ok(entities);

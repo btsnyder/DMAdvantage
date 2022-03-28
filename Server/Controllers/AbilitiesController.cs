@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DMAdvantage.Data;
+﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
@@ -7,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DMAdvantage.Server.Controllers
 {

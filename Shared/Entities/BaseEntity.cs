@@ -9,8 +9,6 @@ namespace DMAdvantage.Shared.Entities
         [Required]
         public string Name { get; set; }
 
-        public abstract string OrderBy();
-
         public override bool Equals(object o)
         {
             var other = o as BaseEntity;

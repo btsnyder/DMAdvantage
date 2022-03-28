@@ -434,7 +434,7 @@
                                         <MudItem xs="4">@weapon.DamageType</MudItem>
 
                                         <MudItem xs="12" Class="d-flex flex-wrap">
-                                            @foreach (var prop in weapon.PropertyDescriptions)
+                                            @foreach (var prop in weapon.Properties)
                                             {
                                                 <MudButton Class="m-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop.Name (@prop.Description)</MudButton>
                                             }
@@ -529,10 +529,9 @@
 </MudForm>
 
 @code {
-    void ShowWeaponProperty(WeaponDescription weapon)
+    void ShowWeaponProperty(WeaponProperty prop)
     {
-        var description = StaticData.WeaponPropertyDescriptions[Enum.Parse<WeaponProperty>(weapon.Name ?? string.Empty)];
-        DialogService.ShowMessageBox(weapon.Name, description);
+        DialogService.ShowMessageBox(prop.Name, prop.Description);
     }
 
     void ShowAbility(Ability ability)

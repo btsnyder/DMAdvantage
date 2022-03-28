@@ -1,0 +1,11 @@
+﻿@inherits MudComponentBase
+
+<MudContainer>
+    <MudTextField @bind-Value="@_value" Label="@Label" Variant="Variant.Outlined" 
+        Adornment="Adornment.End" AdornmentIcon="@Icons.Filled.Add" OnAdornmentClick="ValueAdded"/>
+</MudContainer>
+
+@foreach (var value in _selectedValues)
+{
+    <MudChip Color="Color.Primary" OnClose="EntityRemoved" Text="@value"/>
+}

@@ -10,10 +10,10 @@ namespace DMAdvantage.Client.Pages.Characters
 {
     public partial class CharacterEditForm
     {
-        private IEnumerable<string> _weaponProperties = Array.Empty<string>();
         private Character _model = new();
         private List<ForcePower> _forcePowers = new();
         private List<DMClass> _classes = new();
+        private List<WeaponProperty> _weaponProperties = new();
         private MudForm _form;
         private bool _loading;
         private readonly CharacterValidator _characterValidator = new();
@@ -27,13 +27,13 @@ namespace DMAdvantage.Client.Pages.Characters
         protected override async Task OnInitializedAsync()
         {
             _loading = true;
-            _weaponProperties = Enum.GetNames<WeaponProperty>();
             if (Id != null)
             {
                 _model = await ApiService.GetEntityById<Character>(Guid.Parse(Id)) ?? new Character();
             }
             _forcePowers = await ApiService.GetAllEntities<ForcePower>() ?? new List<ForcePower>();
             _classes = await ApiService.GetAllEntities<DMClass>() ?? new List<DMClass>();
+            _weaponProperties = await ApiService.GetAllEntities<WeaponProperty>() ?? new List<WeaponProperty>();
 
             await base.OnInitializedAsync();
             _loading = false;

@@ -10,10 +10,5 @@ namespace DMAdvantage.Shared.Entities
 
         public ICollection<Character> Characters { get; set; } = new List<Character>();
         public ICollection<Creature> Creatures { get; set; } = new List<Creature>();
-
-        public override string OrderBy()
-        {
-            return $"{Level} - {Name}";
-        }
     }
 }

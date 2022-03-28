@@ -60,7 +60,6 @@ namespace TestEngineering
                 Intimidation = NullableBoolean(),
                 Performance = NullableBoolean(),
                 Persuasion = NullableBoolean(),
-                WeaponsCache =  JsonSerializer.Serialize(RandomList(Weapon)),
                 User = MockHttpContext.CurrentUser
             };
         }
@@ -75,17 +74,16 @@ namespace TestEngineering
                 Description = Nonsense(),
                 Damage = Nonsense(),
                 DamageType = RandomEnum<DamageType>(),
-                Properties = RandomList(() => Nonsense()).ToArray(),
-                PropertyDescriptions = RandomList(WeaponDescription)
             };
         }
 
-        public static WeaponDescription WeaponDescription()
+        public static WeaponProperty WeaponProperty()
         {
-            return new WeaponDescription
+            return new WeaponProperty
             {
                 Description = Nonsense(),
-                Name = Nonsense()
+                Name = Nonsense(),
+                Modifier = Nonsense()
             };
         }
 

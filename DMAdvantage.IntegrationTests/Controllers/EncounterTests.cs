@@ -12,6 +12,7 @@ using System.Linq;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Query;
 using System.Text.Json;
+using DMAdvantage.Shared.Extensions;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
@@ -29,7 +30,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync("/api/encounters");
+            var response = await client.GetAsync($"/api/{typeof(Encounter).GetPath()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -41,7 +42,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             await client.CreateEncounter();
 
-            var response = await client.GetAsync("/api/encounters");
+            var response = await client.GetAsync($"/api/{typeof(Encounter).GetPath()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var encounters = await response.ParseEntityList<Encounter>();
@@ -76,6 +77,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
                 var encounter = new Encounter
                 {
+                    Name = Faker.Name.FullName(),
                     DataCache = JsonSerializer.Serialize(data),
                     ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
                 };
@@ -89,7 +91,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/encounters?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{typeof(Encounter).GetPath()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var encountersResponse = await response.ParseEntityList<Encounter>();
@@ -118,7 +120,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/encounters?search={search.Search}");
+            var response = await client.GetAsync($"/api/{typeof(Encounter).GetPath()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var encoutnersResponse = await response.ParseEntityList<Encounter>();
@@ -150,7 +152,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var encounter = await client.CreateEncounter();
 
-            var response = await client.GetAsync($"/api/encounters/{encounter.Id}");
+            var response = await client.GetAsync($"/api/{typeof(Encounter).GetPath()}/{encounter.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedEncounter = await response.ParseEntity<Encounter>();
@@ -187,7 +189,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
             };
             encounterEdit.Id = encounter.Id;
-            var response = await client.PutAsync($"api/encounters/{encounter.Id}", encounterEdit);
+            var response = await client.PutAsync($"api/{typeof(Encounter).GetPath()}/{encounter.Id}", encounterEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedEncounter = await client.GetEntity<Encounter>(encounter.Id);
             addedEncounter.Should().NotBeNull();
@@ -200,10 +202,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var encounter = await client.CreateEncounter();
 
-            var response = await client.DeleteAsync($"api/encounters/{encounter.Id}");
+            var response = await client.DeleteAsync($"api/{typeof(Encounter).GetPath()}/{encounter.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var encounterLookup = await client.GetAsync($"api/encounters/{encounter.Id}");
+            var encounterLookup = await client.GetAsync($"api/{typeof(Encounter).GetPath()}/{encounter.Id}");
             encounterLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

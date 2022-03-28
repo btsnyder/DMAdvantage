@@ -6,11 +6,6 @@
 
         public ICollection<Character> Characters { get; set; }
 
-        public override string OrderBy()
-        {
-            return Name ?? string.Empty;
-        }
-
         public override string ToString() => Name;
     }
 }

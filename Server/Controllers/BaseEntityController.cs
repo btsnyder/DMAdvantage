@@ -1,12 +1,10 @@
-﻿using AutoMapper;
-using DMAdvantage.Data;
+﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -27,14 +25,19 @@ namespace DMAdvantage.Server.Controllers
             apiPath = typeof(TEntity).Name.ToLower() + "s";
         }
 
-        public IActionResult GetAllEntities(PagingParameters? paging = null)
+        public IActionResult GetAllEntities(PagingParameters? paging = null, IQueryable<TEntity> ? query = null)
         {
             try
             {
                 var username = User.Identity?.Name ?? string.Empty;
 
-                DbSet<TEntity> dbSet = _context.Set<TEntity>();
-                var entities = dbSet.Where(c => c.User != null && c.User.UserName == username).AsNoTracking().OrderBy(c => c.OrderBy());
+                if (query == null)
+                {
+                    DbSet<TEntity> dbSet = _context.Set<TEntity>();
+                    query = dbSet.Where(c => c.User != null && c.User.UserName == username).AsNoTracking();
+                }
+
+                var entities = query.OrderBy(c => c.ToString());
 
                 if (paging == null)
                     return Ok(entities);
@@ -50,7 +53,7 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
-        public IActionResult GetAllEntities<T>(NamedSearchParameters<T> searching, PagingParameters? paging = null) where T : BaseEntity
+        public IActionResult GetAllEntities<T>(NamedSearchParameters<T> searching, PagingParameters? paging = null, IQueryable<TEntity>? query = null) where T : TEntity
         {
             try
             {
@@ -58,22 +61,21 @@ namespace DMAdvantage.Server.Controllers
                 var search = searching.Search;
 
                 var dbSet = _context.Set<T>();
-                IQueryable<T> query;
-                if (search == null)
+                if (query == null)
                     query = dbSet
                         .Where(c => c.User != null && c.User.UserName == username)
                         .AsNoTracking();
-                else
-                    query = dbSet
-                        .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search.ToLower()))
+                if (search != null)
+                    query = query
+                        .Where(c => c.Name != null && c.Name.ToLower().Contains(search.ToLower()))
                         .AsNoTracking();
 
-                var entities = query.ToList().OrderBy(c => c.OrderBy());
+                var entities = query.ToList().OrderBy(c => c.ToString());
 
                 if (paging == null)
                     return Ok(entities);
 
-                var pagedResults = PagedList<T>.ToPagedList(entities, paging);
+                var pagedResults = PagedList<TEntity>.ToPagedList(entities, paging);
                 Response.SetPagedHeader(pagedResults);
                 return Ok(pagedResults);
             }
@@ -84,15 +86,19 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
-        protected IActionResult GetEntityById(Guid id)
+        protected IActionResult GetEntityById(Guid id, IQueryable<TEntity>? query = null)
         {
             try
             {
                 var username = User.Identity?.Name ?? string.Empty;
 
-                DbSet<TEntity> dbSet = _context.Set<TEntity>();
-                var entity = dbSet.AsNoTracking()
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                if (query == null)
+                {
+                    DbSet<TEntity> dbSet = _context.Set<TEntity>();
+                    query = dbSet.AsNoTracking();
+                }
+                
+                var entity = query.FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entity == null) return NotFound();
                 return Ok(entity);

@@ -1,4 +1,5 @@
-﻿@typeparam TEntity
+﻿@inherits MudComponentBase
+@typeparam TEntity
 
 <MudAutocomplete ResetValueOnEmptyText="true" CoerceText="true" T="TEntity" SearchFunc="@Search"
                 Value="@_value" ValueChanged="@Selected" Label="@Label" Dense="true" ToStringFunc="@(entity => entity.ToString() ?? string.Empty)"/>

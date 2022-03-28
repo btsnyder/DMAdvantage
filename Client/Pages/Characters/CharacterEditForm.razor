@@ -98,47 +98,9 @@ else
                 </MudPaper>
             </MudItem>
             
-            <MudItem xs="12" Class="d-flex align-items-center">
-                <MudText Class="fw-bold" Typo="Typo.h5">Weapons</MudText> 
-                <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" Size="Size.Small" OnClick="() => _model.Weapons.Add(new Weapon())"/>
+            <MudItem xs="12">
+                <MultipleEntityDropdown TEntity="Weapon" @bind-SelectedEntities="_model.Weapons" Label="Weapons"/>
             </MudItem>
-            @foreach (var weapon in _model.Weapons)
-            {
-                <MudItem xs="12" Class="d-flex">
-                    <MudTextField Class="m-2" @bind-Value="weapon.Name" Label="Name" For="() => weapon.Name"/>
-                    <MudSelect Class="m-2" T="WeaponType" @bind-Value="@weapon.Type" Label="Type" For="() => weapon.Type">
-                        @foreach (var type in Enum.GetValues<WeaponType>())
-                        {
-                            <MudSelectItem Value="@type">@type.GetStringValue()</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <ToggledText @bind-Value="weapon.Melee" Text="Melee" />
-                    <MudSelect Class="m-2" T="string" MultiSelection="true" @bind-SelectedValues="weapon.Properties" Label="Properties">
-                        @foreach (var prop in _weaponProperties)
-                        {
-                            <MudSelectItem T="string" Value="@prop">@prop</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudTextField Class="m-2" @bind-Value="weapon.Damage" Label="Damage" For="() => weapon.Damage"/>
-                    <MudSelect Class="m-2" T="DamageType" @bind-Value="@weapon.DamageType" Label="Type">
-                        @foreach (var type in Enum.GetValues<DamageType>())
-                        {
-                            <MudSelectItem Value="@type"/>
-                        }
-                    </MudSelect>
-                    <MudIconButton Class="mx-2 my-auto" Icon="@Icons.Filled.Delete" Variant="Variant.Filled" Color="Color.Error" OnClick="() => _model.Weapons.Remove(weapon)"/>
-                </MudItem>
-                <MudItem xs="12" Class="d-flex">
-                    @foreach (var prop in weapon.PropertyDescriptions.OrderBy(x => x.Name))
-                    {
-                        <MudTextField Class="m-2" @bind-Value="@prop.Description" Label="@prop.Name" Variant="Variant.Outlined" For="() => prop.Description"/>
-                    }
-                </MudItem>
-                <MudItem xs="12" Class="p-0">
-                    <hr/>
-                </MudItem>
-            }
-
             <MudItem xs="12">
                 <MultipleEntityDropdown TEntity="Ability" @bind-SelectedEntities="_model.Abilities" Label="Abilities"/>
             </MudItem>
