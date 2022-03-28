@@ -50,9 +50,9 @@ namespace DMAdvantage.Client.Pages.Creatures
                 }
                 NavigationManager.NavigateTo("creatures");
             }
-            catch (Exception ex)
+            catch
             {
-                Snackbar.Add($"Error submitting change: {ex}", Severity.Error);
+                Snackbar.Add($"Error submitting change!", Severity.Error);
                 _loading = false;
                 StateHasChanged();
             }
@@ -78,10 +78,10 @@ namespace DMAdvantage.Client.Pages.Creatures
                     _model.Vulnerabilities = EnumExtensions.GetEnumValues<DamageType>(val).ToList();
                     break;
                 case nameof(_model.Immunities):
-                    _model.Immunities = val.ToList();
+                    _model.Immunities = EnumExtensions.GetEnumValues<DamageType>(val).ToList();
                     break;
                 case nameof(_model.Resistances):
-                    _model.Resistances = val.ToList();
+                    _model.Resistances = EnumExtensions.GetEnumValues<DamageType>(val).ToList();
                     break;
                 default:
                     throw new NotImplementedException($"Unknown value type in CreateEditForm: {prop}");

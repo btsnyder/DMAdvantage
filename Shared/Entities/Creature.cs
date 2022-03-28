@@ -1,6 +1,4 @@
-﻿using DMAdvantage.Shared.Models;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using DMAdvantage.Shared.Enums;
 
 namespace DMAdvantage.Shared.Entities
@@ -9,10 +7,11 @@ namespace DMAdvantage.Shared.Entities
     {
         [Column(TypeName = "decimal(5, 2)")]
         public decimal ChallengeRating { get; set; }
-        public string ActionsCache { get; set; }
-        public List<BaseAction> Actions => string.IsNullOrWhiteSpace(ActionsCache) ? new List<BaseAction>() : JsonSerializer.Deserialize<List<BaseAction>>(ActionsCache);
         public List<DamageType> Vulnerabilities { get; set; } = new();
-        public List<string> Immunities { get; set; } = new();
-        public List<string> Resistances { get; set; } = new();
+        public List<DamageType> Immunities { get; set; } = new();
+        public List<DamageType> Resistances { get; set; } = new();
+
+        public ICollection<Weapon> Weapons { get; set; } = new List<Weapon>();
+        public ICollection<BaseAction> Actions { get; set; } = new List<BaseAction>();
     }
 }

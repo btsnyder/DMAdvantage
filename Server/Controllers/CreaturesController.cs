@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -38,6 +39,7 @@ namespace DMAdvantage.Server.Controllers
         {
             return _context.Creatures
                 .Include(c => c.ForcePowers)
+                .Include(c => c.Actions)
                 .AsNoTracking();
         }
 
@@ -59,6 +61,7 @@ namespace DMAdvantage.Server.Controllers
 
                 var entityFromRepo = _context.Creatures
                     .Include(c => c.ForcePowers)
+                    .Include(c => c.Actions)
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entityFromRepo == null)
@@ -93,6 +96,24 @@ namespace DMAdvantage.Server.Controllers
             var forcePowers = _context.ForcePowers
                 .Where(x => request.ForcePowers.Select(f => f.Id).Contains(x.Id)).ToList();
             entity.Entity.ForcePowers = forcePowers;
+            var actions = new List<BaseAction>();
+            foreach (var action in request.Actions)
+            {
+                var actionFromRepo = _context.Actions.FirstOrDefault(x => x.Id == action.Id);
+                EntityEntry<BaseAction> actionEntry;
+                if (actionFromRepo == null)
+                {
+                    actionEntry = _context.Add(new BaseAction());
+                    actionEntry.Entity.Id = Guid.NewGuid();
+                    action.Id = actionEntry.Entity.Id;
+                }
+                else
+                    actionEntry = _context.Entry(actionFromRepo);
+                actionEntry.CurrentValues.SetValues(action);
+                actions.Add(actionEntry.Entity);
+            }
+
+            entity.Entity.Actions = actions;
             return entity.Entity;
         }
 

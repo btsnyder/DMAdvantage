@@ -1,14 +1,15 @@
 ﻿using DMAdvantage.Shared.Enums;
 
-namespace DMAdvantage.Shared.Models
+namespace DMAdvantage.Shared.Entities
 {
-    public class BaseAction
+    public class BaseAction : BaseEntity
     {
-        public string Name { get; set; }
         public string Description { get; set; }
         public string Hit { get; set; } 
         public string Range { get; set; } 
         public string Damage { get; set; }
         public DamageType DamageType { get; set; }
+
+        public ICollection<Creature> Creatures { get; set; } = new List<Creature>();
     }
 }

@@ -29,6 +29,7 @@ namespace DMAdvantage.Data
         public DbSet<DMClass> DMClasses => Set<DMClass>();
         public DbSet<Weapon> Weapons => Set<Weapon>();
         public DbSet<WeaponProperty> WeaponProperties => Set<WeaponProperty>();
+        public DbSet<BaseAction> Actions => Set<BaseAction>();
 
 
         public bool SaveAll()
@@ -54,17 +55,6 @@ namespace DMAdvantage.Data
 
             var converter = new EnumToStringConverter<DamageType>();
 
-            modelBuilder.Entity<Creature>()
-                .Property(e => e.Vulnerabilities)
-                .HasConversion(
-                    v => string.Join(",", v.Select(e => e.ToString("D")).ToArray()),
-                    v => v.Split(new[] { ',' })
-                        .Select(e => Enum.Parse(typeof(DamageType), e))
-                        .Cast<DamageType>()
-                        .ToList()
-            );
-
-            modelBuilder.Ignore<BaseAction>();
             modelBuilder.Ignore<InitativeData>();
 
             AddPropertyList(modelBuilder, (Creature c) => c.Vulnerabilities);

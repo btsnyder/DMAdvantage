@@ -89,7 +89,7 @@
             </MudSelect>
         </MudItem>
         <MudItem xs="4">
-            <MudSelect T="string" Label="Immunities" MultiSelection="true" SelectedValues="_model.Immunities"
+            <MudSelect T="string" Label="Immunities" MultiSelection="true" SelectedValues="_model.Immunities.Select(x => x.GetStringValue())"
                        SelectedValuesChanged="args => SelectedValuesChanged(args, nameof(_model.Immunities))">
                 @foreach (var type in _damageTypes)
                 {
@@ -98,7 +98,7 @@
             </MudSelect>
         </MudItem>
         <MudItem xs="4">
-            <MudSelect T="string" Label="Resistances" MultiSelection="true" SelectedValues="_model.Resistances"
+            <MudSelect T="string" Label="Resistances" MultiSelection="true" SelectedValues="_model.Resistances.Select(x => x.GetStringValue())"
                        SelectedValuesChanged="args => SelectedValuesChanged(args, nameof(_model.Resistances))">
                 @foreach (var type in _damageTypes)
                 {
