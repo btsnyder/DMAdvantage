@@ -13,8 +13,6 @@ namespace DMAdvantage.Client.Pages.Encounters
         private bool _loading;
         private List<InitativeDataModel> _initatives = new();
         private InitativeDataModel? _selectedInitative;
-        private Character? _selectedInitativeCharacter => _selectedInitative?.Being as Character;
-        private Creature? _selectedInitativeCreature => _selectedInitative?.Being as Creature;
 
         private InitativeDataModel? _currentPlayer;
         IList<ForcePower> SelectedForcePowers { get; set; } = new List<ForcePower>();
@@ -95,12 +93,12 @@ namespace DMAdvantage.Client.Pages.Encounters
             _loading = true;
             try
             {
-                _model.Data.Clear();
+                _model.InitativeData.Clear();
                 foreach (var init in _initatives)
                 {
-                    _model.Data.Add(init);
+                    _model.InitativeData.Add(init);
                 }
-                _model.CurrentPlayer = _currentPlayer?.BeingId ?? Guid.Empty;
+                _model.CurrentPlayer = _currentPlayer?.Being?.Id ?? Guid.Empty;
                 _model.ConcentrationPowers.Clear();
                 foreach (var power in _concentrationPowers)
                 {
@@ -252,27 +250,17 @@ namespace DMAdvantage.Client.Pages.Encounters
 
             if (_model != null)
             {
-                List<Being> beings = new();
-                var characters = await ApiService.GetViews<Character>(_model.Data.Select(x => x.BeingId));
-                var creatures = await ApiService.GetViews<Creature>(_model.Data.Select(x => x.BeingId));
-                if (characters != null)
-                    beings.AddRange(characters);
-                if (creatures != null)
-                    beings.AddRange(creatures);
-
                 _initatives.Clear();
-                foreach (var initative in _model.Data)
+                foreach (var initative in _model.InitativeData)
                 {
-                    var being = beings.FirstOrDefault(b => b.Id == initative.BeingId);
-                    if (being == null) continue;
-                    _initatives.Add(new InitativeDataModel(being, initative) { });
+                    if (initative.Being == null) continue;
+                    _initatives.Add(new InitativeDataModel(initative.Being, initative) { });
                 }
-
                 var sorted = new List<InitativeDataModel>(_initatives);
                 sorted.Sort((data1, data2) => data2.Initative.CompareTo(data1.Initative));
                 _initatives = new List<InitativeDataModel>(sorted);
 
-                _currentPlayer = _initatives.FirstOrDefault(x => x.BeingId == _model.CurrentPlayer);
+                _currentPlayer = _initatives.FirstOrDefault(x => x.Being.Id == _model.CurrentPlayer);
                 _selectedInitative ??= _initatives.FirstOrDefault();
 
                 if (_selectedInitative?.Being != null)
@@ -311,15 +299,9 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         private string InitativeDisplayName(InitativeDataModel data)
         {
-            var sameBeing = _initatives.Where(x => x.Being.Id == data.BeingId);
+            var sameBeing = _initatives.Where(x => x.Being.Id == data.Being.Id);
             if (sameBeing.Count() == 1) return data.Name;
             return $"{data.Name} {sameBeing.ToList().IndexOf(data) + 1}";
-        }
-
-        private void UseHitDice()
-        {
-            _selectedInitative!.CurrentHitDice--;
-            StateHasChanged();
         }
     }
 }

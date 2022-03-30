@@ -30,6 +30,7 @@ namespace DMAdvantage.Data
         public DbSet<Weapon> Weapons => Set<Weapon>();
         public DbSet<WeaponProperty> WeaponProperties => Set<WeaponProperty>();
         public DbSet<BaseAction> Actions => Set<BaseAction>();
+        public DbSet<InitativeData> InitativeData => Set<InitativeData>();
 
 
         public bool SaveAll()
@@ -54,8 +55,6 @@ namespace DMAdvantage.Data
             base.OnModelCreating(modelBuilder);
 
             var converter = new EnumToStringConverter<DamageType>();
-
-            modelBuilder.Ignore<InitativeData>();
 
             AddPropertyList(modelBuilder, (Creature c) => c.Vulnerabilities);
             AddPropertyList(modelBuilder, (Creature c) => c.Immunities);

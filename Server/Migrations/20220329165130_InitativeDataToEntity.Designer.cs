@@ -4,6 +4,7 @@ using DMAdvantage.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMAdvantage.Server.Migrations
 {
     [DbContext(typeof(DMContext))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20220329165130_InitativeDataToEntity")]
+    partial class InitativeDataToEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -515,52 +517,6 @@ namespace DMAdvantage.Server.Migrations
                     b.ToTable("ForcePowers");
                 });
 
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.InitativeData", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CharacterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CreatureId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("CurrentFP")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurrentHP")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurrentHitDice")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CurrentTP")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("EncounterId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Initative")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId");
-
-                    b.HasIndex("CreatureId");
-
-                    b.HasIndex("EncounterId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("InitativeData");
-                });
-
             modelBuilder.Entity("DMAdvantage.Shared.Entities.TechPower", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1056,33 +1012,6 @@ namespace DMAdvantage.Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.InitativeData", b =>
-                {
-                    b.HasOne("DMAdvantage.Shared.Entities.Character", "Character")
-                        .WithMany()
-                        .HasForeignKey("CharacterId");
-
-                    b.HasOne("DMAdvantage.Shared.Entities.Creature", "Creature")
-                        .WithMany()
-                        .HasForeignKey("CreatureId");
-
-                    b.HasOne("DMAdvantage.Shared.Entities.Encounter", "Encounter")
-                        .WithMany("InitativeData")
-                        .HasForeignKey("EncounterId");
-
-                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Creature");
-
-                    b.Navigation("Encounter");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("DMAdvantage.Shared.Entities.TechPower", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.Character", null)
@@ -1203,11 +1132,6 @@ namespace DMAdvantage.Server.Migrations
             modelBuilder.Entity("DMAdvantage.Shared.Entities.DMClass", b =>
                 {
                     b.Navigation("Characters");
-                });
-
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.Encounter", b =>
-                {
-                    b.Navigation("InitativeData");
                 });
 #pragma warning restore 612, 618
         }

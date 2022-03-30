@@ -215,14 +215,18 @@ namespace TestEngineering
 
         public static InitativeData InitativeData()
         {
-            return new InitativeData
+            var data = new InitativeData
             {
                 Initative = Faker.RandomNumber.Next(0, 20),
-                BeingId = Guid.NewGuid(),
                 CurrentHP = Faker.RandomNumber.Next(0, 200),
                 CurrentFP = Faker.RandomNumber.Next(0, 20),
                 CurrentTP = Faker.RandomNumber.Next(0, 20)
             };
+            if (Faker.Boolean.Random())
+                data.Creature = Creature();
+            else
+                data.Character = Character();
+            return data;
         }
 
         public static Encounter Encounter()
@@ -237,8 +241,8 @@ namespace TestEngineering
             return new Encounter
             {
                 Name = Nonsense(),
-                CurrentPlayer = mockInitativeData[Faker.RandomNumber.Next(0, mockInitativeData.Count - 1)].BeingId,
-                DataCache = JsonSerializer.Serialize(mockInitativeData),
+                CurrentPlayer = mockInitativeData[Faker.RandomNumber.Next(0, mockInitativeData.Count - 1)].Being?.Id ?? Guid.Empty,
+                InitativeData = mockInitativeData,
                 ConcentrationCache = JsonSerializer.Serialize(mockConcentration),
                 User = MockHttpContext.CurrentUser
             };

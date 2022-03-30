@@ -57,32 +57,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             for (var i = 0; i < 25; i++)
             {
-                var characters = new List<Guid>();
-                for (var j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
-                {
-                    var character = await client.CreateCharacter();
-                    characters.Add(character.Id);
-                }
-
-                var creatures = new List<Guid>();
-                for (var j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
-                {
-                    var creature = await client.CreateCreature();
-                    creatures.Add(creature.Id);
-                }
-
-                var data = new List<InitativeData>();
-                data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
-                data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
-
-                var encounter = new Encounter
-                {
-                    Name = Faker.Name.FullName(),
-                    DataCache = JsonSerializer.Serialize(data),
-                    ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
-                };
-
-                await client.CreateEncounter(encounter);
+                await client.CreateEncounter();
             }
 
             var paging = new PagingParameters
@@ -141,8 +116,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var encounter = await client.CreateEncounter();
 
-            var encounters = await client.GetAllEntities<Encounter>();
-            encounters.Where(e => e.Id == encounter.Id).Should().HaveCount(1);
+            var addedEncounter = await client.GetEntity<Encounter>(encounter.Id);
+            addedEncounter.Should().NotBeNull();
         }
 
         [Fact]
@@ -165,27 +140,29 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var encounter = await client.CreateEncounter();
 
-            var characters = new List<Guid>();
+            var characters = new List<Character>();
             for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
             {
                 var character = await client.CreateCharacter();
-                characters.Add(character.Id);
+                character.User = null;
+                characters.Add(character);
             }
 
-            var creatures = new List<Guid>();
+            var creatures = new List<Creature>();
             for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
             {
                 var creature = await client.CreateCreature();
-                creatures.Add(creature.Id);
+                creature.User = null;
+                creatures.Add(creature);
             }
 
             var data = new List<InitativeData>();
-            data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
-            data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
+            data.AddRange(characters.Select(x => new InitativeData { Character = x }));
+            data.AddRange(creatures.Select(x => new InitativeData { Creature = x }));
 
             var encounterEdit = new Encounter
             {
-                DataCache = JsonSerializer.Serialize(data),
+                InitativeData = data,
                 ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
             };
             encounterEdit.Id = encounter.Id;
@@ -193,6 +170,12 @@ namespace DMAdvantage.IntegrationTests.Controllers
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedEncounter = await client.GetEntity<Encounter>(encounter.Id);
             addedEncounter.Should().NotBeNull();
+
+            foreach (var initative in data)
+            {
+                initative.Id = addedEncounter.InitativeData.FirstOrDefault(x => x.Being.Id == initative.Being.Id)?.Id ?? Guid.Empty;
+            }
+
             Validation.CompareEntities(encounterEdit, addedEncounter);
         }
 

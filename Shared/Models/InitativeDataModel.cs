@@ -4,34 +4,36 @@ namespace DMAdvantage.Shared.Models
 {
     public class InitativeDataModel : InitativeData
     {
-        public Being Being;
-
         public InitativeDataModel(Being being)
         {
-            Being = being;
-            BeingId = being.Id;
+            if (being is Character character)
+                Character = character;
+            else if (being is Creature creature)
+                Creature = creature;
             CurrentHP = being.HitPoints;
             CurrentFP = being.ForcePoints;
             CurrentTP = being.TechPoints;
-            CurrentHitDice = being is Character character ? character.Level : 0;
+            CurrentHitDice = IsCharacter ? Character.Level : 0;
 
         }
 
         public InitativeDataModel(Being being, InitativeData data)
         {
             Initative = data.Initative;
-            BeingId = data.BeingId;
+            if (being is Character character)
+                Character = character;
+            else if (being is Creature creature)
+                Creature = creature;
             CurrentHP = data.CurrentHP;
             CurrentFP = data.CurrentFP;
             CurrentTP = data.CurrentTP;
             CurrentHitDice = data.CurrentHitDice;
-            Being = being;
         }
 
         public string Name => Being?.Name;
-        public string ArmorClass => Being is Character character ? character.ArmorClass.ToString() : string.Empty;
-        public string ForcePoints => Being is Character ? CurrentFP.ToString() : string.Empty;
-        public string TechPoints => Being is Character ? CurrentTP.ToString() : string.Empty;
+        public string ArmorClass => IsCharacter ? Character.ArmorClass.ToString() : string.Empty;
+        public string ForcePoints => IsCharacter ? CurrentFP.ToString() : string.Empty;
+        public string TechPoints => IsCharacter ? CurrentTP.ToString() : string.Empty;
 
         public void ApplyHP(int value)
         {
@@ -46,13 +48,10 @@ namespace DMAdvantage.Shared.Models
 
         public string GetHPDisplay()
         {
-            switch (Being)
-            {
-                case null:
-                    return string.Empty;
-                case Character:
-                    return CurrentHP.ToString();
-            }
+            if (Character == null && Creature == null)
+                return string.Empty;
+            if (IsCharacter)
+                return CurrentHP.ToString();
 
             if (CurrentHP > Being.HitPoints * 0.75)
                 return "Healthy";

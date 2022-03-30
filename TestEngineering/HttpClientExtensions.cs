@@ -102,28 +102,34 @@ namespace TestEngineering
         {
             if (encounter == null)
             { 
-                var characters = new List<Guid>();
-                for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+                var characters = new List<Character>();
+                for (var j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
                 {
                     var character = await client.CreateCharacter();
-                    characters.Add(character.Id);
+                    character.ForcePowers = null;
+                    character.TechPowers = null;
+                    character.User = null;
+                    characters.Add(character);
                 }
 
-                var creatures = new List<Guid>();
-                for (var i = 0; i < Faker.RandomNumber.Next(1, 5); i++)
+                var creatures = new List<Creature>();
+                for (var j = 0; j < Faker.RandomNumber.Next(1, 5); j++)
                 {
                     var creature = await client.CreateCreature();
-                    creatures.Add(creature.Id);
+                    creature.ForcePowers = null;
+                    creature.TechPowers = null;
+                    creature.User = null;
+                    creatures.Add(creature);
                 }
 
                 var data = new List<InitativeData>();
-                data.AddRange(characters.Select(x => new InitativeData { BeingId = x }));
-                data.AddRange(creatures.Select(x => new InitativeData { BeingId = x }));
+                data.AddRange(characters.Select(x => new InitativeData { Character = x }));
+                data.AddRange(creatures.Select(x => new InitativeData { Creature = x }));
 
                 encounter = new Encounter
                 {
                     Name = Faker.Name.FullName(),
-                    DataCache = JsonSerializer.Serialize(data),
+                    InitativeData = data,
                     ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
                 };
             }

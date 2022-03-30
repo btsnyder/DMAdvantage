@@ -22,7 +22,15 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var entity = _context.Encounters.FirstOrDefault(x => x.Id == id);
+                var entity = _context.Encounters
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.Abilities)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.Class)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.ForcePowers)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.Weapons).ThenInclude(w => w.Properties)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Creature).ThenInclude(c => c.ForcePowers)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Creature).ThenInclude(c => c.Actions)
+                    .AsNoTracking()
+                    .FirstOrDefault(x => x.Id == id);
                 if (entity != null)
                     return Ok(entity);
                 return NotFound();
