@@ -1,4 +1,5 @@
 ﻿using DMAdvantage.Data;
+using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,10 +48,7 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var results = _context.Characters
-                    .Include(c => c.Abilities)
-                    .Include(c => c.Class)
-                    .Include(c => c.ForcePowers)
+                var results = _context.GetQueryable<Character>()
                     .AsNoTracking();
                 if (ids.Any())
                     results = results.Where(x => ids.Contains(x.Id));
@@ -68,10 +66,8 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var result = _context.Characters
-                    .Include(c => c.Abilities)
-                    .Include(c => c.Class)
-                    .Include(c => c.ForcePowers)
+                var result = _context.GetQueryable<Character>()
+                    .AsNoTracking()
                     .FirstOrDefault(c => c.PlayerName == name);
                 return Ok(result);
             }
@@ -88,7 +84,7 @@ namespace DMAdvantage.Server.Controllers
             try
             {
                 if (ids.Any())
-                    return Ok(_context.Creatures.Where(x => ids.Contains(x.Id)));
+                    return Ok(_context.GetQueryable<Creature>().AsNoTracking().Where(x => ids.Contains(x.Id)));
                 return Ok(_context.Creatures);
             }
             catch (Exception ex)
@@ -104,7 +100,7 @@ namespace DMAdvantage.Server.Controllers
             try
             {
                 if (ids.Any())
-                    return Ok(_context.ForcePowers.Where(x => ids.Contains(x.Id)));
+                    return Ok(_context.GetQueryable<ForcePower>().AsNoTracking().Where(x => ids.Contains(x.Id)));
                 return Ok(_context.ForcePowers);
             }
             catch (Exception ex)
@@ -120,7 +116,7 @@ namespace DMAdvantage.Server.Controllers
             try
             {
                 if (ids.Any())
-                    return Ok(_context.Abilities.Where(x => ids.Contains(x.Id)));
+                    return Ok(_context.GetQueryable<Ability>().AsNoTracking().Where(x => ids.Contains(x.Id)));
                 return Ok(_context.Abilities);
             }
             catch (Exception ex)

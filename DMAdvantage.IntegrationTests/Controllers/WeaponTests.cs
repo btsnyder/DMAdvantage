@@ -28,7 +28,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync($"/api/{typeof(Weapon).GetPath()}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -39,7 +39,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             await client.CreateWeapon();
 
-            var response = await client.GetAsync($"/api/{typeof(Weapon).GetPath()}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var weapons = await response.ParseEntityList<Weapon>();
@@ -67,7 +67,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{typeof(Weapon).GetPath()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var weaponsResponse = await response.ParseEntityList<Weapon>();
@@ -97,7 +97,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/{typeof(Weapon).GetPath()}?search={search.Search}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var weaponsResponse = await response.ParseEntityList<Weapon>();
@@ -128,7 +128,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var weapon = Generation.Weapon();
             weapon.Name = null;
-            var response = await client.PostAsync($"/api/{typeof(Weapon).GetPath()}", weapon);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}", weapon);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -139,7 +139,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var weapon = await client.CreateWeapon();
 
-            var response = await client.GetAsync($"/api/{typeof(Weapon).GetPath()}/{weapon.Id}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}/{weapon.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedWeapon = await response.ParseEntity<Weapon>();
@@ -159,7 +159,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             newProperty.User = null;
             weaponEdit.Properties.Add(newProperty);
 
-            var response = await client.PutAsync($"api/{typeof(Weapon).GetPath()}/{weapon.Id}", weaponEdit);
+            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<Weapon>()}/{weapon.Id}", weaponEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedWeapon = await client.GetEntity<Weapon>(weapon.Id);
             addedWeapon.Should().NotBeNull();
@@ -172,10 +172,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var weapon = await client.CreateWeapon();
 
-            var response = await client.DeleteAsync($"api/{typeof(Weapon).GetPath()}/{weapon.Id}");
+            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Weapon>()}/{weapon.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var weaponLookup = await client.GetAsync($"api/{typeof(Weapon).GetPath()}/{weapon.Id}");
+            var weaponLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<Weapon>()}/{weapon.Id}");
             weaponLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

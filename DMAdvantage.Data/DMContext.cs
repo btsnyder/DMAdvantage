@@ -73,5 +73,26 @@ namespace DMAdvantage.Data
                     c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v!.GetHashCode())),
                     c => c.ToList()));
         }
+
+        public IQueryable<T> GetQueryable<T>() where T : BaseEntity
+        {
+            return typeof(T).Name switch
+            {
+                nameof(Character) => (IQueryable<T>)Characters
+                    .Include(c => c.Abilities)
+                    .Include(c => c.Class)
+                    .Include(c => c.ForcePowers)
+                    .Include(c => c.Weapons).ThenInclude(w => w.Properties),
+                nameof(Creature) => (IQueryable<T>)Creatures
+                    .Include(c => c.ForcePowers)
+                    .Include(c => c.Actions),
+                nameof(Encounter) => (IQueryable<T>)Encounters
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Character)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Creature),
+                nameof(Weapon) => (IQueryable<T>)Weapons
+                    .Include(w => w.Properties),
+                _ => Set<T>()
+            };
+        }
     }
 }

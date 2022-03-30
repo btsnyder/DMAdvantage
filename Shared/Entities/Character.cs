@@ -1,10 +1,7 @@
-﻿using DMAdvantage.Shared.Models;
-using System.Text.Json;
-
-namespace DMAdvantage.Shared.Entities
+﻿namespace DMAdvantage.Shared.Entities
 {
     public class Character : Being
-    {
+    { 
         public string PlayerName { get; set; }
         public int Level { get; set; }
         public int HitDice { get; set; }

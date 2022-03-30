@@ -25,22 +25,14 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet]
         public IActionResult GetAllCreatures([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Creature>? searching = null)
         {
-            if (searching == null) return GetAllEntities(paging, GetQuery());
-            return GetAllEntities(searching, paging, GetQuery());
+            if (searching == null) return GetAllEntities(paging);
+            return GetAllEntities(searching, paging);
         }
 
         [HttpGet("{id:guid}")]
         public IActionResult GetCreatureById(Guid id)
         {
-            return GetEntityById(id, GetQuery());
-        }
-
-        private IQueryable<Creature> GetQuery()
-        {
-            return _context.Creatures
-                .Include(c => c.ForcePowers)
-                .Include(c => c.Actions)
-                .AsNoTracking();
+            return GetEntityById(id);
         }
 
         [HttpPost]
@@ -59,9 +51,7 @@ namespace DMAdvantage.Server.Controllers
                 if (username == null)
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-                var entityFromRepo = _context.Creatures
-                    .Include(c => c.ForcePowers)
-                    .Include(c => c.Actions)
+                var entityFromRepo = _context.GetQueryable<Creature>()
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entityFromRepo == null)

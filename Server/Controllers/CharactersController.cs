@@ -23,24 +23,14 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet]
         public IActionResult GetAllCharacters([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Character>? searching = null)
         {
-            if (searching == null) return GetAllEntities(paging, GetQuery());
-            return GetAllEntities(searching, paging, GetQuery());
+            if (searching == null) return GetAllEntities(paging);
+            return GetAllEntities(searching, paging);
         }
 
         [HttpGet("{id:guid}")]
         public IActionResult GetCharacterById(Guid id)
         {
-            return GetEntityById(id, GetQuery());
-        }
-
-        private IQueryable<Character> GetQuery()
-        {
-            return _context.Characters
-                .Include(c => c.Abilities)
-                .Include(c => c.Class)
-                .Include(c => c.ForcePowers)
-                .Include(c => c.Weapons).ThenInclude(w => w.Properties)
-                .AsNoTracking();
+            return GetEntityById(id);
         }
 
         [HttpPost]
@@ -58,11 +48,7 @@ namespace DMAdvantage.Server.Controllers
                 if (username == null)
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-                var entityFromRepo = _context.Characters
-                    .Include(c => c.Abilities)
-                    .Include(c => c.Class)
-                    .Include(c => c.ForcePowers)
-                    .Include(c => c.Weapons).ThenInclude(c => c.Properties)
+                var entityFromRepo = _context.GetQueryable<Character>()
                     .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entityFromRepo == null)

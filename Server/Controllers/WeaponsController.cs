@@ -24,22 +24,14 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet]
         public IActionResult GetAllWeapons([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Weapon>? searching = null)
         {
-            if (searching == null) return GetAllEntities(paging, GetQuery());
-            return GetAllEntities(searching, paging, GetQuery());
+            if (searching == null) return GetAllEntities(paging);
+            return GetAllEntities(searching, paging);
         }
 
         [HttpGet("{id:guid}")]
         public IActionResult GetWeaponById(Guid id)
         {
-            return GetEntityById(id, GetQuery());
-        }
-
-
-        private IQueryable<Weapon> GetQuery()
-        {
-            return _context.Weapons
-                .Include(c => c.Properties)
-                .AsNoTracking();
+            return GetEntityById(id);
         }
 
         [HttpPost]

@@ -25,22 +25,14 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet]
         public IActionResult GetAllEncounters([FromQuery] PagingParameters? paging = null, [FromQuery] NamedSearchParameters<Encounter>? searching = null)
         {
-            if (searching == null) return GetAllEntities(paging, GetQuery());
-            return GetAllEntities(searching, paging, GetQuery());
+            if (searching == null) return GetAllEntities(paging);
+            return GetAllEntities(searching, paging);
         }
 
         [HttpGet("{id:guid}")]
         public IActionResult GetEncounterById(Guid id)
         {
-            return GetEntityById(id, GetQuery());
-        }
-
-        private IQueryable<Encounter> GetQuery()
-        {
-            return _context.Encounters
-                .Include(c => c.InitativeData).ThenInclude(i => i.Character)
-                .Include(c => c.InitativeData).ThenInclude(i => i.Creature)
-                .AsNoTracking();
+            return GetEntityById(id);
         }
 
         [HttpPost]

@@ -19,18 +19,18 @@ namespace DMAdvantage.Client.Services.Implementations
         public async Task AddEntity<T>(T model)
         {
             if (model == null) return;
-            await _httpService.Post($"/api/{typeof(T).GetPath()}", model);
+            await _httpService.Post($"/api/{DMTypeExtensions.GetPath<T>()}", model);
         }
 
         public async Task<T?> GetEntityById<T>(Guid id) where T : class
         {
-            return await _httpService.Get<T>($"/api/{typeof(T).GetPath()}/{id}");
+            return await _httpService.Get<T>($"/api/{DMTypeExtensions.GetPath<T>()}/{id}");
         }
 
         public async Task UpdateEntity<T>(Guid id, T model)
         {
             if (model == null) return;
-            await _httpService.Put($"/api/{typeof(T).GetPath()}/{id}", model);
+            await _httpService.Put($"/api/{DMTypeExtensions.GetPath<T>()}/{id}", model);
         }
 
         public async Task<List<T>?> GetAllEntities<T>(ISearchQuery? searching = null) where T : class
@@ -52,7 +52,7 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task<PagedList<T>?> GetAllPagedEntities<T>(PagingParameters paging, ISearchQuery? searching = null, CancellationToken? token = null) where T : class
         {
-            var uri = $"/api/{typeof(T).GetPath()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}";
+            var uri = $"/api/{DMTypeExtensions.GetPath<T>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}";
             if (searching != null)
                 uri += $"&{searching.GetQuery()}";
             var (data, headers) = await _httpService.GetWithResponseHeader<List<T>>(uri, token);
@@ -80,7 +80,7 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task RemoveEntity<T>(Guid id)
         {
-            await _httpService.Delete($"/api/{typeof(T).GetPath()}/{id}");
+            await _httpService.Delete($"/api/{DMTypeExtensions.GetPath<T>()}/{id}");
         }
 
         public async Task<Encounter?> GetEncounterView(Guid id)
@@ -90,7 +90,7 @@ namespace DMAdvantage.Client.Services.Implementations
 
         public async Task<List<T>?> GetViews<T>(IEnumerable<Guid>? ids = null)
         {
-            var uri = $"/api/view/{typeof(T).GetPath()}";
+            var uri = $"/api/view/{DMTypeExtensions.GetPath<T>()}";
             if (typeof(T).Name.Contains("Ability"))
                 uri += "ids";
             var values = ids?.ToList();

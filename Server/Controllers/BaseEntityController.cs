@@ -25,17 +25,14 @@ namespace DMAdvantage.Server.Controllers
             apiPath = typeof(TEntity).Name.ToLower() + "s";
         }
 
-        public IActionResult GetAllEntities(PagingParameters? paging = null, IQueryable<TEntity> ? query = null)
+        public IActionResult GetAllEntities(PagingParameters? paging = null)
         {
             try
             {
                 var username = User.Identity?.Name ?? string.Empty;
 
-                if (query == null)
-                {
-                    DbSet<TEntity> dbSet = _context.Set<TEntity>();
-                    query = dbSet.Where(c => c.User != null && c.User.UserName == username).AsNoTracking();
-                }
+                IQueryable<TEntity> queryable = _context.GetQueryable<TEntity>();
+                var query = queryable.AsNoTracking().Where(c => c.User != null && c.User.UserName == username).AsNoTracking();
 
                 var entities = query.OrderBy(c => c.ToString());
 
@@ -53,16 +50,14 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
-        public IActionResult GetAllEntities<T>(NamedSearchParameters<T> searching, PagingParameters? paging = null, IQueryable<TEntity>? query = null) where T : TEntity
+        public IActionResult GetAllEntities<T>(NamedSearchParameters<T> searching, PagingParameters? paging = null) where T : TEntity
         {
             try
             {
                 var username = User.Identity?.Name ?? string.Empty;
                 var search = searching.Search;
 
-                var dbSet = _context.Set<T>();
-                if (query == null)
-                    query = dbSet
+                var query = _context.GetQueryable<T>()
                         .Where(c => c.User != null && c.User.UserName == username)
                         .AsNoTracking();
                 if (search != null)
@@ -86,19 +81,15 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
-        protected IActionResult GetEntityById(Guid id, IQueryable<TEntity>? query = null)
+        protected IActionResult GetEntityById(Guid id)
         {
             try
             {
                 var username = User.Identity?.Name ?? string.Empty;
 
-                if (query == null)
-                {
-                    DbSet<TEntity> dbSet = _context.Set<TEntity>();
-                    query = dbSet.AsNoTracking();
-                }
-                
-                var entity = query.FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                var entity = _context.GetQueryable<TEntity>()
+                    .AsNoTracking()
+                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
 
                 if (entity == null) return NotFound();
                 return Ok(entity);

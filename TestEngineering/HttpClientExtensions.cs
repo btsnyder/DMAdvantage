@@ -32,14 +32,14 @@ namespace TestEngineering
 
         public static async Task<T> GetEntity<T>(this HttpClient client, Guid id)
         {
-            var response = await client.GetAsync($"/api/{typeof(T).GetPath()}/{id}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<T>()}/{id}");
             var entity = await response.ParseEntity<T>();
             return entity;
         }
 
         public static async Task<List<T>> GetAllEntities<T>(this HttpClient client)
         {
-            var response = await client.GetAsync($"/api/{typeof(T).GetPath()}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<T>()}");
             var entities = await response.ParseEntityList<T>();
             return entities;
         }
@@ -64,7 +64,7 @@ namespace TestEngineering
             weapon.Properties = null;
             weapon.User = null;
             character.Weapons.Add(weapon);
-            var response = await client.PostAsync($"/api/{typeof(Character).GetPath()}", character);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Character>()}", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<Character>();
             return created;
@@ -92,7 +92,7 @@ namespace TestEngineering
             }
             creature.Actions = actions;
 
-            var response = await client.PostAsync($"/api/{typeof(Creature).GetPath()}", creature);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}", creature);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<Creature>();
             return created;
@@ -133,7 +133,7 @@ namespace TestEngineering
                     ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
                 };
             }
-            var response = await client.PostAsync($"/api/{typeof(Encounter).GetPath()}", encounter);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Encounter>()}", encounter);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<Encounter>();
             return created;
@@ -142,7 +142,7 @@ namespace TestEngineering
         public static async Task<ForcePower> CreateForcePower(this HttpClient client, ForcePower? forcePower = null)
         {
             forcePower ??= Generation.ForcePower();
-            var response = await client.PostAsync($"/api/{typeof(ForcePower).GetPath()}", forcePower);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}", forcePower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<ForcePower>();
             return created;
@@ -151,7 +151,7 @@ namespace TestEngineering
         public static async Task<TechPower> CreateTechPower(this HttpClient client, TechPower? techPower = null)
         {
             techPower ??= Generation.TechPower();
-            var response = await client.PostAsync($"/api/{typeof(TechPower).GetPath()}", techPower);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<TechPower>()}", techPower);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<TechPower>();
             return created;
@@ -160,7 +160,7 @@ namespace TestEngineering
         public static async Task<Ability> CreateAbility(this HttpClient client, Ability? ability = null)
         {
             ability ??= Generation.Ability();
-            var response = await client.PostAsync($"/api/{typeof(Ability).GetPath()}", ability);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Ability>()}", ability);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<Ability>();
             return created;
@@ -169,7 +169,7 @@ namespace TestEngineering
         public static async Task<DMClass> CreateDMClass(this HttpClient client, DMClass? dmclass = null)
         {
             dmclass ??= Generation.DMClass();
-            var response = await client.PostAsync($"/api/{typeof(DMClass).GetPath()}", dmclass);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}", dmclass);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<DMClass>();
             return created;
@@ -188,7 +188,7 @@ namespace TestEngineering
                 properties.Add(prop);
             }
             weapon.Properties = properties;
-            var response = await client.PostAsync($"/api/{typeof(Weapon).GetPath()}", weapon);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}", weapon);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<Weapon>();
             return created;
@@ -197,7 +197,7 @@ namespace TestEngineering
         public static async Task<WeaponProperty> CreateWeaponProperty(this HttpClient client, WeaponProperty? property = null)
         {
             property ??= Generation.WeaponProperty();
-            var response = await client.PostAsync($"/api/{typeof(WeaponProperty).GetPath()}", property);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}", property);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<WeaponProperty>();
             return created;

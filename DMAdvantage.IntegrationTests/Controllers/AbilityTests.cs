@@ -28,7 +28,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var client = _factory.CreateClient();
 
-            var response = await client.GetAsync($"/api/{typeof(Ability).GetPath()}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Ability>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -39,7 +39,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             await client.CreateAbility();
 
-            var response = await client.GetAsync($"/api/{typeof(Ability).GetPath()}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Ability>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var abilities = await response.ParseEntityList<Ability>();
@@ -67,7 +67,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{typeof(Ability).GetPath()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Ability>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var abilitiesResponse = await response.ParseEntityList<Ability>();
@@ -97,7 +97,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/{typeof(Ability).GetPath()}?search={search.Search}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Ability>()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var abilitiesResponse = await response.ParseEntityList<Ability>();
@@ -128,7 +128,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             var ability = Generation.Ability();
             ability.Name = null;
-            var response = await client.PostAsync($"/api/{typeof(Ability).GetPath()}", ability);
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Ability>()}", ability);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -139,7 +139,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var ability = await client.CreateAbility();
 
-            var response = await client.GetAsync($"/api/{typeof(Ability).GetPath()}/{ability.Id}");
+            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Ability>()}/{ability.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedAbility = await response.ParseEntity<Ability>();
@@ -153,7 +153,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var ability = await client.CreateAbility();
             var abilityEdit = Generation.Ability();
 
-            var response = await client.PutAsync($"api/{typeof(Ability).GetPath()}/{ability.Id}", abilityEdit);
+            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<Ability>()}/{ability.Id}", abilityEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedAbility = await client.GetEntity<Ability>(ability.Id);
             addedAbility.Should().NotBeNull();
@@ -167,10 +167,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var client = await _factory.CreateAuthenticatedClientAsync();
             var ability = await client.CreateAbility();
 
-            var response = await client.DeleteAsync($"api/{typeof(Ability).GetPath()}/{ability.Id}");
+            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Ability>()}/{ability.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var abilityLookup = await client.GetAsync($"api/{typeof(Ability).GetPath()}/{ability.Id}");
+            var abilityLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<Ability>()}/{ability.Id}");
             abilityLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
