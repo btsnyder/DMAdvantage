@@ -7,6 +7,8 @@ using System.Text;
 using AutoMapper;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -45,33 +47,7 @@ namespace DMAdvantage.Server.Controllers
 
                         if (result.Succeeded)
                         {
-                            // Create the Token
-                            var claims = new[]
-                            {
-                                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
-                                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
-                            };
-
-                            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
-
-                            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                            var token = new JwtSecurityToken(
-                                _config["Tokens:Issuer"],
-                                _config["Tokens:Audience"],
-                                claims,
-                                expires: DateTime.UtcNow.AddDays(7),
-                                signingCredentials: credentials);
-
-                            var userModel = new LoginResponse
-                            {
-                                FirstName = user.FirstName,
-                                LastName = user.LastName,
-                                Token = new JwtSecurityTokenHandler().WriteToken(token)
-                            };
-
-                            return Created("", userModel);
+                            return Created("", CreateLogin(user));
                         }
                     }
                 }
@@ -82,6 +58,43 @@ namespace DMAdvantage.Server.Controllers
             }
 
             return BadRequest();
+        }
+
+        [Route("refresh")]
+        [HttpGet]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var currentUser = await _userManager.FindByNameAsync(User.Identity?.Name);
+            return Ok(CreateLogin(currentUser));
+        }
+
+        private LoginResponse CreateLogin(User user)
+        {
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                _config["Tokens:Issuer"],
+                _config["Tokens:Audience"],
+                claims,
+                expires: DateTime.UtcNow.AddDays(7),
+                signingCredentials: credentials);
+
+            return new LoginResponse
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Token = new JwtSecurityTokenHandler().WriteToken(token)
+            };
         }
     }
 }

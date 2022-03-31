@@ -24,6 +24,9 @@ namespace DMAdvantage.Client.Services.Implementations
         public async Task Initialize()
         {
             User = await _localStorageService.GetItem<LoginResponse>(UserKey);
+            if (User == null) return;
+            User = await _httpService.Get<LoginResponse>("/api/account/refresh");
+            await _localStorageService.SetItem(UserKey, User);
         }
 
         public async Task Login(LoginRequest request)
