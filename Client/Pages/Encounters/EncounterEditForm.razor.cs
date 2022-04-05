@@ -43,6 +43,7 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         protected override async Task OnInitializedAsync()
         {
+            _loading = true;
             NavigationManager.LocationChanged += NavigationManager_LocationChanged;
 
             _characters = await ApiService.GetAllEntities<Character>() ?? new();
@@ -55,6 +56,7 @@ namespace DMAdvantage.Client.Pages.Encounters
             }
             
             await base.OnInitializedAsync();
+            _loading = false;
         }
 
         protected override void OnAfterRender(bool firstRender)
