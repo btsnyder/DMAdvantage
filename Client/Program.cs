@@ -1,6 +1,7 @@
 using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Services.Implementations;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.JSInterop;
 using MudBlazor;
 using MudBlazor.Services;
 
@@ -17,7 +18,8 @@ namespace DMAdvantage.Client
                 .AddScoped<IApiService, ApiService>()
                 .AddScoped<IAccountService, AccountService>()
                 .AddScoped<IHttpService, HttpService>()
-                .AddScoped<ILocalStorageService, LocalStorageService>()
+                .AddSingleton<ILocalStorageService, LocalStorageService>()
+                .AddSingleton<IDeviceSizeService, DeviceSizeService>()
                 .AddMudServices(config =>
                 {
                     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;
@@ -28,7 +30,11 @@ namespace DMAdvantage.Client
             var host = builder.Build();
 
             var accountService = host.Services.GetRequiredService<IAccountService>();
-            await accountService.Initialize();
+            await accountService.InitializeAsync();
+
+            var js = host.Services.GetRequiredService<IJSRuntime>();
+            var deviceSizeService = host.Services.GetRequiredService<IDeviceSizeService>();
+            await deviceSizeService.InitializeAsync(js);
 
             await host.RunAsync();
         }

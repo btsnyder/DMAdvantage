@@ -1,0 +1,40 @@
+﻿@page "/account"
+@inject NavigationManager NavigationManager
+@inject IApiService ApiService
+@inject IDeviceSizeService DeviceSizeService
+@inherits ComponentBaseWithDeviceChange
+
+<MudGrid Class="justify-center">
+    <MudItem xs="12" Class="d-flex justify-center">
+        <MudText Class="fw-bold" Typo="Typo.h4">DM Advantage</MudText>
+    </MudItem>
+    @if (DeviceSizeService.Current > DeviceSize.Small) { <MudItem md="4"/> }
+    <MudItem xs="12" md="4">
+        <MudContainer Class="d-flex">
+            <MudSelect T="Character" @bind-Value="@_selectedCharacter" Label="View Character" Variant="Variant.Outlined" Class="me-2 flex-grow-1">
+                @foreach (var dmclass in _characters)
+                {
+                    <MudSelectItem Value="@dmclass">@dmclass.Name</MudSelectItem>
+                }
+            </MudSelect>
+            <MudIconButton Class="my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.RemoveRedEye" Size="Size.Large" Color="Color.Secondary"
+                OnClick="@(() => NavigationManager.NavigateTo($"characters/view/{_selectedCharacter.PlayerName}"))" Disabled="@(_selectedCharacter == null)"/>
+        </MudContainer>
+    </MudItem>
+    @if (DeviceSizeService.Current > DeviceSize.Small) { <MudItem md="4"/> }
+    <MudItem xs="12" md="4">
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Filled.Login" Size="Size.Large" Color="Color.Primary" FullWidth="true"
+            OnClick="@(() => NavigationManager.NavigateTo("account/login"))">Login</MudButton>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private Character _selectedCharacter;
+    private List<Character> _characters = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _characters = await ApiService.GetViews<Character>() ?? new List<Character>();
+        await base.OnInitializedAsync();
+    }
+}

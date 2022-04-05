@@ -8,16 +8,19 @@ using System.Linq.Expressions;
 using System.Text.Json;
 using DMAdvantage.Shared.Enums;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using DMAdvantage.Shared.Services;
 
 namespace DMAdvantage.Data
 {
     public class DMContext: IdentityDbContext<User>
     {
         private readonly IConfiguration? _configuration;
+        private readonly IKeyVaultManager _keyVaultManager;
 
-        public DMContext(DbContextOptions<DMContext> options, IConfiguration? configuration) : base(options)
+        public DMContext(DbContextOptions<DMContext> options, IConfiguration? configuration, IKeyVaultManager keyVaultManager) : base(options)
         {
             _configuration = configuration;
+            _keyVaultManager = keyVaultManager;
         }
 
         public DbSet<Character> Characters => Set<Character>();
@@ -38,15 +41,16 @@ namespace DMAdvantage.Data
             return SaveChanges() > 0;
         }
 
-
         protected override void OnConfiguring(DbContextOptionsBuilder bldr)
         {
             base.OnConfiguring(bldr);
 
-            bldr.EnableSensitiveDataLogging();
+            var connectionString = _keyVaultManager.GetSecret("DMSql").Result;
+            if (connectionString == null)
+                connectionString = _configuration.GetConnectionString("DbConnectionString");
 
             if (!bldr.IsConfigured)
-                bldr.UseSqlServer(_configuration.GetConnectionString("DbConnectionString"),
+                bldr.UseSqlServer(connectionString,
                      b => b.MigrationsAssembly("DMAdvantage.Server"));
         }
 

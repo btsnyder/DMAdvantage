@@ -10,8 +10,39 @@
     @if (AccountService.IsLoggedIn())
     {
         <MudAppBar Elevation="1">
-            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />
-            <MudText Typo="Typo.h5" class="ml-3">DM Advantage</MudText> 
+            @*<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />*@
+            <MudText Typo="Typo.h5" Class="mx-3">DM Advantage</MudText> 
+            <MudMenu Class="mx-3" StartIcon="@Icons.Filled.BarChart" Label="Data">
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("characters"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.Person"/>Characters
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("creatures"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.CrueltyFree"/>Creatures
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("forcepowers"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.BackHand"/>Force Powers
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("techpowers"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.FlashOn"/>Tech Powers
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("abilities"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.PersonAdd"/>Abilities
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("classes"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.Star"/>Classes
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("weapons"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.AutoFixHigh"/>Weapons
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("weaponproperties"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.Build"/>Weapon Properties
+                </MudMenuItem>
+            </MudMenu>
+            <MudButton Class="mx-3" StartIcon="@Icons.Filled.Fort"
+                OnClick="@(() => NavigationManager.NavigateTo("encounters"))">Encounters</MudButton>
+            <MudButton Class="mx-3" StartIcon="@Icons.Filled.Logout"
+                OnClick="@(() => NavigationManager.NavigateTo("/account/logout"))">Logout</MudButton>
+
         </MudAppBar>
     }
     <MudDrawer @bind-Open="@_drawerOpen" Variant="DrawerVariant.Temporary">

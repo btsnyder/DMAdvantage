@@ -7,18 +7,16 @@ namespace DMAdvantage.Client.Helpers
 {
     public class AppRouteView : RouteView 
     {
-        [Inject]
-        public NavigationManager NavigationManager { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
 
-        [Inject]
-        public IAccountService AccountService { get; set; }
+        [Inject] public IAccountService AccountService { get; set; }
 
         protected override void Render(RenderTreeBuilder builder)
         {
             var authorize = Attribute.GetCustomAttribute(RouteData.PageType, typeof(AuthorizeAttribute)) != null;
             if (authorize && !AccountService.IsLoggedIn())
             {
-                NavigationManager.NavigateTo("account/login");
+                NavigationManager.NavigateTo("account");
             }
             else
             {

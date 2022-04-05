@@ -1,11 +1,10 @@
 ﻿@page "/account/login"
 @inject IAccountService AccountService
 @inject NavigationManager NavigationManager
-@using ButtonType = MudBlazor.ButtonType
 
 <EditForm Model="@_model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
-    <MudGrid class="justify-center">
+    <MudGrid Class="justify-center">
         <MudItem xs="12" sm="4">
             <MudCard Outlined="true">
                 <MudCardContent>
@@ -34,6 +33,7 @@
 
 @code {
     private readonly LoginRequest _model = new();
+    
     private bool _loading;
 
     [Inject] ISnackbar Snackbar { get; set; }

@@ -21,7 +21,7 @@ namespace DMAdvantage.Client.Services.Implementations
             _localStorageService = localStorageService;
         }
 
-        public async Task Initialize()
+        public async Task InitializeAsync()
         {
             User = await _localStorageService.GetItem<LoginResponse>(UserKey);
             if (User == null) return;

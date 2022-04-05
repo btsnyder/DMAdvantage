@@ -93,7 +93,7 @@ namespace DMAdvantage.Client.Services.Implementations
             var uri = $"/api/view/{DMTypeExtensions.GetPath<T>()}";
             if (typeof(T).Name.Contains("Ability"))
                 uri += "ids";
-            var values = ids?.ToList();
+            var values = ids?.ToList() ?? new List<Guid>();
             if (values != null && values.Any())
             {
                 uri += "?";

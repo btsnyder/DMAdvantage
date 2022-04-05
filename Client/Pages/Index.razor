@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
 
 <MudPaper Class="d-flex flex-wrap gap-4" Elevation="0">
     <MudButton Variant="Variant.Filled" StartIcon="@Icons.Filled.Person" Color="Color.Tertiary"

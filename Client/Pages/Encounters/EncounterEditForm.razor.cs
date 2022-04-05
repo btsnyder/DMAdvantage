@@ -54,7 +54,6 @@ namespace DMAdvantage.Client.Pages.Encounters
                 await ReloadEncounter();
             }
             
-
             await base.OnInitializedAsync();
         }
 

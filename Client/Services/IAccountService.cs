@@ -6,7 +6,7 @@ namespace DMAdvantage.Client.Services
     public interface IAccountService
     {
         LoginResponse? User { get; }
-        Task Initialize();
+        Task InitializeAsync();
         Task Login(LoginRequest model);
         Task Logout();
         public bool IsLoggedIn();

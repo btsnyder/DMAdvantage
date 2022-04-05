@@ -3,6 +3,8 @@ using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Azure;
+using DMAdvantage.Shared.Services;
 
 namespace DMAdvantage.Server
 {
@@ -40,6 +42,13 @@ namespace DMAdvantage.Server
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
                     };
                 });
+
+            services.AddAzureClients(azureClientFactoryBuilder =>
+            {
+                azureClientFactoryBuilder.AddSecretClient(Configuration.GetSection("KeyVault"));
+            });
+
+            services.AddSingleton<IKeyVaultManager, KeyVaultManager>();
 
             services.AddDbContext<DMContext>();
 
