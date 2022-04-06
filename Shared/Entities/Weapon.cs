@@ -9,7 +9,6 @@ namespace DMAdvantage.Shared.Entities
         public string Description { get; set; }
         public string Damage { get; set; }
         public DamageType DamageType { get; set; }
-        public string PropertyDescription { get; set; }
 
         public ICollection<WeaponProperty> Properties { get; set; } = new List<WeaponProperty>();
         public ICollection<Character> Characters { get; set; } = new List<Character>();

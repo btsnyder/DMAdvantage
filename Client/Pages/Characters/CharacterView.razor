@@ -34,58 +34,77 @@ else if (_model != null)
     </MudGrid>
     <MudPaper Class="py-2 my-5" Elevation="3" Outlined="true">
         <div class="d-flex justify-content-around align-items-center">
-                <div class="d-flex flex-column align-items-center">
-                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">STR</MudText>
-                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.StrengthBonus.PrintInt()</MudText>
-                    <MudText Typo="Typo.caption">(@_model.Strength)</MudText>
-                </div>
-                <div class="d-flex flex-column align-items-center">
-                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">DEX</MudText>
-                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.DexterityBonus.PrintInt()</MudText>
-                    <MudText Typo="Typo.caption">(@_model.Dexterity)</MudText>
-                </div>
-                <div class="d-flex flex-column align-items-center">
-                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">CON</MudText>
-                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.ConstitutionBonus.PrintInt()</MudText>
-                    <MudText Typo="Typo.caption">(@_model.Constitution)</MudText>
-                </div>
+            <div class="d-flex flex-column align-items-center">
+                <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">STR</MudText>
+                <MudText Class="fw-bold" Typo="Typo.h5">@_model.StrengthBonus.PrintInt()</MudText>
+                <MudText Typo="Typo.caption">(@_model.Strength)</MudText>
             </div>
-            <div class="d-flex justify-content-around align-items-center my-2">
-                <div class="d-flex flex-column align-items-center">
-                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">INT</MudText>
-                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.IntelligenceBonus.PrintInt()</MudText>
-                    <MudText Typo="Typo.caption">(@_model.Intelligence)</MudText>
-                </div>
-                <div class="d-flex flex-column align-items-center">
-                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">WIS</MudText>
-                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.WisdomBonus.PrintInt()</MudText>
-                    <MudText Typo="Typo.caption">(@_model.Wisdom)</MudText>
-                </div>
-                <div class="d-flex flex-column align-items-center">
-                    <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">CHA</MudText>
-                    <MudText Class="fw-bold" Typo="Typo.h5">@_model.CharismaBonus.PrintInt()</MudText>
-                    <MudText Typo="Typo.caption">(@_model.Charisma)</MudText>
-                </div>
+            <div class="d-flex flex-column align-items-center">
+                <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">DEX</MudText>
+                <MudText Class="fw-bold" Typo="Typo.h5">@_model.DexterityBonus.PrintInt()</MudText>
+                <MudText Typo="Typo.caption">(@_model.Dexterity)</MudText>
             </div>
+            <div class="d-flex flex-column align-items-center">
+                <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">CON</MudText>
+                <MudText Class="fw-bold" Typo="Typo.h5">@_model.ConstitutionBonus.PrintInt()</MudText>
+                <MudText Typo="Typo.caption">(@_model.Constitution)</MudText>
+            </div>
+        </div>
+        <div class="d-flex justify-content-around align-items-center my-2">
+            <div class="d-flex flex-column align-items-center">
+                <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">INT</MudText>
+                <MudText Class="fw-bold" Typo="Typo.h5">@_model.IntelligenceBonus.PrintInt()</MudText>
+                <MudText Typo="Typo.caption">(@_model.Intelligence)</MudText>
+            </div>
+            <div class="d-flex flex-column align-items-center">
+                <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">WIS</MudText>
+                <MudText Class="fw-bold" Typo="Typo.h5">@_model.WisdomBonus.PrintInt()</MudText>
+                <MudText Typo="Typo.caption">(@_model.Wisdom)</MudText>
+            </div>
+            <div class="d-flex flex-column align-items-center">
+                <MudText Class="fw-bold" Color="Color.Error" Typo="Typo.h6">CHA</MudText>
+                <MudText Class="fw-bold" Typo="Typo.h5">@_model.CharismaBonus.PrintInt()</MudText>
+                <MudText Typo="Typo.caption">(@_model.Charisma)</MudText>
+            </div>
+        </div>
     </MudPaper>
-    <MudText Class="fw-bold" Typo="Typo.h6">Weapons</MudText>
-    <MudTable Items="_model.Weapons" Breakpoint="Breakpoint.None" Dense="true" Outlined="true">
-        <ColGroup>
-            <col style="width: 50%;"/>
-            <col style="width: 25%;"/>
-            <col style="width: 25%;"/>
-        </ColGroup>
-        <HeaderContent>
-            <MudTh Class="bg-danger text-white">Name</MudTh>
-            <MudTh Class="bg-danger text-white">Hit</MudTh>
-            <MudTh Class="bg-danger text-white">Dam</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd DataLabel="Name">@context.Name</MudTd>
-            <MudTd DataLabel="Hit">@_model.WeaponBonus(context.Melee).PrintInt()</MudTd>
-            <MudTd DataLabel="Dam">@context.Damage@_model.WeaponBonus(context.Melee, true).PrintInt()</MudTd>
-        </RowTemplate>
-    </MudTable>
+    <MudGrid>
+        <MudItem xs="12">
+            <MudText Class="fw-bold" Typo="Typo.h6">Weapons</MudText>
+        </MudItem>
+        <MudItem xs="6" Class="bg-danger border border-white">
+            <MudText>Name</MudText>
+        </MudItem>
+        <MudItem xs="3" Class="bg-danger border border-white">
+            <MudText>Hit</MudText>
+        </MudItem>
+        <MudItem xs="3" Class="bg-danger border border-white">
+            <MudText>Dam</MudText>
+        </MudItem>
+        @foreach (var weapon in _model.Weapons)
+        {
+            <MudItem xs="6" Class="border-top border-start border-white">
+                <MudText Typo="Typo.caption">@weapon.Name</MudText>
+            </MudItem>
+            <MudItem xs="3" Class="border-top border-white">
+                <MudText Typo="Typo.caption">@_model.WeaponBonus(weapon.Melee).PrintInt()</MudText>
+            </MudItem>
+            <MudItem xs="3" Class="border-top border-end border-white">
+                <MudText Typo="Typo.caption">@weapon.Damage@_model.WeaponBonus(weapon.Melee, true).PrintInt()</MudText>
+            </MudItem>
+            @if (weapon.Properties.Any())
+            {
+                <MudItem xs="12" Class="d-flex flex-wrap border border-top-0 border-white">
+                    @foreach (var prop in weapon.Properties)
+                    {
+                        <MudButton Class="m-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">
+                            @prop
+                        </MudButton>
+                    }
+                </MudItem>
+            }
+        }
+    </MudGrid>
     <MudText Class="fw-bold mt-5" Typo="Typo.h6">Abilities</MudText>
     <MudContainer Class="d-flex flex-wrap p-0">
         @foreach (var ability in _model.Abilities.OrderBy(x => x.ToString()))
@@ -201,5 +220,10 @@ else
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         DialogService.Show<DiceRollDialog>("Roll", options);
+    }
+
+    void ShowWeaponProperty(WeaponProperty prop)
+    {
+        DialogService.ShowMessageBox(prop.Name, prop.Description);
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Extensions.Azure;
 using DMAdvantage.Shared.Services;
+using Azure.Security.KeyVault.Secrets;
 
 namespace DMAdvantage.Server
 {

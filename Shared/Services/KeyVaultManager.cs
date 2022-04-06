@@ -1,6 +1,4 @@
-﻿using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using Microsoft.Extensions.Options;
+﻿using Azure.Security.KeyVault.Secrets;
 
 namespace DMAdvantage.Shared.Services
 {

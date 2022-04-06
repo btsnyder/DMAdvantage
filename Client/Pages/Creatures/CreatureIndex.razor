@@ -3,14 +3,16 @@
 @inject IApiService ApiService
 @inject NavigationManager NavigationManager
 
-<div Class="d-flex align-items-center mb-5">
-    <MudText Class="fw-bold" Typo="Typo.h3">Creatures</MudText> 
-    <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("creatures/add"))"/>
-</div>
-@if (!loading)
+@if (!_loading)
 {
-    <MudTable Items="@creatures" Breakpoint="Breakpoint.Sm" Loading="@loading" LoadingProgressColor="Color.Info"
-              Outlined="true" Dense="true" Striped="true">
+    <MudTable Items="@_creatures" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
+        Dense="true" Striped="true" Filter="new Func<Creature,bool>(SearchCreature)" Elevation="0">
+        <ToolBarContent>
+            <MudText Class="fw-bold" Typo="Typo.h3">Creatures</MudText>
+            <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("creatures/add"))"/>
+            <MudSpacer />
+            <MudTextField @bind-Value="search" Placeholder="Search" Adornment="Adornment.Start" Immediate=true AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"/>
+        </ToolBarContent>
         <ColGroup>
             <col />
             <col />
@@ -44,8 +46,9 @@ else
 }
 
 @code {
-    private bool loading;
-    private List<Creature>? creatures;
+    private bool _loading;
+    private string search = "";
+    private List<Creature>? _creatures;
 
     protected override async Task OnInitializedAsync()
     {
@@ -54,20 +57,29 @@ else
 
     private async Task RemoveCharacter(Creature creature)
     {
-        if (creatures == null) return;
-        creatures.Remove(creature);
+        if (_creatures == null) return;
+        _creatures.Remove(creature);
         await ApiService.RemoveEntity<Creature>(creature.Id);
     }
 
     private async Task RefreshCreatures()
     {
-        loading = true;
-        creatures = await ApiService.GetAllEntities<Creature>();
-        loading = false;   
+        _loading = true;
+        _creatures = await ApiService.GetAllEntities<Creature>();
+        _loading = false;   
     }
 
     private void EditCreature(Guid id)
     {
         NavigationManager.NavigateTo($"creatures/edit/{id}");   
+    }
+
+    private bool SearchCreature(Creature creature)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+            return true;
+        if (creature.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
     }
 }
