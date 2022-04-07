@@ -5,6 +5,7 @@
         public string PlayerName { get; set; }
         public int Level { get; set; }
         public int HitDice { get; set; }
+        public int Credits { get; set; }
         public DMClass Class { get; set; }
         public bool? StrengthSave { get; set; } = false;
         public bool? DexteritySave { get; set; } = false;
