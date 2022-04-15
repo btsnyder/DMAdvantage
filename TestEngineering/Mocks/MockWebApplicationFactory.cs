@@ -25,6 +25,8 @@ namespace TestEngineering.Mocks
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, "appsettings.json");
 
+            Environment.SetEnvironmentVariable("LOCAL_DB", "true");
+
             builder.ConfigureAppConfiguration((_, conf) =>
             {
                 conf.AddJsonFile(configPath);

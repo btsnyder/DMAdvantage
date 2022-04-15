@@ -51,7 +51,11 @@ namespace DMAdvantage.Data
 
             if (!bldr.IsConfigured)
                 bldr.UseSqlServer(connectionString,
-                     b => b.MigrationsAssembly("DMAdvantage.Server"));
+                    b =>
+                    {
+                        b.MigrationsAssembly("DMAdvantage.Server");
+                        b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    });
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -9,11 +9,14 @@
         public int CurrentFP { get; set; }
         public int CurrentTP { get; set; }
         public int CurrentHitDice { get; set; }
+        public Guid? CharacterId { get; set; }
         public Character Character { get; set; }
+        public Guid? CreatureId { get; set; }
         public Creature Creature { get; set; }
         public Being Being => Character == null ? Creature : Character;
         public bool IsCharacter => Character != null;
 
+        public Guid EncounterId { get; set; }
         public Encounter Encounter { get; set; }
 
         public override bool Equals(object o)
@@ -29,7 +32,7 @@
                 other?.Being?.Id == Being?.Id;
         }
 
-        public override int GetHashCode() => Id.GetHashCode();
+        public override int GetHashCode() => $"{Id}:{Being?.Id}".GetHashCode();
 
         public override string ToString()
         {

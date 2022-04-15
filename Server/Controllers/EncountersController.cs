@@ -150,10 +150,6 @@ namespace DMAdvantage.Server.Controllers
                 data.Id = initativeEntry.Entity.Id;
                 initativeEntry.CurrentValues.SetValues(data);
                 initativeEntry.Entity.User = currentUser;
-                if (data.Character != null)
-                    initativeEntry.Entity.Character = _context.Characters.AsNoTracking().FirstOrDefault(x => x.Id == data.Character.Id);
-                if (data.Creature != null)
-                    initativeEntry.Entity.Creature = _context.Creatures.AsNoTracking().FirstOrDefault(x => x.Id == data.Creature.Id);
 
                 initativeData.Add(initativeEntry.Entity);
             }

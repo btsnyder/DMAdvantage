@@ -300,9 +300,9 @@ namespace DMAdvantage.Client.Pages.Encounters
 
         private string InitativeDisplayName(InitativeDataModel data)
         {
-            var sameBeing = _initatives.Where(x => x.Being.Id == data.Being.Id);
-            if (sameBeing.Count() == 1) return data.Name;
-            return $"{data.Name} {sameBeing.ToList().IndexOf(data) + 1}";
+            var sameBeing = _initatives.FindAll(x => x.Being.Id == data.Being.Id);
+            if (sameBeing.Count == 1) return data.Name;
+            return $"{data.Name} {sameBeing.IndexOf(data) + 1}";
         }
     }
 }

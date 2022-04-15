@@ -17,7 +17,6 @@ namespace TestEngineering
             CompareData(expected, actual);
         }
 
-
         private static void CompareData<T>(T? expected, T? actual)
         {
             if (expected == null)

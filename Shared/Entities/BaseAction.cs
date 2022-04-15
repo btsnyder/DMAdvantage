@@ -10,6 +10,6 @@ namespace DMAdvantage.Shared.Entities
         public string Damage { get; set; }
         public DamageType DamageType { get; set; }
 
-        public ICollection<Creature> Creatures { get; set; } = new List<Creature>();
+        public ICollection<Creature> Creatures { get; set; }
     }
 }

@@ -6,10 +6,17 @@ namespace DMAdvantage.Shared.Models
     {
         public InitativeDataModel(Being being)
         {
+            Id = Guid.NewGuid();
             if (being is Character character)
+            {
                 Character = character;
+                CharacterId = character.Id;
+            }
             else if (being is Creature creature)
+            {
                 Creature = creature;
+                CreatureId = creature.Id;
+            }
             CurrentHP = being.HitPoints;
             CurrentFP = being.ForcePoints;
             CurrentTP = being.TechPoints;
@@ -19,11 +26,18 @@ namespace DMAdvantage.Shared.Models
 
         public InitativeDataModel(Being being, InitativeData data)
         {
+            Id = Guid.NewGuid();
             Initative = data.Initative;
             if (being is Character character)
+            {
                 Character = character;
+                CharacterId= character.Id;
+            }
             else if (being is Creature creature)
+            {
                 Creature = creature;
+                CreatureId = creature.Id;
+            }
             CurrentHP = data.CurrentHP;
             CurrentFP = data.CurrentFP;
             CurrentTP = data.CurrentTP;

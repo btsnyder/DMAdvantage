@@ -24,16 +24,36 @@ namespace DMAdvantage.Server.Controllers
             try
             {
                 var entity = _context.Encounters
-                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.Abilities)
-                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.Class)
-                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.ForcePowers)
-                    .Include(e => e.InitativeData).ThenInclude(i => i.Character).ThenInclude(c => c.Weapons).ThenInclude(w => w.Properties)
-                    .Include(e => e.InitativeData).ThenInclude(i => i.Creature).ThenInclude(c => c.ForcePowers)
-                    .Include(e => e.InitativeData).ThenInclude(i => i.Creature).ThenInclude(c => c.Actions)
-                    .AsNoTracking()
-                    .FirstOrDefault(x => x.Id == id);
+                     .Include(i => i.InitativeData)
+                     .AsNoTracking()
+                     .FirstOrDefault(x => x.Id == id);
+               
+ 
                 if (entity != null)
+                {
+                    var characters = _context.Characters
+                       .Include(c => c.Abilities)
+                       .Include(c => c.Class)
+                       .Include(c => c.ForcePowers)
+                       .Include(c => c.Weapons).ThenInclude(w => w.Properties)
+                       .Where(c => entity.InitativeData.Select(i => i.CharacterId).Contains(c.Id))
+                       .AsNoTracking()
+                       .ToList();
+                    var creatures = _context.Creatures
+                        .Include(c => c.ForcePowers)
+                        .Include(c => c.Actions)
+                        .Where(c => entity.InitativeData.Select(i => i.CreatureId).Contains(c.Id))
+                        .AsNoTracking()
+                        .ToList();
+                    foreach (var i in entity.InitativeData)
+                    {
+                        if (i.CharacterId != null)
+                            i.Character = characters.FirstOrDefault(c => c.Id == i.CharacterId);
+                        if (i.CreatureId != null)
+                            i.Creature = creatures.FirstOrDefault(c => c.Id == i.CreatureId);
+                    }
                     return Ok(entity);
+                }
                 return NotFound();
             }
             catch (Exception ex)

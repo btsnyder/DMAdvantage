@@ -75,7 +75,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         }
 
         [Fact]
-        public async Task Get_AllCreaturesWithSearching_Ok()
+        public async Task Get_AllEncountersWithSearching_Ok()
         {
             var client = await _factory.CreateAuthenticatedClientAsync();
             var encounters = new List<Encounter>();
@@ -154,11 +154,12 @@ namespace DMAdvantage.IntegrationTests.Controllers
                 var creature = await client.CreateCreature();
                 creature.User = null;
                 creatures.Add(creature);
+                creatures.Add(creature);
             }
 
             var data = new List<InitativeData>();
-            data.AddRange(characters.Select(x => new InitativeData { Character = x }));
-            data.AddRange(creatures.Select(x => new InitativeData { Creature = x }));
+            data.AddRange(characters.Select(x => new InitativeData { Character = x, CharacterId = x.Id }));
+            data.AddRange(creatures.Select(x => new InitativeData { Creature = x, CreatureId = x.Id }));
 
             var encounterEdit = new Encounter
             {
@@ -171,9 +172,9 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var addedEncounter = await client.GetEntity<Encounter>(encounter.Id);
             addedEncounter.Should().NotBeNull();
 
-            foreach (var initative in data)
+            for (int i = 0; i < encounterEdit.InitativeData.Count; i++)
             {
-                initative.Id = addedEncounter.InitativeData.FirstOrDefault(x => x.Being.Id == initative.Being.Id)?.Id ?? Guid.Empty;
+                encounterEdit.InitativeData.ElementAt(i).Id = addedEncounter.InitativeData.ElementAt(i).Id;
             }
 
             Validation.CompareEntities(encounterEdit, addedEncounter);
