@@ -1,0 +1,9 @@
+﻿@page "/shipencounters/edit/{Id}"
+@attribute [Authorize]
+
+<ShipEncounterEditForm Id="@Id"/>
+
+@code
+{
+    [Parameter] public string Id { get; set; }
+}

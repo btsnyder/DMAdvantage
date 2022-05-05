@@ -1,8 +1,6 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Client.Validators;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Enums;
-using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -13,7 +11,6 @@ namespace DMAdvantage.Client.Pages.Characters
         private Character _model = new();
         private List<ForcePower> _forcePowers = new();
         private List<DMClass> _classes = new();
-        private List<WeaponProperty> _weaponProperties = new();
         private MudForm _form;
         private bool _loading;
         private readonly CharacterValidator _characterValidator = new();
@@ -33,7 +30,6 @@ namespace DMAdvantage.Client.Pages.Characters
             }
             _forcePowers = await ApiService.GetAllEntities<ForcePower>() ?? new List<ForcePower>();
             _classes = await ApiService.GetAllEntities<DMClass>() ?? new List<DMClass>();
-            _weaponProperties = await ApiService.GetAllEntities<WeaponProperty>() ?? new List<WeaponProperty>();
 
             await base.OnInitializedAsync();
             _loading = false;

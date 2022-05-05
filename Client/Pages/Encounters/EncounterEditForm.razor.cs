@@ -92,6 +92,7 @@ namespace DMAdvantage.Client.Pages.Encounters
                 _saving = true;
             }
             _loading = true;
+            StateHasChanged();
             try
             {
                 _model.InitativeData.Clear();
@@ -165,16 +166,18 @@ namespace DMAdvantage.Client.Pages.Encounters
                 SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowers.Contains(x)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
         }
 
-        private void OnAddCharacter()
+        private async Task OnAddCharacter()
         {
             if (_selectedCharacter == null) return;
+            _selectedCharacter = await ApiService.GetEntityById<Character>(_selectedCharacter.Id);
             var data = new InitativeDataModel(_selectedCharacter);
             _initatives.Insert(0, data);
         }
 
-        private void OnAddCreature()
+        private async Task OnAddCreature()
         {
             if (_selectedCreature == null) return;
+            _selectedCreature = await ApiService.GetEntityById<Creature>(_selectedCreature.Id);
             var data = new InitativeDataModel(_selectedCreature);
             _initatives.Insert(0, data);
         }

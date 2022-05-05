@@ -37,9 +37,23 @@
                 <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("weaponproperties"))">
                     <MudIcon Class="me-2" Icon="@Icons.Filled.Build"/>Weapon Properties
                 </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("enemyships"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.DirectionsBoat"/>Ships
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("playerships"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.AirplanemodeActive"/>Player Ships
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("shipweapons"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.AutoFixHigh"/>Ship Weapons
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("shipweaponproperties"))">
+                    <MudIcon Class="me-2" Icon="@Icons.Filled.Build"/>Ship Weapon Properties
+                </MudMenuItem>
             </MudMenu>
             <MudButton Class="mx-3" StartIcon="@Icons.Filled.Fort"
                 OnClick="@(() => NavigationManager.NavigateTo("encounters"))">Encounters</MudButton>
+            <MudButton Class="mx-3" StartIcon="@Icons.Filled.Houseboat"
+                OnClick="@(() => NavigationManager.NavigateTo("shipencounters"))">Ship Encounters</MudButton>
             <MudButton Class="mx-3" StartIcon="@Icons.Filled.Logout"
                 OnClick="@(() => NavigationManager.NavigateTo("/account/logout"))">Logout</MudButton>
 

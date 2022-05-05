@@ -15,12 +15,10 @@ namespace DMAdvantage.Data
     public class DMContext: IdentityDbContext<User>
     {
         private readonly IConfiguration? _configuration;
-        private readonly IKeyVaultManager _keyVaultManager;
 
-        public DMContext(DbContextOptions<DMContext> options, IConfiguration? configuration, IKeyVaultManager keyVaultManager) : base(options)
+        public DMContext(DbContextOptions<DMContext> options, IConfiguration? configuration) : base(options)
         {
             _configuration = configuration;
-            _keyVaultManager = keyVaultManager;
         }
 
         public DbSet<Character> Characters => Set<Character>();
@@ -34,7 +32,12 @@ namespace DMAdvantage.Data
         public DbSet<WeaponProperty> WeaponProperties => Set<WeaponProperty>();
         public DbSet<BaseAction> Actions => Set<BaseAction>();
         public DbSet<InitativeData> InitativeData => Set<InitativeData>();
-
+        public DbSet<EnemyShip> EnemyShips => Set<EnemyShip>();
+        public DbSet<ShipWeapon> ShipWeapons => Set<ShipWeapon>();
+        public DbSet<ShipWeaponProperty> ShipWeaponProperties => Set<ShipWeaponProperty>();
+        public DbSet<PlayerShip> PlayerShips => Set<PlayerShip>();
+        public DbSet<ShipEncounter> ShipEncounters => Set<ShipEncounter>();
+        public DbSet<ShipInitativeData> ShipInitativeData => Set<ShipInitativeData>();
 
         public bool SaveAll()
         {
@@ -45,9 +48,7 @@ namespace DMAdvantage.Data
         {
             base.OnConfiguring(bldr);
 
-            var connectionString = _keyVaultManager.GetSecret("DMSql").Result;
-            if (connectionString == null)
-                connectionString = _configuration.GetConnectionString("DbConnectionString");
+            var connectionString = _configuration.GetConnectionString("DbConnectionString");
 
             if (!bldr.IsConfigured)
                 bldr.UseSqlServer(connectionString,
@@ -82,8 +83,10 @@ namespace DMAdvantage.Data
                     c => c.ToList()));
         }
 
-        public IQueryable<T> GetQueryable<T>() where T : BaseEntity
+        public IQueryable<T> GetQueryable<T>(bool include = true) where T : BaseEntity
         {
+            if (!include)
+                return Set<T>();
             return typeof(T).Name switch
             {
                 nameof(Character) => (IQueryable<T>)Characters
@@ -99,6 +102,12 @@ namespace DMAdvantage.Data
                     .Include(e => e.InitativeData).ThenInclude(i => i.Creature),
                 nameof(Weapon) => (IQueryable<T>)Weapons
                     .Include(w => w.Properties),
+                nameof(EnemyShip) => (IQueryable<T>)EnemyShips
+                    .Include(w => w.Weapons).ThenInclude(w => w.Properties),
+                nameof(ShipWeapon) => (IQueryable<T>)ShipWeapons
+                    .Include(w => w.Properties),
+                nameof(PlayerShip) => (IQueryable<T>)PlayerShips
+                    .Include(w => w.Weapons).ThenInclude(w => w.Properties),
                 _ => Set<T>()
             };
         }

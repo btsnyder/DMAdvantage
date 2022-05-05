@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +14,6 @@ namespace DMAdvantage.Server.Controllers
         protected readonly DMContext _context;
         protected readonly ILogger<BaseEntityController<TEntity>> _logger;
         protected readonly UserManager<User> _userManager;
-        protected string apiPath { get; set; }
 
         public BaseEntityController(DMContext context,
             ILogger<BaseEntityController<TEntity>> logger,
@@ -22,7 +22,6 @@ namespace DMAdvantage.Server.Controllers
             _context = context;
             _logger = logger;
             _userManager = userManager;
-            apiPath = typeof(TEntity).Name.ToLower() + "s";
         }
 
         public IActionResult GetAllEntities(PagingParameters? paging = null)
@@ -57,7 +56,7 @@ namespace DMAdvantage.Server.Controllers
                 var username = User.Identity?.Name ?? string.Empty;
                 var search = searching.Search;
 
-                var query = _context.GetQueryable<T>()
+                var query = _context.GetQueryable<T>(false)
                         .Where(c => c.User != null && c.User.UserName == username)
                         .AsNoTracking();
                 if (search != null)
@@ -113,7 +112,7 @@ namespace DMAdvantage.Server.Controllers
                     var entity = await CreateNewEntityInContext(request);
                     if (_context.SaveAll())
                     {
-                        return Created($"/api/{apiPath}/{entity.Id}", entity);
+                        return Created($"/api/{DMTypeExtensions.GetPath<TEntity>()}/{entity.Id}", entity);
                     }
                 }
                 else
@@ -147,7 +146,7 @@ namespace DMAdvantage.Server.Controllers
                 if (entityFromRepo == null)
                 {
                     var entity = await CreateNewEntityInContext(request);
-                    return Created($"/api/{apiPath}/{entity.Id}", entity);
+                    return Created($"/api/{DMTypeExtensions.GetPath<TEntity>()}/{entity.Id}", entity);
                 }
 
                 await CreateNewEntityInContext(request);

@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -48,7 +49,7 @@ namespace DMAdvantage.Server.Controllers
                     var entity = await CreateNewEncounterInContext(request);
                     if (_context.SaveAll())
                     {
-                        return Created($"/api/{apiPath}/{entity.Id}", entity);
+                        return Created($"/api/{DMTypeExtensions.GetPath<Encounter>()}/{entity.Id}", entity);
                     }
                 }
                 else

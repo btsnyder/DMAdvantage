@@ -1,0 +1,122 @@
+﻿@inject IDialogService DialogService
+
+@if (_loading)
+{
+    <LightsaberLoad />
+}
+else
+{
+    <MudForm Model="@_model" @ref="@_form">
+        <MudGrid Class="mb-5">
+            <MudItem xs="3">
+                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_shipValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="3">
+                <MudNumericField @bind-Value="_model.ArmorClass" Label="Armor Class" Variant="Variant.Outlined" For="() => _model.ArmorClass" Validation="@(_shipValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="6"/>
+
+            <MudItem xs="3">
+                <MudNumericField @bind-Value="_model.HullPoints" Label="Hull Points" Variant="Variant.Outlined" For="() => _model.HullPoints" Validation="@(_shipValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="3">
+                <MudNumericField @bind-Value="_model.HullHitDiceNumber" Label="Hull HD#" Variant="Variant.Outlined" For="() => _model.HullHitDiceNumber"/>
+            </MudItem>
+            <MudItem xs="3">
+                 <MudSelect T="int" @bind-Value="@_model.HullHitDice" Label="Hull HD" Variant="Variant.Outlined" For="() => _model.HullHitDice" Validation="@(_shipValidator.ValidateValue)">
+                    <MudSelectItem Value="4"/>
+                    <MudSelectItem Value="6"/>
+                    <MudSelectItem Value="8"/>
+                    <MudSelectItem Value="10"/>
+                    <MudSelectItem Value="12"/>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="3">
+                <MudButton Class="my-auto" StartIcon="@Icons.Filled.RestartAlt" Variant="Variant.Filled" OnClick="GenerateHullPoints">Generate</MudButton>
+            </MudItem>
+
+            <MudItem xs="3">
+                <MudNumericField @bind-Value="_model.ShieldPoints" Label="Shield Points" Variant="Variant.Outlined" For="() => _model.ShieldPoints" Validation="@(_shipValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="3">
+                <MudNumericField @bind-Value="_model.ShieldHitDiceNumber" Label="Shield HD#" Variant="Variant.Outlined" For="() => _model.ShieldHitDiceNumber"/>
+            </MudItem>
+            <MudItem xs="3">
+                 <MudSelect T="int" @bind-Value="@_model.ShieldHitDice" Label="Shield HD" Variant="Variant.Outlined" For="() => _model.ShieldHitDice" Validation="@(_shipValidator.ValidateValue)">
+                    <MudSelectItem Value="4"/>
+                    <MudSelectItem Value="6"/>
+                    <MudSelectItem Value="8"/>
+                    <MudSelectItem Value="10"/>
+                    <MudSelectItem Value="12"/>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="3">
+                <MudButton Class="my-auto" StartIcon="@Icons.Filled.RestartAlt" Variant="Variant.Filled" OnClick="GenerateShieldPoints">Generate</MudButton>
+            </MudItem>
+ 
+            
+             <MudItem xs="2">
+                <MudPaper class="d-flex flex-column px-2" Outlined="true">
+                    <MudNumericField @bind-Value="_model.Strength" TextChanged="_model.StrengthChanged" Label="Strength" Variant="Variant.Outlined" For="() => _model.Strength" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudNumericField @bind-Value="_model.StrengthBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.StrengthBonus" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudCheckBox @bind-Checked="_model.StrengthSave" Label="Save" For="() => _model.StrengthSave" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Boost" Label="Boost" For="() => _model.Boost" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Ram" Label="Ram" For="() => _model.Ram" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="2">
+                <MudPaper class="d-flex flex-column px-2" Outlined="true">
+                    <MudNumericField @bind-Value="_model.Dexterity" TextChanged="_model.DexterityChanged" Label="Dexterity" Variant="Variant.Outlined" For="() => _model.Dexterity" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudNumericField @bind-Value="_model.DexterityBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.DexterityBonus" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudCheckBox @bind-Checked="_model.DexteritySave" Label="Save" For="() => _model.DexteritySave" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Hide" Label="Hide" For="() => _model.Hide" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Maneuvering" Label="Maneuvering" For="() => _model.Maneuvering" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="2">
+                <MudPaper class="d-flex flex-column px-2" Outlined="true">
+                    <MudNumericField @bind-Value="_model.Constitution" TextChanged="_model.ConstitutionChanged" Label="Constitution" Variant="Variant.Outlined" For="() => _model.Constitution" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudNumericField @bind-Value="_model.ConstitutionBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.ConstitutionBonus" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudCheckBox @bind-Checked="_model.ConstitutionSave" Label="Save" For="() => _model.ConstitutionSave" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Patch" Label="Patch" For="() => _model.Patch" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Regulation" Label="Regulation" For="() => _model.Regulation" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="2">
+                <MudPaper class="d-flex flex-column px-2" Outlined="true">
+                    <MudNumericField @bind-Value="_model.Intelligence" TextChanged="_model.IntelligenceChanged" Label="Intelligence" Variant="Variant.Outlined" For="() => _model.Intelligence" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudNumericField @bind-Value="_model.IntelligenceBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.IntelligenceBonus" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudCheckBox @bind-Checked="_model.IntelligenceSave" Label="Save" For="() => _model.IntelligenceSave" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Astrogation" Label="Astrogation" For="() => _model.Astrogation" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Data" Label="Data" For="() => _model.Data" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Probe" Label="Probe" For="() => _model.Probe" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="2">
+                <MudPaper class="d-flex flex-column px-2" Outlined="true">
+                    <MudNumericField @bind-Value="_model.Wisdom" TextChanged="_model.WisdomChanged" Label="Wisdom" Variant="Variant.Outlined" For="() => _model.Wisdom" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudNumericField @bind-Value="_model.WisdomBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.WisdomBonus" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudCheckBox @bind-Checked="_model.WisdomSave" Label="Save" For="() => _model.WisdomSave" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Scan" Label="Scan" For="() => _model.Scan" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="2">
+                <MudPaper class="d-flex flex-column px-2" Outlined="true">
+                    <MudNumericField @bind-Value="_model.Charisma" TextChanged="_model.CharismaChanged" Label="Charisma" Variant="Variant.Outlined" For="() => _model.Charisma" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudNumericField @bind-Value="_model.CharismaBonus" Variant="Variant.Outlined" Label="Bonus" For="() => _model.CharismaBonus" Validation="@(_shipValidator.ValidateValue)"/>
+                    <MudCheckBox @bind-Checked="_model.CharismaSave" Label="Save" For="() => _model.CharismaSave" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Impress" Label="Impress" For="() => _model.Impress" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Interfere" Label="Interfere" For="() => _model.Interfere" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Menace" Label="Menace" For="() => _model.Menace" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                    <MudCheckBox @bind-Checked="_model.Swindle" Label="Swindle" For="() => _model.Swindle" TriState="true" IndeterminateIcon="@Icons.Filled.CheckBox" CheckedIcon="@Icons.Filled.AddBox"/>
+                </MudPaper>
+            </MudItem>
+            
+            <MudItem xs="12">
+                <MultipleEntityDropdown TEntity="ShipWeapon" @bind-SelectedEntities="_model.Weapons" Label="Weapons"/>
+            </MudItem>
+
+            <Submit CancelRef="ships" OnClick="OnSubmit"/>
+        </MudGrid>
+    </MudForm>
+}

@@ -83,6 +83,11 @@ namespace DMAdvantage.Client.Services.Implementations
             await _httpService.Delete($"/api/{DMTypeExtensions.GetPath<T>()}/{id}");
         }
 
+        public async Task<ShipEncounter?> GetShipEncounterView(Guid id)
+        {
+            return await _httpService.Get<ShipEncounter>($"/api/view/shipencounter/{id}");
+        }
+
         public async Task<Encounter?> GetEncounterView(Guid id)
         {
             return await _httpService.Get<Encounter>($"/api/view/encounter/{id}");

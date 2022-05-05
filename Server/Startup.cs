@@ -44,18 +44,6 @@ namespace DMAdvantage.Server
                     };
                 });
 
-            bool localDb = bool.TryParse(Environment.GetEnvironmentVariable("LOCAL_DB"), out bool ldb) ? ldb : false;
-            if (localDb)
-                services.AddSingleton<IKeyVaultManager, EmptyKeyVaultManager>();
-            else
-            {
-                services.AddAzureClients(azureClientFactoryBuilder =>
-                {
-                    azureClientFactoryBuilder.AddSecretClient(Configuration.GetSection("KeyVault"));
-                });
-                services.AddSingleton<IKeyVaultManager, KeyVaultManager>();
-            }
-
             services.AddDbContext<DMContext>();
             services.AddTransient<Seeder>();
 

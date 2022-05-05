@@ -1,0 +1,479 @@
+﻿@using DMAdvantage.Shared
+@inject IDialogService DialogService
+
+@if (_loading)
+{
+    <LightsaberLoad />
+}
+else
+{
+    <MudForm Model="@_model" @ref="@_form">
+        <MudGrid Class="mb-5">
+            <MudItem xs="12" Class="d-flex justify-content-between">
+                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Disabled="IsView"/>
+                <MudSpacer/>
+                <MudIconButton Icon="@Icons.Filled.Token" Color="Color.Primary" aria-label="roll" OnClick="ShowRoll"/>
+                @if (IsView)
+                {
+                    <ToggledText @bind-Value="_autoLoad" Text="Auto Load" />
+                }
+                else
+                {
+                    <ToggledText @bind-Value="_autoSave" Text="Auto Save" />
+                }
+            </MudItem>
+
+            @if (!IsView)
+            {
+                <MudItem xs="12">
+                    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Outlined="true">
+                        <MudTabPanel Text="Player Ship">  
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="PlayerShip" SearchFunc="@PlayerShipSearch"
+                                        @bind-Value=@_selectedPlayerShip Label="Search" Dense="true"/>
+                                </MudItem>
+
+                                    @if (_selectedPlayerShip != null)
+                                    {
+                                        <MudItem xs="3" Class="d-flex justify-center">
+                                            <MudText>Name</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>AC</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>HP</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>SP</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>STR</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>DEX</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>CON</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>INT</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>WIS</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>CHA</MudText>
+                                        </MudItem>
+
+
+                                        <MudItem xs="3" Class="d-flex justify-center">
+                                            <MudText Class="fw-bold" Typo="Typo.h5">@_selectedPlayerShip.Name</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Warning" Size="Size.Large">@_selectedPlayerShip.ArmorClass</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Error" Size="Size.Large">@_selectedPlayerShip.HullPoints</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Info" Size="Size.Large">@_selectedPlayerShip.ShieldPoints</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedPlayerShip.StrengthBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedPlayerShip.DexterityBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedPlayerShip.ConstitutionBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedPlayerShip.IntelligenceBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedPlayerShip.WisdomBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedPlayerShip.CharismaBonus.PrintInt()</MudChip>
+                                        </MudItem>
+
+                                        <MudItem xs="12" Class="d-flex justify-content-end">
+                                            <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddPlayerShip"/>
+                                        </MudItem>
+                                    }
+                            </MudGrid>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Enemy Ship">  
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudAutocomplete Class="w-50" ResetValueOnEmptyText="true" T="EnemyShip" SearchFunc="@EnemyShipSearch"
+                                        @bind-Value=@_selectedEnemyShip Label="Search" Dense="true"/>
+                                </MudItem>
+
+                                    @if (_selectedEnemyShip != null)
+                                    {
+                                        <MudItem xs="3" Class="d-flex justify-center">
+                                            <MudText>Name</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>AC</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>HP</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>SP</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>STR</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>DEX</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>CON</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>INT</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>WIS</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudText>CHA</MudText>
+                                        </MudItem>
+
+
+                                        <MudItem xs="3" Class="d-flex justify-center">
+                                            <MudText Class="fw-bold" Typo="Typo.h5">@_selectedEnemyShip.Name</MudText>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Warning" Size="Size.Large">@_selectedEnemyShip.ArmorClass</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Error" Size="Size.Large">@_selectedEnemyShip.HullPoints</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Info" Size="Size.Large">@_selectedEnemyShip.ShieldPoints</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedEnemyShip.StrengthBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedEnemyShip.DexterityBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedEnemyShip.ConstitutionBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedEnemyShip.IntelligenceBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedEnemyShip.WisdomBonus.PrintInt()</MudChip>
+                                        </MudItem>
+                                        <MudItem xs="1" Class="d-flex justify-center">
+                                            <MudChip Class="fw-bold" Color="Color.Primary" Size="Size.Large">@_selectedEnemyShip.CharismaBonus.PrintInt()</MudChip>
+                                        </MudItem>
+
+                                        <MudItem xs="12" Class="d-flex justify-content-end">
+                                            <MudFab Color="Color.Success" StartIcon="@Icons.Filled.Add" Label="Insert" OnClick="OnAddEnemyShip"/>
+                                        </MudItem>
+                                    }
+                            </MudGrid>
+                        </MudTabPanel>
+                    </MudTabs>
+                </MudItem>
+            }
+
+            @if (!IsView)
+            {
+                <MudItem xs="12" Class="d-flex">
+                    @if (_initativeEditing)
+                    {
+                        <MudFab Style="width: 250px;" Class="mx-2" Color="Color.Error" StartIcon="@Icons.Filled.Close" Label="Close Edit" OnClick="InitativeEditDone" />
+                    }
+                    else
+                    {
+                        <MudFab Style="width: 250px;" Class="mx-2" Color="Color.Secondary" StartIcon="@Icons.Filled.Create" Label="Edit Initative" OnClick="InitativeEditStart" />
+                    }
+                    <MudIconButton Class="mx-2" Color="Color.Primary" Variant="Variant.Filled" Icon="@Icons.Filled.ChevronLeft" OnClick="InitativePrevious"/>
+                    <MudIconButton Class="mx-2" Color="Color.Primary" Variant="Variant.Filled" Icon="@Icons.Filled.ChevronRight" OnClick="InitativeNext"/>
+                </MudItem>
+            }
+
+            <MudItem xs="6">
+                <MudTable Items="_initatives" T="ShipInitativeDataModel" Hover="true" Breakpoint="Breakpoint.None" Elevation="3" OnRowClick="@(args => InitativeRowClickEvent(args))" Outlined="true">
+                    <ColGroup>
+                        <col style="width: 10%"/>
+                        <col style="width: 15%"/>
+                        <col style="width: 40%"/>
+                        <col style="width: 7%"/>
+                        <col style="width: 7%"/>
+                        <col style="width: 7%"/>
+                        <col style="width: 7%"/>
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh Class="mud-theme-tertiary text-white" />
+                        <MudTh Class="mud-theme-tertiary text-white">Init</MudTh>
+                        <MudTh Class="mud-theme-tertiary text-white">Name</MudTh>
+                        <MudTh Class="mud-theme-tertiary text-white">AC</MudTh>
+                        <MudTh Class="mud-theme-tertiary text-white">HP</MudTh>
+                        <MudTh Class="mud-theme-tertiary text-white">SP</MudTh>
+                        <MudTh Class="mud-theme-tertiary text-white" />
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Current" Class="@GetRowClass(context)">
+                            @if (_currentPlayer == context)
+                            {
+                                <MudIcon Icon="@Icons.Filled.DoubleArrow" />
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Init" Class="@GetRowClass(context)">
+                            @if (_initativeEditing && !IsView)
+                            {
+                                <MudNumericField @bind-Value="context.Initative" Variant="Variant.Outlined" />
+                            }
+                            else
+                            {
+                                <MudText>@context.Initative</MudText> 
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Name" Class="@GetRowClass(context)">@InitativeDisplayName(context)</MudTd>
+                        <MudTd DataLabel="AC" Class="@GetRowClass(context)">@(IsView ? context.ArmorClass : context.Ship.ArmorClass)</MudTd>
+                        <MudTd DataLabel="HP" Style=@($"color: {context.GetHPColor()}; background: {HealthBackground(context)}")>@(IsView ? context.GetHPDisplay() : @context.CurrentHull)</MudTd>
+                        <MudTd DataLabel="SP" Style=@($"color: {context.GetSPColor()}; background: {HealthBackground(context)}")>@(IsView ? context.GetSPDisplay() : @context.CurrentShield)</MudTd>
+                        <MudTd DataLabel="Delete" Class="@GetRowClass(context)">                
+                            @if (!IsView)
+                            {
+                                <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveInitative(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+                            }
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
+            </MudItem>
+
+            <MudItem xs="6">
+                @if (_selectedInitative != null && ((IsView && _selectedInitative.EnemyShip == null) || !IsView))
+                {
+                    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" Outlined="true">
+                        <MudTabPanel Text="Basic">  
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudText>Name: <b>@_selectedInitative?.Name</b></MudText>
+                                </MudItem>
+
+                                @if (_selectedInitative.IsPlayer)
+                                {
+                                    <MudItem xs="6">
+                                        <MudText>Player: <b>@_selectedInitative.PlayerShip.Name</b></MudText>
+                                    </MudItem>
+                                    <MudItem xs="6"/>
+                                }
+
+                                <MudItem xs="3">
+                                    <MudText>AC: <b>@_selectedInitative?.Ship?.ArmorClass</b></MudText>
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudText>Initative: <b>@_selectedInitative?.Ship?.DexterityBonus.PrintInt()</b></MudText>
+                                </MudItem>
+                                <MudItem xs="6"/>
+
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudText>HP:</MudText>
+                                    @if (_selectedInitative?.Ship != null)
+                                    {
+                                        <MudProgressLinear Class="mx-2" Color="Color.Info" @bind-Value="@_selectedInitative.HPAsDouble" Size="Size.Large" Max="@_selectedInitative.Ship.HullPoints" />
+                                    }
+                                    <MudText Class="mx-2">@_selectedInitative?.CurrentHull/@_selectedInitative?.Ship?.HullPoints</MudText>
+                                    @if (!IsView)
+                                    {
+                                        <MudNumericField Class="mx-2" Variant="Variant.Outlined" @bind-Value="_hullEdit" Style="width: 100px;" />
+                                        <MudIconButton Class="mx-2 my-auto" Color="Color.Error" Variant="Variant.Filled" Icon="@Icons.Filled.WaterDrop" OnClick="ApplyHullDamage"/>
+                                        <MudIconButton Class="mx-2 my-auto" Color="Color.Success" Variant="Variant.Filled" Icon="@Icons.Filled.MedicalServices" OnClick="ApplyHullPoints"/>
+                                    }
+                                </MudItem>
+                                <MudItem xs="12" Class="d-flex align-items-center">
+                                    <MudText>SP:</MudText>
+                                    @if (_selectedInitative?.Ship != null)
+                                    {
+                                        <MudProgressLinear Class="mx-2" Color="Color.Info" @bind-Value="@_selectedInitative.SPAsDouble" Size="Size.Large" Max="@_selectedInitative.Ship.ShieldPoints" />
+                                    }
+                                    <MudText Class="mx-2">@_selectedInitative?.CurrentShield/@_selectedInitative?.Ship?.ShieldPoints</MudText>
+                                    @if (!IsView)
+                                    {
+                                        <MudNumericField Class="mx-2" Variant="Variant.Outlined" @bind-Value="_shieldEdit" Style="width: 100px;" />
+                                        <MudIconButton Class="mx-2 my-auto" Color="Color.Error" Variant="Variant.Filled" Icon="@Icons.Filled.WaterDrop" OnClick="ApplyShieldDamage"/>
+                                        <MudIconButton Class="mx-2 my-auto" Color="Color.Success" Variant="Variant.Filled" Icon="@Icons.Filled.MedicalServices" OnClick="ApplyShieldPoints"/>
+                                    }
+                                </MudItem>
+
+                                @if (_selectedInitative.Ship != null)
+                                {
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudText>Hull Hit Dice (d@(_selectedInitative.Ship.HullHitDice)):</MudText>
+                                        @for (int i = 1; i <= _selectedInitative.Ship.HullHitDiceNumber; i++)
+                                        {
+                                            <MudCheckBox Color="Color.Error" Checked=@(i <= _selectedInitative!.CurrentHullHitDice) Disabled=true />
+                                        }
+                                        @if (!IsView)
+                                        {
+                                            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="(() => _selectedInitative!.CurrentHullHitDice--)" 
+                                                Disabled="@(_selectedInitative!.CurrentHullHitDice <= 0)">USE</MudButton>
+                                            <MudButton Class="ml-3" Variant="Variant.Filled" Color="Color.Success" OnClick="(() => _selectedInitative!.CurrentHullHitDice++)" 
+                                                Disabled="@(_selectedInitative!.CurrentHullHitDice >= _selectedInitative!.Ship.HullHitDice)">RESTORE</MudButton>
+                                        }
+                                    </MudItem>
+
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudText>Shield Hit Dice (d@(_selectedInitative.Ship.ShieldHitDice)):</MudText>
+                                        @for (int i = 1; i <= _selectedInitative.Ship.ShieldHitDiceNumber; i++)
+                                        {
+                                            <MudCheckBox Color="Color.Info" Checked=@(i <= _selectedInitative!.CurrentShieldHitDice) Disabled=true />
+                                        }
+                                        @if (!IsView)
+                                        {
+                                            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="(() => _selectedInitative!.CurrentShieldHitDice--)" 
+                                                Disabled="@(_selectedInitative!.CurrentShieldHitDice <= 0)">USE</MudButton>
+                                            <MudButton Class="ml-3" Variant="Variant.Filled" Color="Color.Success" OnClick="(() => _selectedInitative!.CurrentShieldHitDice++)" 
+                                                Disabled="@(_selectedInitative!.CurrentShieldHitDice >= _selectedInitative!.Ship.ShieldHitDice)">RESTORE</MudButton>
+                                        }
+                                    </MudItem>
+                                }
+
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">STR: @_selectedInitative?.Ship?.Strength</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">CON: @_selectedInitative?.Ship?.Constitution</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">DEX: @_selectedInitative?.Ship?.Dexterity</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">INT: @_selectedInitative?.Ship?.Intelligence</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">WIS: @_selectedInitative?.Ship?.Wisdom</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">CHA: @_selectedInitative?.Ship?.Charisma</MudItem>
+
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Ship?.StrengthBonus.PrintInt()</b>)</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Ship?.DexterityBonus.PrintInt()</b>)</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Ship?.ConstitutionBonus.PrintInt()</b>)</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Ship?.IntelligenceBonus.PrintInt()</b>)</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Ship?.WisdomBonus.PrintInt()</b>)</MudItem>
+                                <MudItem xs="2" Class="d-flex justify-center pa-0">(<b>@_selectedInitative?.Ship?.CharismaBonus.PrintInt()</b>)</MudItem>
+                        
+                                @if (_selectedInitative.IsPlayer)
+                                {
+                                    <MudItem xs="2" Class="d-flex justify-center pa-0">
+                                        Save: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.StrengthBonus, _selectedInitative.PlayerShip.StrengthSave).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                        Save: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.DexterityBonus, _selectedInitative.PlayerShip.DexteritySave).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                        Save: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.ConstitutionBonus, _selectedInitative.PlayerShip.ConstitutionSave).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                        Save: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.IntelligenceBonus, _selectedInitative.PlayerShip.IntelligenceSave).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                        Save: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.WisdomBonus, _selectedInitative.PlayerShip.WisdomSave).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="2" Class="d-flex justify-center pt-0">
+                                        Save: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.CharismaBonus, _selectedInitative.PlayerShip.CharismaSave).PrintInt()</b>
+                                    </MudItem>
+
+                                    <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                        Astrogation: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.IntelligenceBonus, _selectedInitative.PlayerShip.Astrogation).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                        Boost: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.StrengthBonus, _selectedInitative.PlayerShip.Boost).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pb-0">
+                                        Data: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.IntelligenceBonus, _selectedInitative.PlayerShip.Data).PrintInt()</b>
+                                    </MudItem>
+
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Hide: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.DexterityBonus, _selectedInitative.PlayerShip.Hide).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Impress: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.CharismaBonus, _selectedInitative.PlayerShip.Impress).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Interfere: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.CharismaBonus, _selectedInitative.PlayerShip.Interfere).PrintInt()</b>
+                                    </MudItem>
+
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Maneuvering: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.DexterityBonus, _selectedInitative.PlayerShip.Maneuvering).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Menace: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.CharismaBonus, _selectedInitative.PlayerShip.Menace).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Patch: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.ConstitutionBonus, _selectedInitative.PlayerShip.Patch).PrintInt()</b>
+                                    </MudItem>
+
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Probe: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.IntelligenceBonus, _selectedInitative.PlayerShip.Probe).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Ram: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.StrengthBonus, _selectedInitative.PlayerShip.Ram).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Regulation: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.ConstitutionBonus, _selectedInitative.PlayerShip.Regulation).PrintInt()</b>
+                                    </MudItem>
+
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Scan: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.WisdomBonus, _selectedInitative.PlayerShip.Scan).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" Class="d-flex justify-center pa-0">
+                                        Swindle: <b>@_selectedInitative.PlayerShip.SkillBonus(_selectedInitative.PlayerShip.CharismaBonus, _selectedInitative.PlayerShip.Swindle).PrintInt()</b>
+                                    </MudItem>
+                                    <MudItem xs="4" />
+                                }
+                            </MudGrid>
+                        </MudTabPanel>
+                        <MudTabPanel Text="Weapons">  
+                            @if (_selectedInitative.Ship != null)
+                            {
+                                @foreach (var weapon in _selectedInitative.Ship.Weapons)
+                                {
+                                    <MudPaper Class="my-4 pa-4" Elevation="3" Outlined="true">
+                                        <MudGrid>
+                                            <MudItem xs="4">@weapon.Name</MudItem>
+                                            <MudItem xs="2">@_selectedInitative.Ship.WisdomBonus.PrintInt()</MudItem>
+                                            <MudItem xs="2">@weapon.Damage@_selectedInitative.Ship.WeaponBonus(weapon)</MudItem>
+                                            <MudItem xs="4">@weapon.DamageType</MudItem>
+
+                                            <MudItem xs="12" Class="d-flex flex-wrap">
+                                                @foreach (var prop in weapon.Properties)
+                                                {
+                                                    <MudButton Class="m-2" Variant="Variant.Outlined" Color="Color.Info" OnClick="@(() => ShowWeaponProperty(prop))" Size="Size.Small">@prop</MudButton>
+                                                }
+                                            </MudItem>
+                                        </MudGrid>
+                                    </MudPaper>
+                                }
+                            }
+                        </MudTabPanel>
+                        <MudTabPanel Text="Actions">
+                            <ShipActionGrid />
+                        </MudTabPanel>
+                    </MudTabs>
+                }
+            </MudItem>
+
+            @if (!IsView)
+            {
+                <Submit @bind-Loading="@_loading" CancelRef="encounters" OnClick="OnValidSubmit"/>
+            }
+        </MudGrid>
+    </MudForm>
+}
+
+@code {
+    void ShowWeaponProperty(ShipWeaponProperty prop)
+    {
+        DialogService.ShowMessageBox(prop.Name, prop.Description);
+    }
+
+    void ShowRoll()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+        DialogService.Show<DiceRollDialog>("Roll", options);
+    }
+}

@@ -1,6 +1,6 @@
 ﻿namespace DMAdvantage.Shared.Entities
 {
-    public class Character : Being
+    public class Character : Being, IAbilityEntity
     { 
         public string PlayerName { get; set; }
         public int Level { get; set; }

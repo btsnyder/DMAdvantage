@@ -3,7 +3,7 @@ using DMAdvantage.Shared.Enums;
 
 namespace DMAdvantage.Shared.Entities
 {
-    public class Creature : Being
+    public class Creature : Being, IAbilityEntity
     {
         [Column(TypeName = "decimal(5, 2)")]
         public decimal ChallengeRating { get; set; }

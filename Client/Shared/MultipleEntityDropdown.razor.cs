@@ -1,5 +1,6 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
@@ -26,10 +27,11 @@ namespace DMAdvantage.Client.Shared
         }
         [Parameter] public EventCallback<ICollection<TEntity>> SelectedEntitiesChanged { get; set; }
         [Parameter] public string Label { get; set; }
+        [Parameter] public ISearchQuery Query { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            _data = await ApiService.GetAllEntities<TEntity>() ?? new List<TEntity>();
+            _data = await ApiService.GetAllEntities<TEntity>(Query) ?? new List<TEntity>();
             await base.OnInitializedAsync();
         }
 

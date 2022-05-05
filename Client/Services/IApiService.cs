@@ -13,6 +13,7 @@ namespace DMAdvantage.Client.Services
         Task UpdateEntity<T>(Guid id, T model);
         Task RemoveEntity<T>(Guid id);
         Task<Encounter?> GetEncounterView(Guid id);
+        Task<ShipEncounter?> GetShipEncounterView(Guid id);
         Task<List<T>?> GetViews<T>(IEnumerable<Guid>? ids = null);
         Task<Character?> GetCharacterViewFromPlayerName(string name);
     }

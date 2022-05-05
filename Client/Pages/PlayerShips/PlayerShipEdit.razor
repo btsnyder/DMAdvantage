@@ -1,0 +1,10 @@
+﻿@page "/playerships/edit/{Id}"
+@attribute [Authorize]
+
+<h1>Edit Player Ship</h1>
+<PlayerShipEditForm Id="@Id"/>
+
+@code
+{
+    [Parameter] public string Id { get; set; }
+}

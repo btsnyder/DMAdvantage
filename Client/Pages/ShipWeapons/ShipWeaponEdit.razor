@@ -1,0 +1,10 @@
+﻿@page "/shipweapons/edit/{Id}"
+@attribute [Authorize]
+
+<h1>Edit Ship Weapon</h1>
+<ShipWeaponEditForm Id="@Id"/>
+
+@code
+{
+    [Parameter] public string Id { get; set; }
+}

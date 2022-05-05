@@ -19,38 +19,77 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpGet("encounter/{id:guid}")]
-        public IActionResult GetEncounterById(Guid id)
+        public async Task<IActionResult> GetEncounterById(Guid id)
         {
             try
             {
-                var entity = _context.Encounters
-                     .Include(i => i.InitativeData)
-                     .AsNoTracking()
-                     .FirstOrDefault(x => x.Id == id);
-               
+                var entity = await _context.Encounters
+                    .Include(e => e.InitativeData)
+                    .FirstOrDefaultAsync(x => x.Id == id);
  
                 if (entity != null)
                 {
-                    var characters = _context.Characters
-                       .Include(c => c.Abilities)
-                       .Include(c => c.Class)
-                       .Include(c => c.ForcePowers)
+                    foreach (var i in entity.InitativeData)
+                    {
+                        _context.Entry(i).Reference(i => i.Character).Load();
+                        if (i.Character != null)
+                        {
+                            var character = _context.Entry(i.Character);
+                            character.Collection(c => c.Abilities).Load();
+                            character.Reference(c => c.Class).Load();
+                            character.Collection(c => c.ForcePowers).Load();
+                            character.Collection(c => c.Weapons).Load();
+                            foreach (var weapon in character.Entity.Weapons)
+                            {
+                                _context.Entry(weapon).Collection(w => w.Properties).Load();
+                            }
+                        }
+                        if (i.Creature != null)
+                        {
+                            var creature = _context.Entry(i.Creature);
+                            creature.Collection(c => c.ForcePowers).Load();
+                            creature.Collection(c => c.Actions).Load();
+                        }
+                    }
+                    return Ok(entity);
+                }
+                return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to return encounter: {ex}");
+                return BadRequest("Failed to return encounter");
+            }
+        }
+
+        [HttpGet("shipencounter/{id:guid}")]
+        public IActionResult GetShipEncounterById(Guid id)
+        {
+            try
+            {
+                var entity = _context.ShipEncounters
+                     .Include(i => i.InitativeData)
+                     .AsNoTracking()
+                     .FirstOrDefault(x => x.Id == id);
+
+                if (entity != null)
+                {
+                    var playerShips = _context.PlayerShips
                        .Include(c => c.Weapons).ThenInclude(w => w.Properties)
-                       .Where(c => entity.InitativeData.Select(i => i.CharacterId).Contains(c.Id))
+                       .Where(c => entity.InitativeData.Select(i => i.PlayerShipId).Contains(c.Id))
                        .AsNoTracking()
                        .ToList();
-                    var creatures = _context.Creatures
-                        .Include(c => c.ForcePowers)
-                        .Include(c => c.Actions)
-                        .Where(c => entity.InitativeData.Select(i => i.CreatureId).Contains(c.Id))
+                    var enemyShips = _context.EnemyShips
+                        .Include(c => c.Weapons).ThenInclude(w => w.Properties)
+                        .Where(c => entity.InitativeData.Select(i => i.EnemyShipId).Contains(c.Id))
                         .AsNoTracking()
                         .ToList();
                     foreach (var i in entity.InitativeData)
                     {
-                        if (i.CharacterId != null)
-                            i.Character = characters.FirstOrDefault(c => c.Id == i.CharacterId);
-                        if (i.CreatureId != null)
-                            i.Creature = creatures.FirstOrDefault(c => c.Id == i.CreatureId);
+                        if (i.PlayerShipId != null)
+                            i.PlayerShip = playerShips.FirstOrDefault(c => c.Id == i.PlayerShipId);
+                        if (i.EnemyShipId != null)
+                            i.EnemyShip = enemyShips.FirstOrDefault(c => c.Id == i.EnemyShipId);
                     }
                     return Ok(entity);
                 }

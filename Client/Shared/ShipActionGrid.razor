@@ -1,0 +1,30 @@
+﻿<MudItem xs="12">
+@*    <div class="d-flex flex-column">
+        <text style="font-size: large"><b></b></text>
+        <hr style="margin-top: -3px"/>
+    </div>*@
+    @foreach (var action in _actions)
+    {
+        <MudPaper Class="pa-2" Elevation="0" Outlined="true">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1 text-danger">
+                    <b>@action.Key</b>
+                </div>
+                @if (action.Key == _selectedAction)
+                {
+                    <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Filled.ExpandLess" OnClick="@(() => HideAction())" />
+                }
+                else
+                {
+                    <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Filled.ExpandMore" OnClick="@(() => ShowAction(action.Key))" />
+                }
+            </div>
+            @if (action.Key == _selectedAction)
+            {
+                <p>
+                    @action.Value
+                </p>
+            }
+        </MudPaper>
+    }
+</MudItem>

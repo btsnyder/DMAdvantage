@@ -49,14 +49,6 @@ namespace DMAdvantage.Client.Helpers
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", user.Token);
         }
 
-        public static string PrintInt(this int i)
-        {
-            if (i >= 0)
-                return $"+{i}";
-            else
-                return i.ToString();
-        }
-
         private static async Task HandleErrors(this HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)

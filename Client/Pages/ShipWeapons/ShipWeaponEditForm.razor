@@ -1,0 +1,42 @@
+﻿@inherits MudComponentBase
+@inject IDialogService DialogService
+
+@if (_loading)
+{
+    <LightsaberLoad />
+}
+else
+{
+    <MudForm Model="@_model" @ref="@_form">
+        <MudGrid Class="mb-5">
+            <MudItem xs="4">
+                <MudTextField @bind-Value="_model.Name" Label="Name" For="() => _model.Name" Validation="@(_weaponValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudSelect T="ShipWeaponType" @bind-Value="@_model.Type" Label="Type" For="() => _model.Type">
+                    @foreach (var type in Enum.GetValues<ShipWeaponType>())
+                    {
+                        <MudSelectItem Value="@type">@type.GetStringValue()</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="4">
+                <MultipleEntityDropdown TEntity="ShipWeaponProperty" @bind-SelectedEntities="_model.Properties" Label="Properties"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudTextField @bind-Value="_model.Damage" Label="Damage" For="() => _model.Damage"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudSelect Class="m-2" T="DamageType" @bind-Value="@_model.DamageType" Label="Type">
+                    @foreach (var type in Enum.GetValues<DamageType>())
+                    {
+                        <MudSelectItem Value="@type"/>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <Submit CancelRef="weapons" OnClick="OnSubmit"/>
+        </MudGrid>
+    </MudForm>
+}

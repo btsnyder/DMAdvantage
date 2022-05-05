@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMAdvantage.Server.Migrations
 {
     [DbContext(typeof(DMContext))]
-    [Migration("20220407162758_InitativeDataFKToId")]
-    partial class InitativeDataFKToId
+    [Migration("20220428191602_EnemyShips")]
+    partial class EnemyShips
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -526,10 +526,10 @@ namespace DMAdvantage.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CharacterId")
+                    b.Property<Guid?>("CharacterId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CreatureId")
+                    b.Property<Guid?>("CreatureId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("CurrentFP")
@@ -564,6 +564,219 @@ namespace DMAdvantage.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("InitativeData");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.Ship", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ArmorClass")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Charisma")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CharismaBonus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Constitution")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConstitutionBonus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Dexterity")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DexterityBonus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HullHitDice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HullHitDiceNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HullPoints")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Intelligence")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IntelligenceBonus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ShieldHitDice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShieldHitDiceNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ShieldPoints")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Speed")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Strength")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StrengthBonus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Wisdom")
+                        .HasColumnType("int");
+
+                    b.Property<int>("WisdomBonus")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Ship");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Ship");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipEncounter", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CurrentPlayer")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShipEncounters");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipInitativeData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CurrentHull")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CurrentHullHitDice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CurrentShield")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CurrentShieldHitDice")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("EnemyShipId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Initative")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("PlayerShipId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ShipEncounterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EnemyShipId");
+
+                    b.HasIndex("PlayerShipId");
+
+                    b.HasIndex("ShipEncounterId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShipInitativeData");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipWeapon", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Damage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("DamageType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShipWeapons");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipWeaponProperty", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Modifier")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShipWeaponProperties");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.TechPower", b =>
@@ -899,6 +1112,36 @@ namespace DMAdvantage.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ShipShipWeapon", b =>
+                {
+                    b.Property<Guid>("ShipsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WeaponsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ShipsId", "WeaponsId");
+
+                    b.HasIndex("WeaponsId");
+
+                    b.ToTable("ShipShipWeapon");
+                });
+
+            modelBuilder.Entity("ShipWeaponShipWeaponProperty", b =>
+                {
+                    b.Property<Guid>("PropertiesId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WeaponsId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PropertiesId", "WeaponsId");
+
+                    b.HasIndex("WeaponsId");
+
+                    b.ToTable("ShipWeaponShipWeaponProperty");
+                });
+
             modelBuilder.Entity("WeaponWeaponProperty", b =>
                 {
                     b.Property<Guid>("PropertiesId")
@@ -912,6 +1155,80 @@ namespace DMAdvantage.Server.Migrations
                     b.HasIndex("WeaponsId");
 
                     b.ToTable("WeaponWeaponProperty");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.EnemyShip", b =>
+                {
+                    b.HasBaseType("DMAdvantage.Shared.Entities.Ship");
+
+                    b.HasDiscriminator().HasValue("EnemyShip");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.PlayerShip", b =>
+                {
+                    b.HasBaseType("DMAdvantage.Shared.Entities.Ship");
+
+                    b.Property<bool?>("Astrogation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Boost")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("CharismaSave")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("ConstitutionSave")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Data")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("DexteritySave")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Hide")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Impress")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IntelligenceSave")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Interfere")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Maneuvering")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Menace")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Patch")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Probe")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Ram")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Regulation")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Scan")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("StrengthSave")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("Swindle")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("WisdomSave")
+                        .HasColumnType("bit");
+
+                    b.HasDiscriminator().HasValue("PlayerShip");
                 });
 
             modelBuilder.Entity("AbilityCharacter", b =>
@@ -1062,15 +1379,11 @@ namespace DMAdvantage.Server.Migrations
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.Character", "Character")
                         .WithMany()
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CharacterId");
 
                     b.HasOne("DMAdvantage.Shared.Entities.Creature", "Creature")
                         .WithMany()
-                        .HasForeignKey("CreatureId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CreatureId");
 
                     b.HasOne("DMAdvantage.Shared.Entities.Encounter", "Encounter")
                         .WithMany("InitativeData")
@@ -1087,6 +1400,71 @@ namespace DMAdvantage.Server.Migrations
                     b.Navigation("Creature");
 
                     b.Navigation("Encounter");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.Ship", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipEncounter", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipInitativeData", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.EnemyShip", "EnemyShip")
+                        .WithMany()
+                        .HasForeignKey("EnemyShipId");
+
+                    b.HasOne("DMAdvantage.Shared.Entities.PlayerShip", "PlayerShip")
+                        .WithMany()
+                        .HasForeignKey("PlayerShipId");
+
+                    b.HasOne("DMAdvantage.Shared.Entities.ShipEncounter", "Encounter")
+                        .WithMany("InitativeData")
+                        .HasForeignKey("ShipEncounterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Encounter");
+
+                    b.Navigation("EnemyShip");
+
+                    b.Navigation("PlayerShip");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipWeapon", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipWeaponProperty", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -1181,6 +1559,36 @@ namespace DMAdvantage.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("ShipShipWeapon", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.Ship", null)
+                        .WithMany()
+                        .HasForeignKey("ShipsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.ShipWeapon", null)
+                        .WithMany()
+                        .HasForeignKey("WeaponsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShipWeaponShipWeaponProperty", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.ShipWeaponProperty", null)
+                        .WithMany()
+                        .HasForeignKey("PropertiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.ShipWeapon", null)
+                        .WithMany()
+                        .HasForeignKey("WeaponsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("WeaponWeaponProperty", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.WeaponProperty", null)
@@ -1214,6 +1622,11 @@ namespace DMAdvantage.Server.Migrations
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Encounter", b =>
+                {
+                    b.Navigation("InitativeData");
+                });
+
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipEncounter", b =>
                 {
                     b.Navigation("InitativeData");
                 });

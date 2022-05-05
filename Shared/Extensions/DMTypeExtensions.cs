@@ -11,6 +11,7 @@ namespace DMAdvantage.Shared.Extensions
                 nameof(Ability) => "abilities",
                 nameof(DMClass) => "classes",
                 nameof(WeaponProperty) => "weaponproperties",
+                nameof(ShipWeaponProperty) => "shipweaponproperties",
                 _ => $"{typeof(T).Name}s".ToLower(),
             };
         }

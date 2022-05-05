@@ -1,6 +1,6 @@
-﻿using DMAdvantage.Client.Helpers;
-using DMAdvantage.Client.Services;
+﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 

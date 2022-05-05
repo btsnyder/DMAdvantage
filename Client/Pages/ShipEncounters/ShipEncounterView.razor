@@ -1,0 +1,8 @@
+﻿@page "/shipencounters/view/{Id}"
+
+<ShipEncounterEditForm Id="@Id" IsView="true"/>
+
+@code
+{
+    [Parameter] public string Id { get; set; }
+}

@@ -18,7 +18,6 @@ namespace DMAdvantage.Server.Controllers
             UserManager<User> userManager)
             : base(context, logger, userManager)
         {
-            apiPath = "weaponproperties";
         }
 
         [HttpGet]
