@@ -1,33 +1,33 @@
-﻿using System;
-using TestEngineering.Mocks;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TestEngineering;
-using Xunit;
-using DMAdvantage.Shared.Models;
-using DMAdvantage.Server;
-using FluentAssertions;
-using System.Collections.Generic;
-using System.Linq;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Query;
 using DMAdvantage.Shared.Extensions;
+using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
+using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using TestEngineering;
+using TestEngineering.Mocks;
+using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
     public class CharacterTests
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly TestServer _server;
 
         public CharacterTests()
         {
-            _factory = new MockWebApplicationFactory<Startup>();
+            var factory = new TestServerFactory();
+            _server = factory.Create();
         }
 
         [Fact]
         public async Task Get_AuthenticatedPageForUnauthenticatedUser_Unauthorized()
         {
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Character>()}");
 
@@ -37,7 +37,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllCharacters_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateCharacter();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Character>()}");
@@ -51,7 +51,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllCharactersWithPaging_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var characters = new List<Character>();
 
             for (var i = 0; i < 25; i++)
@@ -80,7 +80,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllCharactersWithSearching_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var characters = new List<Character>();
 
             for (var i = 0; i < 25; i++)
@@ -105,7 +105,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             foreach (var character in charactersResponse)
             {
-                character.User = MockHttpContext.CurrentUser;
+                character.User = characters.First().User;
             }
 
             charactersResponse.Should().BeEquivalentTo(characters.Where(x => x.Name?.ToLower().Contains("found") == true));
@@ -114,7 +114,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewCharacter_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var character = await client.CreateCharacter();
 
@@ -125,7 +125,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewInvalidCharacter_BadRequest()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var character = Generation.Character();
             character.Name = null;
@@ -136,7 +136,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_CharacterById_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var character = await client.CreateCharacter();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Character>()}/{character.Id}");
@@ -149,7 +149,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Put_CharacterById_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var character = await client.CreateCharacter();
             var newCharacter = Generation.Character();
             newCharacter.Id = character.Id;
@@ -173,7 +173,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Delete_CharacterById_NoContent()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var character = await client.CreateCharacter();
 
             var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Character>()}/{character.Id}");

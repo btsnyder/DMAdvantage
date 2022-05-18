@@ -9,6 +9,7 @@ using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DMAdvantage.Data;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -19,12 +20,15 @@ namespace DMAdvantage.Server.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
+        protected readonly DMContext _context;
 
-        public AccountController(ILogger<AccountController> logger,
+        public AccountController(DMContext context,
+            ILogger<AccountController> logger,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             IConfiguration config)
         {
+            _context = context;
             _logger = logger;
             _signInManager = signInManager;
             _userManager = userManager;

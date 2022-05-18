@@ -1,32 +1,33 @@
-﻿using TestEngineering.Mocks;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TestEngineering;
-using Xunit;
-using DMAdvantage.Shared.Models;
-using DMAdvantage.Server;
-using FluentAssertions;
-using System.Collections.Generic;
-using System.Linq;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Query;
 using DMAdvantage.Shared.Extensions;
+using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
+using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using TestEngineering;
+using TestEngineering.Mocks;
+using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
     public class ClassTests
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly TestServer _server;
 
         public ClassTests()
         {
-            _factory = new MockWebApplicationFactory<Startup>();
+            var factory = new TestServerFactory();
+            _server = factory.Create();
         }
 
         [Fact]
         public async Task Get_AuthenticatedPageForUnauthenticatedUser_Unauthorized()
         {
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}");
 
@@ -36,7 +37,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllClasses_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateDMClass();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}");
@@ -50,7 +51,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllClassesWithPaging_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var classes = new List<DMClass>();
 
             for (var i = 0; i < 25; i++)
@@ -79,7 +80,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllClassesWithSearching_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var classes = new List<DMClass>();
 
             for (var i = 0; i < 25; i++)
@@ -108,7 +109,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewDMClass_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var dmclass = await client.CreateDMClass();
 
@@ -119,7 +120,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewInvalidDMClass_BadRequest()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var dmclass = Generation.DMClass();
             dmclass.Name = null;
@@ -131,7 +132,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_DMClassById_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var dmclass = await client.CreateDMClass();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}/{dmclass.Id}");
@@ -144,7 +145,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Put_DMClassById_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var dmclass = await client.CreateDMClass();
             var dmclassEdit = Generation.DMClass();
             dmclassEdit.Id = dmclass.Id;
@@ -159,7 +160,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Delete_DMClassById_NoContent()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var dmclass = await client.CreateDMClass();
 
             var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<DMClass>()}/{dmclass.Id}");

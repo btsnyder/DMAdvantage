@@ -60,7 +60,6 @@ namespace TestEngineering
                 Intimidation = NullableBoolean(),
                 Performance = NullableBoolean(),
                 Persuasion = NullableBoolean(),
-                User = MockHttpContext.CurrentUser
             };
         }
 
@@ -126,7 +125,6 @@ namespace TestEngineering
                 TotalForcePowers = Faker.RandomNumber.Next(),
                 MaxForcePowerLevel = Faker.RandomNumber.Next(),
                 TechPoints = Faker.RandomNumber.Next(),
-                User = MockHttpContext.CurrentUser
             };
             return creatureRequest;
         }
@@ -149,7 +147,6 @@ namespace TestEngineering
                 Alignment = RandomEnum<ForceAlignment>(),
                 Potency = Nonsense(),
                 PrerequisiteId = Guid.NewGuid(),
-                User = MockHttpContext.CurrentUser
             };
 
             return forcePowerRequest;
@@ -171,7 +168,6 @@ namespace TestEngineering
                 HitOption = RandomEnum<HitOption>(),
                 HitDescription = Nonsense(50),
                 Overcharge = Nonsense(),
-                User = MockHttpContext.CurrentUser
             };
 
             return techPowerRequest;
@@ -244,7 +240,6 @@ namespace TestEngineering
                 CurrentPlayer = mockInitativeData[Faker.RandomNumber.Next(0, mockInitativeData.Count - 1)].Being?.Id ?? Guid.Empty,
                 InitativeData = mockInitativeData,
                 ConcentrationCache = JsonSerializer.Serialize(mockConcentration),
-                User = MockHttpContext.CurrentUser
             };
         }
 
@@ -254,7 +249,6 @@ namespace TestEngineering
             {
                 Name = Faker.Name.FullName(),
                 Description = Nonsense(),
-                User = MockHttpContext.CurrentUser
             };
         }
 
@@ -264,7 +258,6 @@ namespace TestEngineering
             {
                 Name = Faker.Name.FullName(),
                 HitDice = Faker.RandomNumber.Next(),
-                User = MockHttpContext.CurrentUser
             };
         }
     }

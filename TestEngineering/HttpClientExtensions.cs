@@ -207,7 +207,7 @@ namespace TestEngineering
         {
             var login = new LoginRequest
             {
-                Username = MockHttpContext.CurrentUser.UserName,
+                Username = MockHttpContext.CurrentUser,
                 Password = MockSigninManagerFactory.CurrentPassword,
             };
 

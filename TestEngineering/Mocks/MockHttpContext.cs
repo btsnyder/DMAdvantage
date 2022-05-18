@@ -8,7 +8,7 @@ namespace TestEngineering.Mocks
 {
     public class MockHttpContext : HttpContext
     {
-        public static readonly User CurrentUser = new() { UserName = "testuser@email.com", Email = "testuser@email.com" };
+        public static readonly string CurrentUser = "testuser@email.com";
 
         public MockHttpContext()
         {
@@ -21,7 +21,7 @@ namespace TestEngineering.Mocks
             var mockWebSocketManager = new Mock<WebSocketManager>();
             WebSockets = mockWebSocketManager.Object;
             var mockClaimsPrincipal = new Mock<ClaimsPrincipal>();
-            mockClaimsPrincipal.Setup(x => x.Identity!.Name).Returns(CurrentUser.UserName);
+            mockClaimsPrincipal.Setup(x => x.Identity!.Name).Returns(CurrentUser);
             User = mockClaimsPrincipal.Object;
         }
 

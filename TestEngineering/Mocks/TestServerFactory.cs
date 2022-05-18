@@ -1,27 +1,23 @@
 ﻿using DMAdvantage.Data;
+using DMAdvantage.Server;
 using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Headers;
 
 namespace TestEngineering.Mocks
 {
-    public class MockWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> 
-        where TStartup : class
+    public class TestServerFactory
     {
-        public MockWebApplicationFactory()
-        {
-            
-        }
+        private readonly Guid _databaseId = Guid.NewGuid();
 
-        public string DatabaseId = Guid.NewGuid().ToString();
-
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        public TestServer Create()
         {
+            var builder = new WebHostBuilder().UseStartup<Startup>();
+
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, "appsettings.json");
 
@@ -32,16 +28,17 @@ namespace TestEngineering.Mocks
                 conf.AddJsonFile(configPath);
             });
 
-            builder.ConfigureServices(services =>
+            builder.ConfigureTestServices(services =>
             {
-                var descriptor = services.Single(
+                var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<DMContext>));
 
-                services.Remove(descriptor);
+                if (descriptor != null)
+                    services.Remove(descriptor);
 
                 services.AddDbContext<DMContext>(options =>
                 {
-                    options.UseInMemoryDatabase(DatabaseId);
+                    options.UseInMemoryDatabase(_databaseId.ToString());
                 });
 
                 var sp = services.BuildServiceProvider();
@@ -52,20 +49,20 @@ namespace TestEngineering.Mocks
                 db.Database.EnsureCreated();
 
                 var userManager = scopedServices.GetRequiredService<UserManager<User>>();
-                var result = Task.Run(async () => await userManager.CreateAsync(MockHttpContext.CurrentUser, MockSigninManagerFactory.CurrentPassword)).Result;
+                var result = Task.Run(async () => await userManager.CreateAsync(new User
+                    {
+                        UserName = MockHttpContext.CurrentUser,
+                        Email = MockHttpContext.CurrentUser
+                    }, 
+                    MockSigninManagerFactory.CurrentPassword))
+                    .Result;
                 if (result != IdentityResult.Success)
                 {
                     throw new InvalidOperationException("Could not create new user in seeder");
                 }
             });
-        }
 
-        public async Task<HttpClient> CreateAuthenticatedClientAsync()
-        {
-            var client = CreateClient();
-            var token = await client.CreateToken();
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            return client;
+            return new TestServer(builder);
         }
     }
 }

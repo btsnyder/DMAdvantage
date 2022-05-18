@@ -14,10 +14,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DMAdvantage.Data\DMAdvantage.Data.csproj" />
+    <ProjectReference Include="..\Server\DMAdvantage.Server.csproj" />
     <ProjectReference Include="..\Shared\DMAdvantage.Shared.csproj" />
   </ItemGroup>
 

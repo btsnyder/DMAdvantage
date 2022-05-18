@@ -1,32 +1,33 @@
-﻿using TestEngineering.Mocks;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TestEngineering;
-using Xunit;
-using DMAdvantage.Shared.Models;
-using DMAdvantage.Server;
-using FluentAssertions;
-using System.Collections.Generic;
-using System.Linq;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Query;
 using DMAdvantage.Shared.Extensions;
+using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
+using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using TestEngineering;
+using TestEngineering.Mocks;
+using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
     public class CreatureTests
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly TestServer _server;
 
         public CreatureTests()
         {
-            _factory = new MockWebApplicationFactory<Startup>();
+            var factory = new TestServerFactory();
+            _server = factory.Create();
         }
 
         [Fact]
         public async Task Get_AuthenticatedPageForUnauthenticatedUser_Unauthorized()
         {
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}");
 
@@ -36,7 +37,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllCreatures_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateCreature();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}");
@@ -50,7 +51,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllCreaturesWithPaging_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var creatures = new List<Creature>();
 
             for (var i = 0; i < 25; i++)
@@ -79,7 +80,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllCreaturesWithSearching_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var creatures = new List<Creature>();
 
             for (var i = 0; i < 25; i++)
@@ -104,7 +105,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             foreach (var creature in creaturesResponse)
             {
-                creature.User = MockHttpContext.CurrentUser;
+                creature.User = creatures.First().User;
             }
 
             creaturesResponse.Should().BeEquivalentTo(creatures.Where(x => x.Name?.ToLower().Contains("found") == true));
@@ -113,7 +114,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewCreature_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var creature = await client.CreateCreature();
 
@@ -124,7 +125,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewInvalidCreature_BadRequest()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var creature = Generation.Creature();
             creature.Name = null;
@@ -136,7 +137,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_CreatureById_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var creature = await client.CreateCreature();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}/{creature.Id}");
@@ -149,7 +150,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Put_CreatureById_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var creature = await client.CreateCreature();
             var creatureEdit = Generation.Creature();
             creatureEdit.Id = creature.Id;
@@ -164,7 +165,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Delete_CreatureById_NoContent()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var creature = await client.CreateCreature();
 
             var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Creature>()}/{creature.Id}");

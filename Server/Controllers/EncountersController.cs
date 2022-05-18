@@ -3,6 +3,7 @@ using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
+using DMAdvantage.Shared.Services.Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,11 +17,15 @@ namespace DMAdvantage.Server.Controllers
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class EncountersController : BaseEntityController<Encounter>
     {
+        private readonly KafkaProducer _producer;
+
         public EncountersController(DMContext context,
             ILogger<EncountersController> logger,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            KafkaProducer producer)
             : base(context, logger, userManager)
         {
+            _producer = producer;
         }
 
         [HttpGet]
@@ -107,6 +112,7 @@ namespace DMAdvantage.Server.Controllers
 
                 await UpdateEncounter(entityFromRepo, request);
                 _context.SaveAll();
+                _producer.SendMessage(new KafkaMessage { Topic = Topics.Encounters, User = username, Value = KafkaValues.Updated });
                 return NoContent();
             }
             catch (Exception ex)

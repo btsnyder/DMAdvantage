@@ -22,7 +22,7 @@ namespace TestEngineering.Mocks
             var manager = new Mock<SignInManager<User>>(MockUserManagerFactory.Create(), contextAccessor.Object, claimsFactory.Object,
                 optionsAccessor.Object, new MockLogger<SignInManager<User>>(), schemes.Object, confirmation.Object);
 
-            manager.Setup(x => x.CheckPasswordSignInAsync(MockHttpContext.CurrentUser, CurrentPassword, false))
+            manager.Setup(x => x.CheckPasswordSignInAsync(It.Is<User>(u => u.UserName == MockHttpContext.CurrentUser), CurrentPassword, false))
                 .Returns(Task.FromResult(SignInResult.Success));
 
             return manager.Object;

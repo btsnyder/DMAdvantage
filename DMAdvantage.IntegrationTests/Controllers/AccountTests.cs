@@ -1,22 +1,23 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Xunit;
 using System.Net;
-using TestEngineering.Mocks;
 using DMAdvantage.Shared.Models;
-using TestEngineering;
-using DMAdvantage.Server;
 using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using TestEngineering;
+using TestEngineering.Mocks;
+using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
-    public class AccountTests : IClassFixture<MockWebApplicationFactory<Startup>>
+    public class AccountTests
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly TestServer _server;
 
-        public AccountTests(MockWebApplicationFactory<Startup> factory)
+        public AccountTests()
         {
-            _factory = factory;
+            var factory = new TestServerFactory();
+            _server = factory.Create();
         }
 
         [Fact]
@@ -24,10 +25,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var login = new LoginRequest
             {
-                Username = MockHttpContext.CurrentUser.UserName,
+                Username = MockHttpContext.CurrentUser,
                 Password = MockSigninManagerFactory.CurrentPassword,
             };
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.PostAsync("/api/account/token", login);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -40,10 +41,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var login = new LoginRequest
             {
-                Username = MockHttpContext.CurrentUser.UserName,
+                Username = MockHttpContext.CurrentUser,
                 Password = "badpassword",
             };
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.PostAsync("/api/account/token", login);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

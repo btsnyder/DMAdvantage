@@ -6,6 +6,7 @@ using System.Text;
 using Microsoft.Extensions.Azure;
 using DMAdvantage.Shared.Services;
 using Azure.Security.KeyVault.Secrets;
+using DMAdvantage.Shared.Services.Kafka;
 
 namespace DMAdvantage.Server
 {
@@ -46,6 +47,8 @@ namespace DMAdvantage.Server
 
             services.AddDbContext<DMContext>();
             services.AddTransient<Seeder>();
+            services.AddTransient<KafkaConsumer>();
+            services.AddSingleton<KafkaProducer>();
 
             services.AddRazorPages();
         }
@@ -70,6 +73,8 @@ namespace DMAdvantage.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseWebSockets();
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -1,32 +1,33 @@
-﻿using TestEngineering.Mocks;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TestEngineering;
-using Xunit;
-using DMAdvantage.Shared.Models;
-using DMAdvantage.Server;
-using FluentAssertions;
-using System.Collections.Generic;
-using System.Linq;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Query;
 using DMAdvantage.Shared.Extensions;
+using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
+using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using TestEngineering;
+using TestEngineering.Mocks;
+using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
     public class WeaponTests
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly TestServer _server;
 
         public WeaponTests()
         {
-            _factory = new MockWebApplicationFactory<Startup>();
+            var factory = new TestServerFactory();
+            _server = factory.Create();
         }
 
         [Fact]
         public async Task Get_AuthenticatedPageForUnauthenticatedUser_Unauthorized()
         {
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}");
 
@@ -36,7 +37,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllWeapons_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateWeapon();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}");
@@ -50,7 +51,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllWeaponsWithPaging_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var weapons = new List<Weapon>();
 
             for (var i = 0; i < 25; i++)
@@ -79,7 +80,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllWeaponsWithSearching_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var weapons = new List<Weapon>();
 
             for (var i = 0; i < 25; i++)
@@ -104,7 +105,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             foreach (var weapon in weaponsResponse)
             {
-                weapon.User = MockHttpContext.CurrentUser;
+                weapon.User = weapons.First().User;
             }
 
             weaponsResponse.Should().BeEquivalentTo(weapons.Where(x => x.Name?.ToLower().Contains("found") == true));
@@ -113,7 +114,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewWeapon_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var weapon = await client.CreateWeapon();
 
@@ -124,7 +125,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewInvalidWeapon_BadRequest()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var weapon = Generation.Weapon();
             weapon.Name = null;
@@ -136,7 +137,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_WeaponById_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var weapon = await client.CreateWeapon();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Weapon>()}/{weapon.Id}");
@@ -149,7 +150,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Put_WeaponById_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var weapon = await client.CreateWeapon();
             var weaponEdit = Generation.Weapon();
             weaponEdit.Id = weapon.Id;
@@ -169,7 +170,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Delete_WeaponById_NoContent()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var weapon = await client.CreateWeapon();
 
             var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Weapon>()}/{weapon.Id}");

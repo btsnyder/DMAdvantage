@@ -1,31 +1,32 @@
-﻿using TestEngineering.Mocks;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
-using TestEngineering;
-using Xunit;
-using DMAdvantage.Shared.Models;
-using DMAdvantage.Server;
-using FluentAssertions;
-using System.Collections.Generic;
-using DMAdvantage.Shared.Enums;
-using DMAdvantage.Shared.Query;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Enums;
 using DMAdvantage.Shared.Extensions;
+using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
+using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using TestEngineering;
+using TestEngineering.Mocks;
+using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
     public class ForcePowerTests
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly TestServer _server;
         public ForcePowerTests()
         {
-            _factory = new MockWebApplicationFactory<Startup>();
+            var factory = new TestServerFactory();
+            _server = factory.Create();
         }
 
         [Fact]
         public async Task Get_AuthenticatedPageForUnauthenticatedUser_Unauthorized()
         {
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}");
 
@@ -35,7 +36,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllForcePowers_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateForcePower();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}");
@@ -49,7 +50,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllForcePowersWithPaging_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var forcePowers = new List<ForcePower>();
 
             for (var i = 0; i < 25; i++)
@@ -79,7 +80,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllForcePowersWithSearching_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             for (var i = 0; i < 25; i++)
             {
@@ -120,7 +121,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewForcePower_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var forcePower = await client.CreateForcePower();
 
@@ -131,7 +132,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewInvalidForcePower_BadRequest()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var forcePower = Generation.ForcePower();
             forcePower.Name = null;
@@ -143,7 +144,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_ForcePowerById_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var forcePower = await client.CreateForcePower();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}/{forcePower.Id}");
@@ -156,7 +157,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Put_ForcePowerById_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var forcePower = await client.CreateForcePower();
             var forcePowerEdit = Generation.ForcePower();
             forcePowerEdit.Id = forcePower.Id;
@@ -171,7 +172,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Delete_ForcePowerById_NoContent()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var forcePower = await client.CreateForcePower();
 
             var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<ForcePower>()}/{forcePower.Id}");

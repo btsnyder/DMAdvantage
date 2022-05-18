@@ -1,34 +1,35 @@
-﻿using TestEngineering.Mocks;
-using System.Net;
-using System.Threading.Tasks;
-using TestEngineering;
-using Xunit;
-using DMAdvantage.Server;
-using DMAdvantage.Shared.Models;
+﻿using System;
 using System.Collections.Generic;
-using System;
-using FluentAssertions;
 using System.Linq;
-using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Query;
+using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Extensions;
+using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Query;
+using FluentAssertions;
+using Microsoft.AspNetCore.TestHost;
+using TestEngineering;
+using TestEngineering.Mocks;
+using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
 {
     public class EncounterTests
     {
-        private readonly MockWebApplicationFactory<Startup> _factory;
+        private readonly TestServer _server;
 
         public EncounterTests()
         {
-            _factory = new MockWebApplicationFactory<Startup>();
+            var factory = new TestServerFactory();
+            _server = factory.Create();
         }
 
         [Fact]
         public async Task Get_AuthenticatedPageForUnauthenticatedUser_Unauthorized()
         {
-            var client = _factory.CreateClient();
+            var client = _server.CreateClient();
 
             var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Encounter>()}");
 
@@ -38,7 +39,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllEncounters_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             await client.CreateEncounter();
 
@@ -53,7 +54,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllEncountersWithPaging_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             for (var i = 0; i < 25; i++)
             {
@@ -77,7 +78,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_AllEncountersWithSearching_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var encounters = new List<Encounter>();
 
             for (var i = 0; i < 25; i++)
@@ -102,7 +103,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
 
             foreach (var encounter in encoutnersResponse)
             {
-                encounter.User = MockHttpContext.CurrentUser;
+                encounter.User = encounters.First().User;
             }
 
             var expected = encounters.Where(x => x.Name?.ToLower().Contains("found") == true);
@@ -112,7 +113,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Post_CreateNewEncounter_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var encounter = await client.CreateEncounter();
 
@@ -123,7 +124,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Get_EncounterById_Ok()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
 
             var encounter = await client.CreateEncounter();
 
@@ -137,7 +138,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Put_EncounterById_Created()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var encounter = await client.CreateEncounter();
 
             var characters = new List<Character>();
@@ -183,7 +184,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         [Fact]
         public async Task Delete_EncounterById_NoContent()
         {
-            var client = await _factory.CreateAuthenticatedClientAsync();
+            var client = await _server.CreateAuthenticatedClientAsync();
             var encounter = await client.CreateEncounter();
 
             var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Encounter>()}/{encounter.Id}");

@@ -25,30 +25,24 @@ namespace DMAdvantage.Server.Controllers
             {
                 var entity = await _context.Encounters
                     .Include(e => e.InitativeData)
+                    .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == id);
  
                 if (entity != null)
                 {
                     foreach (var i in entity.InitativeData)
                     {
-                        _context.Entry(i).Reference(i => i.Character).Load();
-                        if (i.Character != null)
+                        if (i.CharacterId != null)
                         {
-                            var character = _context.Entry(i.Character);
-                            character.Collection(c => c.Abilities).Load();
-                            character.Reference(c => c.Class).Load();
-                            character.Collection(c => c.ForcePowers).Load();
-                            character.Collection(c => c.Weapons).Load();
-                            foreach (var weapon in character.Entity.Weapons)
-                            {
-                                _context.Entry(weapon).Collection(w => w.Properties).Load();
-                            }
+                            i.Character = await _context.GetQueryable<Character>()
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(c => c.Id == i.CharacterId);
                         }
-                        if (i.Creature != null)
+                        if (i.CreatureId != null)
                         {
-                            var creature = _context.Entry(i.Creature);
-                            creature.Collection(c => c.ForcePowers).Load();
-                            creature.Collection(c => c.Actions).Load();
+                            i.Creature = await _context.GetQueryable<Creature>()
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(c => c.Id == i.CreatureId);
                         }
                     }
                     return Ok(entity);
@@ -63,33 +57,31 @@ namespace DMAdvantage.Server.Controllers
         }
 
         [HttpGet("shipencounter/{id:guid}")]
-        public IActionResult GetShipEncounterById(Guid id)
+        public async Task<IActionResult> GetShipEncounterById(Guid id)
         {
             try
             {
-                var entity = _context.ShipEncounters
+                var entity = await _context.ShipEncounters
                      .Include(i => i.InitativeData)
                      .AsNoTracking()
-                     .FirstOrDefault(x => x.Id == id);
+                     .FirstOrDefaultAsync(x => x.Id == id);
 
                 if (entity != null)
                 {
-                    var playerShips = _context.PlayerShips
-                       .Include(c => c.Weapons).ThenInclude(w => w.Properties)
-                       .Where(c => entity.InitativeData.Select(i => i.PlayerShipId).Contains(c.Id))
-                       .AsNoTracking()
-                       .ToList();
-                    var enemyShips = _context.EnemyShips
-                        .Include(c => c.Weapons).ThenInclude(w => w.Properties)
-                        .Where(c => entity.InitativeData.Select(i => i.EnemyShipId).Contains(c.Id))
-                        .AsNoTracking()
-                        .ToList();
                     foreach (var i in entity.InitativeData)
                     {
                         if (i.PlayerShipId != null)
-                            i.PlayerShip = playerShips.FirstOrDefault(c => c.Id == i.PlayerShipId);
+                        {
+                            i.PlayerShip = await _context.GetQueryable<PlayerShip>()
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(c => c.Id == i.PlayerShipId);
+                        }
                         if (i.EnemyShipId != null)
-                            i.EnemyShip = enemyShips.FirstOrDefault(c => c.Id == i.EnemyShipId);
+                        {
+                            i.EnemyShip = await _context.GetQueryable<EnemyShip>()
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync(c => c.Id == i.EnemyShipId);
+                        }
                     }
                     return Ok(entity);
                 }
@@ -107,7 +99,7 @@ namespace DMAdvantage.Server.Controllers
         {
             try
             {
-                var results = _context.GetQueryable<Character>()
+                var results = _context.GetQueryable<Character>(false)
                     .AsNoTracking();
                 if (ids.Any())
                     results = results.Where(x => ids.Contains(x.Id));

@@ -1,6 +1,7 @@
 ﻿using DMAdvantage.Client.Services;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
+using DMAdvantage.Shared.Services.Kafka;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Routing;
 using MudBlazor;
@@ -38,6 +39,7 @@ namespace DMAdvantage.Client.Pages.ShipEncounters
         [Inject] private IApiService ApiService { get; set; }
         [Inject] private NavigationManager NavigationManager { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
+        [Inject] private IKafkaConsumer Consumer { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -51,9 +53,28 @@ namespace DMAdvantage.Client.Pages.ShipEncounters
             {
                 await ReloadEncounter();
             }
-            
+
+            if (IsView)
+            {
+                await Consumer.ConnectAsync(Topics.ShipEncounters);
+                Consumer.OnMessageReceived += MessageReceived;
+            }
+
             await base.OnInitializedAsync();
             _loading = false;
+        }
+
+        private async void MessageReceived(object? sender, string? data)
+        {
+            if (data != null)
+            {
+                var message = KafkaMessage.Deserialize(data);
+                if (message.Value == "updated")
+                {
+                    await ReloadEncounter();
+                    Snackbar.Add("Encounter reloaded!", Severity.Info);
+                }
+            }
         }
 
         protected override void OnAfterRender(bool firstRender)

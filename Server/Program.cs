@@ -1,4 +1,5 @@
 ﻿using DMAdvantage.Data;
+using DMAdvantage.Shared.Services.Kafka;
 
 namespace DMAdvantage.Server
 {
@@ -21,6 +22,9 @@ namespace DMAdvantage.Server
             using var scope = scopeFactory.CreateScope();
             var seeder = scope.ServiceProvider.GetService<Seeder>();
             seeder?.SeedAsync().Wait();
+
+            var producer = scope.ServiceProvider.GetService<KafkaProducer>();
+            producer?.Start();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

@@ -20,6 +20,7 @@ namespace DMAdvantage.Client
                 .AddScoped<IHttpService, HttpService>()
                 .AddSingleton<ILocalStorageService, LocalStorageService>()
                 .AddSingleton<IDeviceSizeService, DeviceSizeService>()
+                .AddTransient<IKafkaConsumer, KafkaConsumer>()
                 .AddMudServices(config =>
                 {
                     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomLeft;

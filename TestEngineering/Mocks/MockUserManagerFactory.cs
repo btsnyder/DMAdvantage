@@ -24,8 +24,8 @@ namespace TestEngineering.Mocks
                 _userValidators, _passwordValidators, keyNormalizer.Object, errors.Object, services.Object,
                 new MockLogger<UserManager<User>>());
 
-            manager.Setup(x => x.FindByNameAsync(MockHttpContext.CurrentUser.UserName))
-                .Returns(Task.FromResult(MockHttpContext.CurrentUser));
+            manager.Setup(x => x.FindByNameAsync(MockHttpContext.CurrentUser))
+                .Returns(Task.FromResult(new User { UserName = MockHttpContext.CurrentUser, Email = MockHttpContext.CurrentUser }));
 
             return manager.Object;
         }
