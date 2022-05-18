@@ -22,20 +22,20 @@ namespace DMAdvantage.Shared.Models
             return 0;
         }
 
-        public static int ForceAttackModifier(this Being being, ForceAlignment alignment)
+        public static int PowerAttackModifier(this Being being, ForceAlignment alignment)
         {
             return alignment switch
             {
                 ForceAlignment.Light => being.WisdomBonus + being.GetProficiencyBonus(),
                 ForceAlignment.Dark => being.CharismaBonus + being.GetProficiencyBonus(),
                 ForceAlignment.Universal => Math.Max(being.WisdomBonus, being.CharismaBonus) + being.GetProficiencyBonus(),
-                _ => 0,
+                _ => being.GetProficiencyBonus(),
             };
         }
 
-        public static int ForceSavingThrow(this Being being, ForceAlignment alignment)
+        public static int PowerSavingThrow(this Being being, ForceAlignment alignment)
         {
-            return 8 + being.ForceAttackModifier(alignment);
+            return 8 + being.PowerAttackModifier(alignment);
         }
 
         public static int SkillBonus(this Being being, int bonus, bool? proficient)

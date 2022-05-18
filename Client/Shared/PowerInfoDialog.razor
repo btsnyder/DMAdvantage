@@ -1,0 +1,44 @@
+﻿<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 500px; overflow-y: scroll">
+            <div class="d-flex flex-column">
+                @if (Power is ForcePower force)
+                {
+                    <text><b>Alignment:</b> @force.Alignment</text>
+                }
+                <text><b>Concentration:</b> @Power.Concentration</text>
+                <text><b>Hit:</b> @Power.HitOption.GetStringValue()</text>
+                @if (!string.IsNullOrWhiteSpace(Power.HitDescription))
+                {
+                    <div><b>Description:</b> @Power.HitDescription</div>
+                }
+                <text><b>Casting Time:</b> @Power.CastingPeriod.GetStringValue()</text>
+                <text><b>Range:</b> @Power.Range.GetStringValue()</text>
+                <text><b>Duration:</b> @Power.Duration</text>
+                <br/>
+                <text>@Power.Description</text>
+                @if (Power is ForcePower forcePotency && !string.IsNullOrEmpty(forcePotency.Potency))
+                {
+                    <br/>
+                    <div><b>Potency:</b> @forcePotency.Potency</div>
+                }
+                else if (Power is TechPower tech && !string.IsNullOrEmpty(tech.Overcharge))
+                {
+                    <br/>
+                    <div><b>Overcharge:</b> @tech.Overcharge</div>
+                }
+            </div>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Submit">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public Power Power { get; set; }
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+}

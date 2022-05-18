@@ -13,7 +13,6 @@ namespace DMAdvantage.Client.Pages.ForcePowers
         private bool _loading;
         private List<ForcePower> _forcePowers;
         private ForcePower? _selectedPrerequisite;
-        private IEnumerable<string> _durations = Array.Empty<string>();
         private List<string> _startingDurations = new();
         private MudForm _form;
         private readonly ForcePowerValidator _forcePowerValidator = new();
@@ -87,7 +86,7 @@ namespace DMAdvantage.Client.Pages.ForcePowers
         private Task<IEnumerable<string>> DurationSearch(string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
-            return Task.FromResult(_durations
+            return Task.FromResult(_startingDurations
                 .Where(x => x.ToLower().Contains(value.ToLower())));
         }
 

@@ -481,47 +481,88 @@ else
                             }
                         </MudTabPanel>
                         <MudTabPanel Text="ForcePowers">
-                            <MudGrid>
-                                <MudItem xs="3"/>
-                                <MudItem xs="3" Class="d-flex justify-center">Light</MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center">Universal</MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center">Dark</MudItem>
+                            @if (_selectedInitative?.Being != null)
+                            {
+                                    <MudGrid>
+                                        <MudItem xs="3"/>
+                                        <MudItem xs="3" Class="d-flex justify-center">Light</MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center">Universal</MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center">Dark</MudItem>
 
-                                <MudItem xs="3" Class="d-flex justify-center">Modifier</MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center">Modifier</MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerAttackModifier(ForceAlignment.Light).PrintInt()</b></MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerAttackModifier(ForceAlignment.Universal).PrintInt()</b></MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerAttackModifier(ForceAlignment.Dark).PrintInt()</b></MudItem>
 
-                                <MudItem xs="3" Class="d-flex justify-center">Save DC</MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Light)</b></MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Universal)</b></MudItem>
-                                <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative?.Being?.ForceSavingThrow(ForceAlignment.Dark)</b></MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center">Save DC</MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerSavingThrow(ForceAlignment.Light)</b></MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerSavingThrow(ForceAlignment.Universal)</b></MudItem>
+                                        <MudItem xs="3" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerSavingThrow(ForceAlignment.Dark)</b></MudItem>
 
-                                <MudItem xs="12" Class="d-flex align-items-center">
-                                    <MudText Class="me-5">FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b></MudText>
-                                    @if (!IsView)
-                                    {
-                                        <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Add" Color="Color.Error" Size="Size.Small" 
-                                            OnClick="@(() => _selectedInitative!.CurrentFP++)" Disabled=@(_selectedInitative == null)/>
-                                        <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Remove" Color="Color.Error" Size="Size.Small" 
-                                            OnClick="@(() => _selectedInitative!.CurrentFP--)" Disabled=@(_selectedInitative == null)/>
-                                    }
-                                </MudItem>
+                                        <MudItem xs="12" Class="d-flex align-items-center">
+                                            <MudText Class="me-5">FP: <b>@_selectedInitative?.CurrentFP/@_selectedInitative?.Being?.ForcePoints</b></MudText>
+                                            @if (!IsView)
+                                            {
+                                                <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Add" Color="Color.Error" Size="Size.Small" 
+                                                OnClick="@(() => _selectedInitative!.CurrentFP++)" Disabled=@(_selectedInitative == null)/>
+                                                <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Remove" Color="Color.Error" Size="Size.Small" 
+                                                OnClick="@(() => _selectedInitative!.CurrentFP--)" Disabled=@(_selectedInitative == null)/>
+                                            }
+                                        </MudItem>
 
-                                <MudItem xs="12">
-                                    <MudText Typo="Typo.h6" Class="fw-bold">Force Powers</MudText>
-                                </MudItem>
-                                <ForcePowerGrid Title="At-Will" Powers="@SelectedForcePowers.Where(x => x.Level == 0).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 1" Powers="@SelectedForcePowers.Where(x => x.Level == 1).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 2" Powers="@SelectedForcePowers.Where(x => x.Level == 2).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 3" Powers="@SelectedForcePowers.Where(x => x.Level == 3).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 4" Powers="@SelectedForcePowers.Where(x => x.Level == 4).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 5" Powers="@SelectedForcePowers.Where(x => x.Level == 5).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 6" Powers="@SelectedForcePowers.Where(x => x.Level == 6).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 7" Powers="@SelectedForcePowers.Where(x => x.Level == 7).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 8" Powers="@SelectedForcePowers.Where(x => x.Level == 8).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                                <ForcePowerGrid Title="Level 9" Powers="@SelectedForcePowers.Where(x => x.Level == 9).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
-                            </MudGrid>
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.h6" Class="fw-bold">Force Powers</MudText>
+                                    </MudItem>
+                                    <ForcePowerGrid Title="At-Will" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 0).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 1" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 1).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 2" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 2).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 3" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 3).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 4" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 4).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 5" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 5).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 6" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 6).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 7" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 7).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 8" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 8).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                    <ForcePowerGrid Title="Level 9" Powers="@_selectedInitative.Being.ForcePowers.Where(x => x.Level == 9).ToList()" Click="ForcePowerClicked" ShowCast="!IsView" />
+                                </MudGrid>
+                            }
+                        </MudTabPanel>
+
+                        <MudTabPanel Text="TechPowers">
+                            @if (_selectedInitative?.Being != null)
+                            {
+                                <MudGrid>
+                                    <MudItem xs="6" Class="d-flex justify-center">Modifier</MudItem>
+                                    <MudItem xs="6" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerAttackModifier(ForceAlignment.None).PrintInt()</b></MudItem>
+
+                                    <MudItem xs="6" Class="d-flex justify-center">Save DC</MudItem>
+                                    <MudItem xs="6" Class="d-flex justify-center"><b>@_selectedInitative.Being.PowerSavingThrow(ForceAlignment.None)</b></MudItem>
+
+                                    <MudItem xs="12" Class="d-flex align-items-center">
+                                        <MudText Class="me-5">TP: <b>@_selectedInitative?.CurrentTP/@_selectedInitative?.Being?.TechPoints</b></MudText>
+                                        @if (!IsView)
+                                        {
+                                            <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Add" Color="Color.Error" Size="Size.Small" 
+                                            OnClick="@(() => _selectedInitative!.CurrentTP++)" Disabled=@(_selectedInitative == null)/>
+                                            <MudIconButton Class="me-2 my-auto" Variant="Variant.Filled" Icon="@Icons.Filled.Remove" Color="Color.Error" Size="Size.Small" 
+                                            OnClick="@(() => _selectedInitative!.CurrentTP--)" Disabled=@(_selectedInitative == null)/>
+                                        }
+                                    </MudItem>
+
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.h6" Class="fw-bold">Tech Powers</MudText>
+                                    </MudItem>
+                                    <TechPowerGrid Title="At-Will" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 0).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 1" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 1).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 2" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 2).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 3" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 3).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 4" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 4).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 5" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 5).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 6" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 6).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 7" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 7).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 8" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 8).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                    <TechPowerGrid Title="Level 9" Powers="@_selectedInitative.Being.TechPowers.Where(x => x.Level == 9).ToList()" Click="TechPowerClicked" ShowCast="!IsView" />
+                                </MudGrid>
+                            }
                         </MudTabPanel>
                     </MudTabs>
                 }

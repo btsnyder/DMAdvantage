@@ -34,7 +34,7 @@
         </MudItem>
 
         <MudItem xs="3">
-            <MudAutocomplete T="string" Label="Duration" @bind-Value="@_model.Duration" SearchFunc="@DurationSearch" Variant="Variant.Outlined" />
+            <MudAutocomplete T="string" Label="Duration" @bind-Value="@_model.Duration" SearchFunc="@DurationSearch" Variant="Variant.Outlined" CoerceValue="true" />
         </MudItem>
          <MudItem xs="2" Class="d-flex justify-center">
             <ToggledText @bind-Value="@_model.Concentration" Text="Concentration" />

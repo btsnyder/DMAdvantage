@@ -4,6 +4,7 @@
     {
         Universal,
         Light,
-        Dark
+        Dark,
+        None
     }
 }

@@ -16,15 +16,13 @@ namespace DMAdvantage.Client.Pages.Encounters
         private InitativeDataModel? _selectedInitative;
 
         private InitativeDataModel? _currentPlayer;
-        IList<ForcePower> SelectedForcePowers { get; set; } = new List<ForcePower>();
         private List<Character> _characters;
         private List<Creature> _creatures;
-        private List<ForcePower> _forcePowers;
         private Character? _selectedCharacter;
         private Creature? _selectedCreature;
         private int _healthEdit;
         private bool _initativeEditing;
-        private Dictionary<string, ForcePower> _concentrationPowers = new();
+        private Dictionary<string, Power> _concentrationPowers = new();
         private bool _autoSave = false;
         private bool _autoLoad = false;
         private Timer _timer;
@@ -50,7 +48,6 @@ namespace DMAdvantage.Client.Pages.Encounters
 
             _characters = await ApiService.GetViews<Character>() ?? new();
             _creatures = await ApiService.GetViews<Creature>() ?? new();
-            _forcePowers = await ApiService.GetViews<ForcePower>() ?? new();
 
             if (Id != null)
             {
@@ -183,8 +180,6 @@ namespace DMAdvantage.Client.Pages.Encounters
         private void InitativeRowClickEvent(TableRowClickEventArgs<InitativeDataModel> e)
         {
             _selectedInitative = e.Item;
-            if (_selectedInitative?.Being != null)
-                SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowers.Contains(x)).OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
         }
 
         private async Task OnAddCharacter()
@@ -255,6 +250,25 @@ namespace DMAdvantage.Client.Pages.Encounters
             }
         }
 
+        private void TechPowerClicked(TechPower? power)
+        {
+            if (_selectedInitative == null || power == null || power.Level < 1)
+                return;
+            if (_selectedInitative.CurrentTP < power.Level + 1)
+            {
+                Snackbar.Add("Not enough tech points!", Severity.Error);
+            }
+            else
+            {
+                _selectedInitative.CurrentTP -= power.Level + 1;
+                if (power.Concentration)
+                {
+                    _concentrationPowers.Add(_selectedInitative.Name ?? $"Player {_initatives.IndexOf(_selectedInitative)}", power);
+                }
+                StateHasChanged();
+            }
+        }
+
         private void RemoveInitative(InitativeDataModel data)
         {
             if (data == _selectedInitative)
@@ -288,25 +302,18 @@ namespace DMAdvantage.Client.Pages.Encounters
                 _currentPlayer = _initatives.FirstOrDefault(x => x.Being.Id == _model.CurrentPlayer);
                 _selectedInitative ??= _initatives.FirstOrDefault();
 
-                if (_selectedInitative?.Being != null)
-                {
-                    if (_selectedInitative.Being.ForcePowers.Any())
-                    {
-                        SelectedForcePowers = _forcePowers.Where(x => _selectedInitative.Being.ForcePowers.Contains(x))
-                            .OrderBy(x => x.Level).ThenBy(x => x.Name).ToList();
-                    }
-                    else
-                    {
-                        SelectedForcePowers = new List<ForcePower>();
-                    }
-                }
-
                 _concentrationPowers.Clear();
                 foreach (var (key, value) in _model.ConcentrationPowers)
                 {
-                    var power = _forcePowers.FirstOrDefault(x => x.Id == value);
+                    Power? power = _initatives.Select(x => x.Being).SelectMany(x => x.ForcePowers).FirstOrDefault(x => x.Id == value);
                     if (power != null)
                         _concentrationPowers.Add(key, power);
+                    else
+                    {
+                        power = _initatives.Select(x => x.Being).SelectMany(x => x.TechPowers).FirstOrDefault(x => x.Id == value);
+                        if (power != null)
+                            _concentrationPowers.Add(key, power);
+                    }
                 }
             }
             StateHasChanged();

@@ -1,0 +1,52 @@
+﻿@if (Powers.Count > 0)
+{
+    <MudItem xs="12">
+        <div class="d-flex flex-column">
+            <text style="font-size: large"><b>@Title</b></text>
+            <hr style="margin-top: -3px"/>
+        </div>
+        @foreach (var power in Powers)
+        {
+            <MudPaper Class="pa-2" Elevation="0" Outlined="true">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1 text-danger">
+                        <b>@power.Name</b>
+                    </div>
+                    @if (ShowCast)
+                    {
+                        <MudButton Variant="Variant.Filled" OnClick="@(() => TechClicked(power))" Color="Color.Error" Class="me-2">CAST</MudButton>
+                    }
+                    @if (power == _selectedTechPower)
+                    {
+                        <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Filled.ExpandLess" OnClick="@(() => HideTechPower())" />
+                    }
+                    else
+                    {
+                        <MudIconButton Variant="Variant.Filled" Color="Color.Primary" Icon="@Icons.Filled.ExpandMore" OnClick="@(() => ShowTechPower(power))" />
+                    }
+                </div>
+                @if (power == _selectedTechPower)
+                {
+                    <div class="d-flex flex-column">
+                        <text><b>Concentration:</b> @power.Concentration</text>
+                        <text><b>Hit:</b> @power.HitOption.GetStringValue()</text>
+                        @if (!string.IsNullOrWhiteSpace(power.HitDescription))
+                        {
+                            <div><b>Description:</b> @power.HitDescription</div>
+                        }
+                        <text><b>Casting Time:</b> @power.CastingPeriod.GetStringValue()</text>
+                        <text><b>Range:</b> @power.Range.GetStringValue()</text>
+                        <text><b>Duration:</b> @power.Duration</text>
+                        <br/>
+                        <text>@power.Description</text>
+                        @if (!string.IsNullOrEmpty(power.Overcharge))
+                        {
+                            <br/>
+                            <div><b>Overcharge:</b> @power.Overcharge</div>
+                        }
+                    </div>
+                }
+            </MudPaper>
+        }
+    </MudItem>
+}

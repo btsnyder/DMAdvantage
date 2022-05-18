@@ -93,9 +93,11 @@ namespace DMAdvantage.Data
                     .Include(c => c.Abilities)
                     .Include(c => c.Class)
                     .Include(c => c.ForcePowers)
+                    .Include(c => c.TechPowers)
                     .Include(c => c.Weapons).ThenInclude(w => w.Properties),
                 nameof(Creature) => (IQueryable<T>)Creatures
                     .Include(c => c.ForcePowers)
+                    .Include(c => c.TechPowers)
                     .Include(c => c.Actions),
                 nameof(Encounter) => (IQueryable<T>)Encounters
                     .Include(e => e.InitativeData).ThenInclude(i => i.Character)

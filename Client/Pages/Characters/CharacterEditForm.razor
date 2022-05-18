@@ -151,7 +151,7 @@ else
     void ShowInfo(ForcePower power)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        var parameters = new DialogParameters {{"ForcePower", power}};
-        DialogService.Show<ForceInfoDialog>(power.Name, parameters, options);
+        var parameters = new DialogParameters {{"Power", power}};
+        DialogService.Show<PowerInfoDialog>(power.Name, parameters, options);
     }
 }

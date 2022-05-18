@@ -11,7 +11,6 @@ namespace DMAdvantage.Client.Pages.TechPowers
         private TechPower _model = new();
         private bool _loading;
         private List<TechPower> _techPowers;
-        private IEnumerable<string> _durations = Array.Empty<string>();
         private List<string> _startingDurations = new();
         private MudForm _form;
         private readonly TechPowerValidator _techPowerValidator = new();
@@ -74,7 +73,7 @@ namespace DMAdvantage.Client.Pages.TechPowers
         private Task<IEnumerable<string>> DurationSearch(string value)
         {
             if (string.IsNullOrWhiteSpace(value)) return Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
-            return Task.FromResult(_durations
+            return Task.FromResult(_startingDurations
                 .Where(x => x.ToLower().Contains(value.ToLower())));
         }
     }

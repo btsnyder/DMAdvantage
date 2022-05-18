@@ -138,10 +138,10 @@ else if (_model != null)
             <text>Light</text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Light).PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.PowerAttackModifier(ForceAlignment.Light).PrintInt()</b></text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Light)</b></text>
+            <text style="font-size: large"><b>@_model.PowerSavingThrow(ForceAlignment.Light)</b></text>
         </div>
     </div>
     <div class="row mb-2 align-items-center justify-center">
@@ -149,10 +149,10 @@ else if (_model != null)
             <text>Universal</text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.PowerAttackModifier(ForceAlignment.Universal).PrintInt()</b></text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Universal)</b></text>
+            <text style="font-size: large"><b>@_model.PowerSavingThrow(ForceAlignment.Universal)</b></text>
         </div>
     </div>
     <div class="row mb-2 align-items-center justify-center">
@@ -160,10 +160,10 @@ else if (_model != null)
             <text>Dark</text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
+            <text style="font-size: large"><b>@_model.PowerAttackModifier(ForceAlignment.Dark).PrintInt()</b></text>
         </div>
         <div class="col">
-            <text style="font-size: large"><b>@_model.ForceSavingThrow(ForceAlignment.Dark)</b></text>
+            <text style="font-size: large"><b>@_model.PowerSavingThrow(ForceAlignment.Dark)</b></text>
         </div>
     </div>
     @for (var i = 0; i <= _model.MaxForcePowerLevel; i++)
@@ -205,8 +205,8 @@ else
     void ShowInfo(ForcePower power)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
-        var parameters = new DialogParameters {{"ForcePower", power}};
-        DialogService.Show<ForceInfoDialog>(power.Name, parameters, options);
+        var parameters = new DialogParameters {{"Power", power}};
+        DialogService.Show<PowerInfoDialog>(power.Name, parameters, options);
     }
 
     void ShowAbility(Ability ability)

@@ -1,5 +1,4 @@
 ﻿using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Components;
 
 namespace DMAdvantage.Client.Shared
