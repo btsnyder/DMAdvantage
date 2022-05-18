@@ -211,6 +211,17 @@ namespace DMAdvantage.Client.Pages.Encounters
             _initatives = new List<InitativeDataModel>(sorted);
         }
 
+        private void LongRest()
+        {
+            foreach (var i in _initatives)
+            {
+                i.CurrentHP = i.Being.HitPoints;
+                i.CurrentHitDice = i.Being is Character character ? character.Level : 0;
+                i.CurrentFP = i.Being.ForcePoints;
+                i.CurrentTP = i.Being.TechPoints;
+            }
+        }
+
         private void InitativeNext()
         {
             int index;
