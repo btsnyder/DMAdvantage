@@ -48,16 +48,19 @@ namespace DMAdvantage.Data
         {
             base.OnConfiguring(bldr);
 
-            var dbKey = _configuration["ConnectionVariable:Key"];
-            var connectionString = Environment.GetEnvironmentVariable(dbKey);
 
-            if (!bldr.IsConfigured && connectionString != null)
+
+            if (!bldr.IsConfigured)
+            {
+                var dbKey = _configuration["ConnectionVariable:Key"];
+                var connectionString = Environment.GetEnvironmentVariable(dbKey) ?? string.Empty;
                 bldr.UseSqlServer(connectionString,
-                    b =>
-                    {
-                        b.MigrationsAssembly("DMAdvantage.Server");
-                        b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
-                    });
+                        b =>
+                        {
+                            b.MigrationsAssembly("DMAdvantage.Server");
+                            b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                        });
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

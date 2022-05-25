@@ -29,6 +29,8 @@ namespace DMAdvantage.Shared.Services.Kafka
 
         public void SendMessage(KafkaMessage message)
         {
+            if (_producer == null)
+                return;
             _producer.Produce(message.Topic, new Message<string, string> { Key = message.User, Value = message.Value },
                 (deliveryReport) =>
                 {
