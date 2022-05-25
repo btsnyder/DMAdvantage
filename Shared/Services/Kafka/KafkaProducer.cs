@@ -9,9 +9,10 @@ namespace DMAdvantage.Shared.Services.Kafka
 
         public KafkaProducer()
         {
+            var host = Environment.GetEnvironmentVariable("DM_KAFKA");
             _config = new Dictionary<string, string>
             {
-                { "bootstrap.servers", "localhost:9092"}
+                { "bootstrap.servers", host }
             };
         }
 

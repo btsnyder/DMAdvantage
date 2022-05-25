@@ -4,10 +4,6 @@
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
 
-<div Class="d-flex align-items-center mb-5">
-    <MudText Class="fw-bold" Typo="Typo.h3">Weapon Properties</MudText> 
-    <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("weaponproperties/add"))"/>
-</div>
 @if (_loading)
 {
     <LightsaberLoad />
@@ -15,7 +11,13 @@
 else
 {
     <MudTable Items="@_weaponProperties" Breakpoint="Breakpoint.Sm" Loading="@_loading" LoadingProgressColor="Color.Info"
-        Outlined="true" Dense="true" Striped="true">
+        Dense="true" Striped="true" Filter="new Func<WeaponProperty,bool>(SearchProperties)">
+        <ToolBarContent>
+            <MudText Class="fw-bold" Typo="Typo.h3">Weapon Properties</MudText>
+            <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo("weaponproperties/add"))"/>
+            <MudSpacer />
+            <MudTextField @bind-Value="search" Placeholder="Search" Adornment="Adornment.Start" Immediate=true AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"/>
+        </ToolBarContent>
         <ColGroup>
             <col />
             <col style="width: 150px;"/>
@@ -42,6 +44,7 @@ else
 
 @code {
     private bool _loading = true; 
+    private string search;
     private List<WeaponProperty>? _weaponProperties;
 
     protected override async Task OnInitializedAsync()
@@ -82,5 +85,14 @@ else
         {
             Snackbar.Add("Error copying property!", Severity.Error);
         }
+    }
+
+    private bool SearchProperties(WeaponProperty property)
+    {
+        if (string.IsNullOrWhiteSpace(search))
+            return true;
+        if (property.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
     }
 }

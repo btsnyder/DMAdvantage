@@ -4,7 +4,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using AutoMapper;
 using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -81,8 +80,9 @@ namespace DMAdvantage.Server.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName)
             };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
+            var tokenVar = _config["Tokens:Key"];
+            var tokenKey = Environment.GetEnvironmentVariable(tokenVar) ?? string.Empty;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 

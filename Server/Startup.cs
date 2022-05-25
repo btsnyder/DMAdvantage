@@ -3,9 +3,6 @@ using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.Extensions.Azure;
-using DMAdvantage.Shared.Services;
-using Azure.Security.KeyVault.Secrets;
 using DMAdvantage.Shared.Services.Kafka;
 
 namespace DMAdvantage.Server
@@ -33,6 +30,9 @@ namespace DMAdvantage.Server
             })
             .AddEntityFrameworkStores<DMContext>();
 
+            var tokenKey = Configuration["Tokens:Key"];
+            var token = Environment.GetEnvironmentVariable(tokenKey);
+
             services.AddAuthentication()
                 .AddCookie()
                 .AddJwtBearer(cfg =>
@@ -41,7 +41,7 @@ namespace DMAdvantage.Server
                     {
                         ValidIssuer = Configuration["Tokens:Issuer"],
                         ValidAudience = Configuration["Tokens:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Tokens:Key"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token))
                     };
                 });
 

@@ -13,9 +13,10 @@ namespace DMAdvantage.Shared.Services.Kafka
 
         public KafkaConsumer()
         {
+            var host = Environment.GetEnvironmentVariable("DM_KAFKA");
             _config = new Dictionary<string, string>
             {
-                { "bootstrap.servers", "localhost:9092"},
+                { "bootstrap.servers", host },
                 { "group.id", "dm-advantage" }
             };
         }

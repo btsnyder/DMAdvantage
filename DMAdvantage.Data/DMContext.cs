@@ -14,9 +14,9 @@ namespace DMAdvantage.Data
 {
     public class DMContext: IdentityDbContext<User>
     {
-        private readonly IConfiguration? _configuration;
+        private readonly IConfiguration _configuration;
 
-        public DMContext(DbContextOptions<DMContext> options, IConfiguration? configuration) : base(options)
+        public DMContext(DbContextOptions<DMContext> options, IConfiguration configuration) : base(options)
         {
             _configuration = configuration;
         }
@@ -48,9 +48,10 @@ namespace DMAdvantage.Data
         {
             base.OnConfiguring(bldr);
 
-            var connectionString = _configuration.GetConnectionString("DbConnectionString");
+            var dbKey = _configuration["ConnectionVariable:Key"];
+            var connectionString = Environment.GetEnvironmentVariable(dbKey);
 
-            if (!bldr.IsConfigured)
+            if (!bldr.IsConfigured && connectionString != null)
                 bldr.UseSqlServer(connectionString,
                     b =>
                     {
