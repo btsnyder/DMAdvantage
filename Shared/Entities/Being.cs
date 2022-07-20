@@ -23,5 +23,7 @@
         public int MaxForcePowerLevel { get; set; }
         public ICollection<TechPower> TechPowers { get; set; } = new List<TechPower>();
         public int TechPoints { get; set; }
+        public int TotalTechPowers { get; set; }
+        public int MaxTechPowerLevel { get; set; }
     }
 }

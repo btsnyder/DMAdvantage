@@ -141,6 +141,36 @@ else
                     </MudButton>
                 }
             }
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_model.TechPoints" Label="Points" Variant="Variant.Outlined" For="() => _model.TechPoints" Validation="@(_characterValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_model.MaxTechPowerLevel" Label="Max Level" Variant="Variant.Outlined" For="() => _model.MaxTechPowerLevel" Validation="@(_characterValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="4">
+                <MudNumericField @bind-Value="_model.TotalTechPowers" Label="Powers Known" Variant="Variant.Outlined" For="() => _model.TotalTechPowers" Validation="@(_characterValidator.ValidateValue)"/>
+            </MudItem>
+            @for (var i = 0; i <= _model.MaxTechPowerLevel; i++)
+            {
+                int display = i;
+                <MudItem xs="12" Class="pb-0">
+                    <MudText Typo="Typo.h4">Level @display</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <hr/>
+                </MudItem>
+                @foreach (var power in _techPowers.Where(x => x.Level == i))
+                {
+                    <MudButton Variant="Variant.Filled" Color="@TechColor(power)" Class="px-2 py-1 ma-2" OnClick="@(() => UpdateTechPower(power))" Disabled="@IsDisabled(power)">
+                        <MudGrid>
+                            <MudItem xs="12" Class="d-flex justify-space-between">
+                                <MudText Class="pt-2">@power.Name</MudText>
+                                <MudIconButton Class="pa-2 px-0" Icon="@Icons.Material.Filled.Info" Style="@($"color:{Colors.Shades.White}")" OnClick="@(() => ShowInfo(power))"></MudIconButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudButton>
+                }
+            }
             <Submit CancelRef="characters" OnClick="OnSubmit"/>
         </MudGrid>
     </MudForm>
@@ -148,7 +178,7 @@ else
 
 @code
 {
-    void ShowInfo(ForcePower power)
+    void ShowInfo(Power power)
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
         var parameters = new DialogParameters {{"Power", power}};

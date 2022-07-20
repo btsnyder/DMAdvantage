@@ -8,11 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace TestEngineering.Mocks
+namespace TestEngineering
 {
     public class TestServerFactory
     {
         private readonly Guid _databaseId = Guid.NewGuid();
+
+        public static readonly string CurrentUser = "testuser@email.com";
+        public static readonly string CurrentPassword = "P@ssw0rd";
 
         public TestServer Create()
         {
@@ -49,10 +52,10 @@ namespace TestEngineering.Mocks
                 var userManager = scopedServices.GetRequiredService<UserManager<User>>();
                 var result = Task.Run(async () => await userManager.CreateAsync(new User
                     {
-                        UserName = MockHttpContext.CurrentUser,
-                        Email = MockHttpContext.CurrentUser
-                    }, 
-                    MockSigninManagerFactory.CurrentPassword))
+                        UserName = CurrentUser,
+                        Email = CurrentUser
+                    },
+                    CurrentPassword))
                     .Result;
                 if (result != IdentityResult.Success)
                 {

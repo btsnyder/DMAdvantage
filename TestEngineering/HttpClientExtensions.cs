@@ -5,7 +5,6 @@ using FluentAssertions;
 using System.Net;
 using System.Text;
 using System.Text.Json;
-using TestEngineering.Mocks;
 
 namespace TestEngineering
 {
@@ -207,8 +206,8 @@ namespace TestEngineering
         {
             var login = new LoginRequest
             {
-                Username = MockHttpContext.CurrentUser,
-                Password = MockSigninManagerFactory.CurrentPassword,
+                Username = TestServerFactory.CurrentUser,
+                Password = TestServerFactory.CurrentPassword,
             };
 
             var response = await client.PostAsync("/api/account/token", login);

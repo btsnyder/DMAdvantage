@@ -13,42 +13,22 @@
             @*<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />*@
             <MudText Typo="Typo.h5" Class="mx-3">DM Advantage</MudText> 
             <MudMenu Class="mx-3" StartIcon="@Icons.Filled.BarChart" Label="Data">
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("characters"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.Person"/>Characters
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("creatures"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.CrueltyFree"/>Creatures
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("forcepowers"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.BackHand"/>Force Powers
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("techpowers"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.FlashOn"/>Tech Powers
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("abilities"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.PersonAdd"/>Abilities
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("classes"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.Star"/>Classes
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("weapons"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.AutoFixHigh"/>Weapons
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("weaponproperties"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.Build"/>Weapon Properties
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("enemyships"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.DirectionsBoat"/>Ships
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("playerships"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.AirplanemodeActive"/>Player Ships
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("shipweapons"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.AutoFixHigh"/>Ship Weapons
-                </MudMenuItem>
-                <MudMenuItem OnClick="@(() => NavigationManager.NavigateTo("shipweaponproperties"))">
-                    <MudIcon Class="me-2" Icon="@Icons.Filled.Build"/>Ship Weapon Properties
-                </MudMenuItem>
+                <MudNavLink Href="/characters" Icon="@Icons.Filled.Person">Characters</MudNavLink>
+                <MudNavLink Href="/creatures" Icon="@Icons.Filled.CrueltyFree">Creatures</MudNavLink>
+                <MudNavGroup Title="Modifiers">
+                    <MudNavLink Href="/forcepowers" Icon="@Icons.Filled.BackHand">Force Powers</MudNavLink>
+                    <MudNavLink Href="/techpowers" Icon="@Icons.Filled.FlashOn">Tech Powers</MudNavLink>
+                    <MudNavLink Href="/abilities" Icon="@Icons.Filled.PersonAdd">Abilities</MudNavLink>
+                    <MudNavLink Href="/classes" Icon="@Icons.Filled.Star">Classes</MudNavLink>
+                    <MudNavLink Href="/weapons" Icon="@Icons.Filled.AutoFixHigh">Weapons</MudNavLink>
+                    <MudNavLink Href="/weaponproperties" Icon="@Icons.Filled.Build">Weapon Properties</MudNavLink>
+                </MudNavGroup>
+                <MudNavGroup Title="Ships" Style="width: 250px;">
+                    <MudNavLink Href="/enemyships" Icon="@Icons.Filled.DirectionsBoat">Ships</MudNavLink>
+                    <MudNavLink Href="/playerships" Icon="@Icons.Filled.AirplanemodeActive">Player Ships</MudNavLink>
+                    <MudNavLink Href="/shipweapons" Icon="@Icons.Filled.Star">Ship Weapons</MudNavLink>
+                    <MudNavLink Href="/shipweaponproperties" Icon="@Icons.Filled.Build">Ship Weapon Properties</MudNavLink>
+                </MudNavGroup>
             </MudMenu>
             <MudButton Class="mx-3" StartIcon="@Icons.Filled.Fort"
                 OnClick="@(() => NavigationManager.NavigateTo("encounters"))">Encounters</MudButton>

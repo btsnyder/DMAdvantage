@@ -21,11 +21,9 @@ namespace DMAdvantage.Server.Controllers
 
         public ShipEncountersController(DMContext context,
             ILogger<ShipEncountersController> logger,
-            UserManager<User> userManager,
-            KafkaProducer producer)
+            UserManager<User> userManager)
             : base(context, logger, userManager)
         {
-            _producer = producer;
         }
 
         [HttpGet]
@@ -112,7 +110,7 @@ namespace DMAdvantage.Server.Controllers
 
                 await UpdateEncounter(entityFromRepo, request);
                 _context.SaveAll();
-                _producer.SendMessage(new KafkaMessage { Topic = Topics.ShipEncounters, User = username, Value = KafkaValues.Updated });
+                _producer?.SendMessage(new KafkaMessage { Topic = Topics.ShipEncounters, User = username, Value = KafkaValues.Updated });
                 return NoContent();
             }
             catch (Exception ex)

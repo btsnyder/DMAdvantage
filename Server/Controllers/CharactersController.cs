@@ -86,6 +86,9 @@ namespace DMAdvantage.Server.Controllers
             var forcePowers = _context.ForcePowers
                 .Where(x => request.ForcePowers.Select(f => f.Id).Contains(x.Id)).ToList();
             entity.Entity.ForcePowers = forcePowers;
+            var techPowers = _context.TechPowers
+                .Where(x => request.TechPowers.Select(f => f.Id).Contains(x.Id)).ToList();
+            entity.Entity.TechPowers = techPowers;
             var dmclass = _context.DMClasses
                 .FirstOrDefault(x => request.Class != null && request.Class.Id == x.Id);
             entity.Entity.Class = dmclass;

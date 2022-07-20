@@ -37,10 +37,10 @@ namespace DMAdvantage.Shared.Models
                 EnemyShip = enemyShip;
                 EnemyShipId = enemyShip.Id;
             }
-            CurrentHull = ship.HullPoints;
-            CurrentHullHitDice = ship.HullHitDiceNumber;
-            CurrentShield = ship.ShieldPoints;
-            CurrentShieldHitDice = ship.ShieldHitDiceNumber;
+            CurrentHull = data.CurrentHull;
+            CurrentHullHitDice = data.CurrentHullHitDice;
+            CurrentShield = data.CurrentShield;
+            CurrentShieldHitDice = data.CurrentShieldHitDice;
         }
 
         public string Name => Ship?.Name;

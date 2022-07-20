@@ -1,5 +1,4 @@
 ﻿using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -8,11 +7,10 @@ using System.Linq.Expressions;
 using System.Text.Json;
 using DMAdvantage.Shared.Enums;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using DMAdvantage.Shared.Services;
 
 namespace DMAdvantage.Data
 {
-    public class DMContext: IdentityDbContext<User>
+    public class DMContext : IdentityDbContext<User>
     {
         private readonly IConfiguration _configuration;
 

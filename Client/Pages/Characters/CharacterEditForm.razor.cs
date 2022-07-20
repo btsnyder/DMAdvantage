@@ -10,6 +10,7 @@ namespace DMAdvantage.Client.Pages.Characters
     {
         private Character _model = new();
         private List<ForcePower> _forcePowers = new();
+        private List<TechPower> _techPowers = new();
         private List<DMClass> _classes = new();
         private MudForm _form;
         private bool _loading;
@@ -29,6 +30,7 @@ namespace DMAdvantage.Client.Pages.Characters
                 _model = await ApiService.GetEntityById<Character>(Guid.Parse(Id)) ?? new Character();
             }
             _forcePowers = await ApiService.GetAllEntities<ForcePower>() ?? new List<ForcePower>();
+            _techPowers = await ApiService.GetAllEntities<TechPower>() ?? new List<TechPower>();
             _classes = await ApiService.GetAllEntities<DMClass>() ?? new List<DMClass>();
 
             await base.OnInitializedAsync();
@@ -96,6 +98,23 @@ namespace DMAdvantage.Client.Pages.Characters
             return _forcePowers.First(x => x.Id == id).Name;
         }
 
+        private Color TechColor(TechPower power)
+        {
+            return _model.TechPowers.Contains(power) ? Color.Primary : Color.Dark;
+        }
+
+        private void UpdateTechPower(TechPower power)
+        {
+            if (_model.TechPowers.Contains(power))
+            {
+                _model.TechPowers.Remove(power);
+            }
+            else
+            {
+                _model.TechPowers.Add(power);
+            }
+        }
+
         private bool IsDisabled(ForcePower power)
         {
             if (_model.ForcePowers.Contains(power))
@@ -106,6 +125,15 @@ namespace DMAdvantage.Client.Pages.Characters
             {
                 return !_model.ForcePowers.Any(f => f.Id == power.PrerequisiteId.Value);
             }
+            return false;
+        }
+
+        private bool IsDisabled(TechPower power)
+        {
+            if (_model.TechPowers.Contains(power))
+                return false;
+            if (_model.TechPowers.Count >= _model.TotalTechPowers)
+                return true;
             return false;
         }
     }

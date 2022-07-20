@@ -5,7 +5,6 @@ using DMAdvantage.Shared.Models;
 using FluentAssertions;
 using Microsoft.AspNetCore.TestHost;
 using TestEngineering;
-using TestEngineering.Mocks;
 using Xunit;
 
 namespace DMAdvantage.IntegrationTests.Controllers
@@ -25,8 +24,8 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var login = new LoginRequest
             {
-                Username = MockHttpContext.CurrentUser,
-                Password = MockSigninManagerFactory.CurrentPassword,
+                Username = TestServerFactory.CurrentUser,
+                Password = TestServerFactory.CurrentPassword,
             };
             var client = _server.CreateClient();
 
@@ -41,7 +40,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var login = new LoginRequest
             {
-                Username = MockHttpContext.CurrentUser,
+                Username = TestServerFactory.CurrentUser,
                 Password = "badpassword",
             };
             var client = _server.CreateClient();
