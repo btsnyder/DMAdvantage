@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class WeaponPropertyValidator : BaseValidator<WeaponProperty>
+    public class EquipmentValidator : BaseValidator<Equipment>
     {
-        public WeaponPropertyValidator()
+        public EquipmentValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
         }

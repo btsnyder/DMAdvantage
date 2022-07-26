@@ -24,7 +24,7 @@ namespace DMAdvantage.Server.Controllers
             try
             {
                 var entity = await _context.Encounters
-                    .Include(e => e.InitativeData)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.EquipmentQuantities)
                     .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == id);
  
@@ -43,6 +43,10 @@ namespace DMAdvantage.Server.Controllers
                             i.Creature = await _context.GetQueryable<Creature>()
                                 .AsNoTracking()
                                 .FirstOrDefaultAsync(c => c.Id == i.CreatureId);
+                        }
+                        foreach (var e in i.EquipmentQuantities)
+                        {
+                            e.Equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.Id == e.EquipmentId);
                         }
                     }
                     return Ok(entity);

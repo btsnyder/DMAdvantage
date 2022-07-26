@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.TestHost;
 using TestEngineering;
 using Xunit;
 
-namespace DMAdvantage.IntegrationTests.Controllers
+namespace DMAdvantage.UnitTests.Controllers
 {
     public class ClassTests
     {

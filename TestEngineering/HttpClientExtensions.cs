@@ -63,6 +63,9 @@ namespace TestEngineering
             weapon.Properties = null;
             weapon.User = null;
             character.Weapons.Add(weapon);
+            var equipment = await client.CreateEquipment();
+            equipment.User = null;
+            character.Equipments.Add(equipment);
             var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Character>()}", character);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<Character>();
@@ -199,6 +202,15 @@ namespace TestEngineering
             var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}", property);
             response.StatusCode.Should().Be(HttpStatusCode.Created);
             var created = await response.ParseEntity<WeaponProperty>();
+            return created;
+        }
+
+        public static async Task<Equipment> CreateEquipment(this HttpClient client, Equipment? equipment = null)
+        {
+            equipment ??= Generation.Equipment();
+            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Equipment>()}", equipment);
+            response.StatusCode.Should().Be(HttpStatusCode.Created);
+            var created = await response.ParseEntity<Equipment>();
             return created;
         }
 

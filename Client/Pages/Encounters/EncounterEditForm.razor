@@ -449,7 +449,24 @@ else
                                         </MudGrid>
                                     </MudPaper>
                                 }
+                                @foreach (var equipment in _selectedInitative.EquipmentQuantities)
+                                {
+                                    <MudPaper Class="my-4 pa-4" Elevation="3" Outlined="true">
+                                        <MudGrid>
+                                            <MudItem xs="5">@equipment.Equipment.Name</MudItem>
+                                            <MudItem xs="3">@equipment.Quantity</MudItem>
+                                            <MudItem xs="2">
+                                                <MudButton Color="Color.Error" OnClick="@(() => equipment.Quantity--)">USE</MudButton>
+                                            </MudItem>
+                                            <MudItem xs="2">
+                                                <MudButton Color="Color.Success" OnClick="@(() => equipment.Quantity++)">ADD</MudButton>
+                                            </MudItem>
+                                            <MudItem xs="12">@equipment.Equipment.Description</MudItem>
+                                        </MudGrid>
+                                    </MudPaper>
+                                }
                             }
+                            
                             @if (_selectedInitative.Creature != null)
                             {
                                 @foreach (var action in _selectedInitative.Creature.Actions)

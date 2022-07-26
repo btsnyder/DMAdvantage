@@ -1,13 +1,10 @@
 using DMAdvantage.Shared.Entities;
 using FluentValidation;
-using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class ForcePowerValidator : AbstractValidator<ForcePower>
+    public class ForcePowerValidator : BaseValidator<ForcePower>
     {
-        public ISnackbar? Snackbar { get; set; }
-
         public ForcePowerValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
@@ -15,19 +12,5 @@ namespace DMAdvantage.Client.Validators
             RuleFor(x => x.Level).InclusiveBetween(0, 10);
             RuleFor(x => x.Duration).NotEmpty();
         }
-
-        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
-        {
-            var result = await ValidateAsync(ValidationContext<ForcePower>.CreateWithOptions((ForcePower)model, x => x.IncludeProperties(propertyName)));
-            if (result.IsValid)
-                return Array.Empty<string>();
-            var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
-            if (Snackbar == null) return errors;
-            foreach (var error in errors)
-            {
-                Snackbar.Add(error, MudBlazor.Severity.Error);
-            }
-            return errors;
-        };
     }
 }

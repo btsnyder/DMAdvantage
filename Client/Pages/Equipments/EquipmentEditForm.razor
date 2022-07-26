@@ -1,0 +1,31 @@
+﻿@inherits MudComponentBase
+@inject IDialogService DialogService
+
+@if (_loading)
+{
+    <LightsaberLoad />
+}
+else
+{
+    <MudForm Model="@_model" @ref="@_form">
+        <MudGrid Class="mb-5">
+            <MudItem xs="6">
+                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_equipmentValidator.ValidateValue)"/>
+            </MudItem>
+            <MudItem xs="6">
+                 <MudSelect T="EquipmentCategory" @bind-Value="@_model.Category" Label="Category" Variant="Variant.Outlined" For="() => _model.Category">
+                    @foreach (var category in Enum.GetValues<EquipmentCategory>())
+                    {
+                        <MudSelectItem Value="@category">@category.GetStringValue()</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_model.Description" Label="Description" Variant="Variant.Outlined" For="() => _model.Description" Lines="10"/>
+            </MudItem>
+
+            <Submit CancelRef="equipments" OnClick="OnSubmit"/>
+        </MudGrid>
+    </MudForm>
+}

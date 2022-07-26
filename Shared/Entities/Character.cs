@@ -34,5 +34,6 @@
 
         public ICollection<Weapon> Weapons { get; set; } = new List<Weapon>();
         public ICollection<Ability> Abilities { get; set; } = new List<Ability>();
+        public ICollection<Equipment> Equipments { get; set; } = new List<Equipment>();
     }
 }

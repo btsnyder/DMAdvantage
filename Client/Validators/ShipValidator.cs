@@ -1,13 +1,11 @@
 ﻿using DMAdvantage.Shared.Entities;
 using FluentValidation;
-using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class ShipValidator : AbstractValidator<Ship>
+    public class ShipValidator : BaseValidator<Ship>
     {
         private int[] _possibleHitDice = new int[] { 4, 6, 8, 10, 12 };
-        public ISnackbar? Snackbar { get; set; }
 
         public ShipValidator()
         {
@@ -31,19 +29,5 @@ namespace DMAdvantage.Client.Validators
             RuleFor(x => x.Charisma).InclusiveBetween(0, 20);
             RuleFor(x => x.CharismaBonus).InclusiveBetween(-10, 10);
         }
-
-        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
-        {
-            var result = await ValidateAsync(ValidationContext<Ship>.CreateWithOptions((Ship)model, x => x.IncludeProperties(propertyName)));
-            if (result.IsValid)
-                return Array.Empty<string>();
-            var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
-            if (Snackbar == null) return errors;
-            foreach (var error in errors)
-            {
-                Snackbar.Add(error, MudBlazor.Severity.Error);
-            }
-            return errors;
-        };
     }
 }

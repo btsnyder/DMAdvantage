@@ -1,13 +1,10 @@
 ﻿using DMAdvantage.Shared.Entities;
 using FluentValidation;
-using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class CreatureValidator : AbstractValidator<Creature>
+    public class CreatureValidator : BaseValidator<Creature>
     {
-        public ISnackbar? Snackbar { get; set; }
-
         public CreatureValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
@@ -31,19 +28,5 @@ namespace DMAdvantage.Client.Validators
             RuleFor(x => x.TotalForcePowers).InclusiveBetween(0, 50);
             RuleFor(x => x.MaxForcePowerLevel).InclusiveBetween(0, 10);
         }
-
-        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
-        {
-            var result = await ValidateAsync(ValidationContext<Creature>.CreateWithOptions((Creature)model, x => x.IncludeProperties(propertyName)));
-            if (result.IsValid)
-                return Array.Empty<string>();
-            var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
-            if (Snackbar == null) return errors;
-            foreach (var error in errors)
-            {
-                Snackbar.Add(error, MudBlazor.Severity.Error);
-            }
-            return errors;
-        };
     }
 }

@@ -84,6 +84,16 @@ namespace TestEngineering
             };
         }
 
+        public static Equipment Equipment()
+        {
+            return new Equipment
+            {
+                Description = Nonsense(),
+                Name = Nonsense(),
+                Category = RandomEnum<EquipmentCategory>()
+            };
+        }
+
         public static bool? NullableBoolean()
         {
             var i = Faker.RandomNumber.Next(0, 2);

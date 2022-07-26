@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.TestHost;
 using TestEngineering;
 using Xunit;
 
-namespace DMAdvantage.IntegrationTests.Controllers
+namespace DMAdvantage.UnitTests.Controllers
 {
     public class CharacterTests
     {
@@ -162,6 +162,10 @@ namespace DMAdvantage.IntegrationTests.Controllers
             var newWeapon = await client.CreateWeapon();
             newWeapon.User = null;
             newCharacter.Weapons.Add(newWeapon);
+            var newEquipment = await client.CreateEquipment();
+            newEquipment.User = null;
+            newEquipment.Characters = new List<Character>();
+            newCharacter.Equipments.Add(newEquipment);
 
             var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<Character>()}/{character.Id}", newCharacter);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);

@@ -104,6 +104,9 @@ else
             <MudItem xs="12">
                 <MultipleEntityDropdown TEntity="Ability" @bind-SelectedEntities="_model.Abilities" Label="Abilities"/>
             </MudItem>
+            <MudItem xs="12">
+                <MultipleEntityDropdown TEntity="Equipment" @bind-SelectedEntities="_model.Equipments" Label="Equipments"/>
+            </MudItem>
 
             <MudItem xs="4">
                 <MudNumericField @bind-Value="_model.ForcePoints" Label="Points" Variant="Variant.Outlined" For="() => _model.ForcePoints" Validation="@(_characterValidator.ValidateValue)"/>
@@ -123,23 +126,25 @@ else
                 <MudItem xs="12">
                     <hr/>
                 </MudItem>
-                @foreach (var power in _forcePowers.Where(x => x.Level == i))
-                {
-                    <MudButton Variant="Variant.Filled" Color="@ForceColor(power)" Class="px-2 py-1 ma-2" OnClick="@(() => UpdateForcePower(power))" Disabled="@IsDisabled(power)">
-                        <MudGrid>
-                            <MudItem xs="12" Class="d-flex pb-0 justify-space-between">
-                                <MudText Class="pa-0">@power.Name</MudText>
-                                <MudIconButton Class="pa-0" Icon="@Icons.Material.Filled.Info" Style="@($"color:{Colors.Shades.White}")" OnClick="@(() => ShowInfo(power))"></MudIconButton>
-                            </MudItem>
-                            <MudItem xs="12" Class="d-flex pt-0">
-                                @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)
-                                {
-                                    <MudText Class="pa-0" style="font-size: 10px">Pre-Req: @GetPowerName(power.PrerequisiteId)</MudText>
-                                }
-                            </MudItem>
-                        </MudGrid>
-                    </MudButton>
-                }
+                <MudItem xs="12">
+                    @foreach (var power in _forcePowers.Where(x => x.Level == i))
+                    {
+                        <MudButton Variant="Variant.Filled" Color="@ForceColor(power)" Class="px-2 py-1 ma-2" OnClick="@(() => UpdateForcePower(power))" Disabled="@IsDisabled(power)">
+                            <MudGrid>
+                                <MudItem xs="12" Class="d-flex pb-0 justify-space-between">
+                                    <MudText Class="pa-0">@power.Name</MudText>
+                                    <MudIconButton Class="pa-0" Icon="@Icons.Material.Filled.Info" Style="@($"color:{Colors.Shades.White}")" OnClick="@(() => ShowInfo(power))"></MudIconButton>
+                                </MudItem>
+                                <MudItem xs="12" Class="d-flex pt-0">
+                                    @if (power.PrerequisiteId != null && power.PrerequisiteId != Guid.Empty)
+                                    {
+                                        <MudText Class="pa-0" style="font-size: 10px">Pre-Req: @GetPowerName(power.PrerequisiteId)</MudText>
+                                    }
+                                </MudItem>
+                            </MudGrid>
+                        </MudButton>
+                    }
+                </MudItem>
             }
             <MudItem xs="4">
                 <MudNumericField @bind-Value="_model.TechPoints" Label="Points" Variant="Variant.Outlined" For="() => _model.TechPoints" Validation="@(_characterValidator.ValidateValue)"/>

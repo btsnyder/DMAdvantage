@@ -21,9 +21,11 @@ namespace DMAdvantage.Server.Controllers
 
         public EncountersController(DMContext context,
             ILogger<EncountersController> logger,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            KafkaProducer producer)
             : base(context, logger, userManager)
         {
+            _producer = producer;
         }
 
         [HttpGet]
@@ -154,6 +156,7 @@ namespace DMAdvantage.Server.Controllers
                     initativeEntry = _context.Entry(dataFromRepo);
                 data.Id = initativeEntry.Entity.Id;
                 initativeEntry.CurrentValues.SetValues(data);
+                initativeEntry.Entity.EquipmentQuantities = data.EquipmentQuantities;
                 initativeEntry.Entity.User = currentUser;
 
                 initativeData.Add(initativeEntry.Entity);

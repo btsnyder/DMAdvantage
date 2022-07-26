@@ -95,6 +95,9 @@ namespace DMAdvantage.Server.Controllers
             var weapons = _context.Weapons
                 .Where(x => request.Weapons.Select(f => f.Id).Contains(x.Id)).ToList();
             entity.Entity.Weapons = weapons;
+            var equipments = _context.Equipments
+                .Where(x => request.Equipments.Select(f => f.Id).Contains(x.Id)).ToList();
+            entity.Entity.Equipments = equipments;
             return entity.Entity;
         }
 

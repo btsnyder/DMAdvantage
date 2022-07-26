@@ -4,6 +4,7 @@ using DMAdvantage.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMAdvantage.Server.Migrations
 {
     [DbContext(typeof(DMContext))]
-    partial class ContextModelSnapshot : ModelSnapshot
+    [Migration("20220720192653_CharacterEquipment")]
+    partial class CharacterEquipment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,21 +52,6 @@ namespace DMAdvantage.Server.Migrations
                     b.HasIndex("CreaturesId");
 
                     b.ToTable("BaseActionCreature");
-                });
-
-            modelBuilder.Entity("CharacterEquipment", b =>
-                {
-                    b.Property<Guid>("CharactersId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EquipmentsId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("CharactersId", "EquipmentsId");
-
-                    b.HasIndex("EquipmentsId");
-
-                    b.ToTable("CharacterEquipment");
                 });
 
             modelBuilder.Entity("CharacterForcePower", b =>
@@ -342,6 +329,24 @@ namespace DMAdvantage.Server.Migrations
                     b.ToTable("Characters");
                 });
 
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.CharacterEquipment", b =>
+                {
+                    b.Property<Guid>("CharacterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("EquipmentId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("CharacterId", "EquipmentId");
+
+                    b.HasIndex("EquipmentId");
+
+                    b.ToTable("CharacterEquipment");
+                });
+
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Creature", b =>
                 {
                     b.Property<Guid>("Id")
@@ -509,7 +514,7 @@ namespace DMAdvantage.Server.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Equipments");
+                    b.ToTable("Equipment");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.ForcePower", b =>
@@ -615,24 +620,6 @@ namespace DMAdvantage.Server.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("InitativeData");
-                });
-
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.InitativeEquipmentQuantity", b =>
-                {
-                    b.Property<Guid>("InitativeDataId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("EquipmentId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("InitativeDataId", "EquipmentId");
-
-                    b.HasIndex("EquipmentId");
-
-                    b.ToTable("InitativeEquipmentQuantity");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Ship", b =>
@@ -1330,21 +1317,6 @@ namespace DMAdvantage.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CharacterEquipment", b =>
-                {
-                    b.HasOne("DMAdvantage.Shared.Entities.Character", null)
-                        .WithMany()
-                        .HasForeignKey("CharactersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DMAdvantage.Shared.Entities.Equipment", null)
-                        .WithMany()
-                        .HasForeignKey("EquipmentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("CharacterForcePower", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.Character", null)
@@ -1423,6 +1395,25 @@ namespace DMAdvantage.Server.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DMAdvantage.Shared.Entities.CharacterEquipment", b =>
+                {
+                    b.HasOne("DMAdvantage.Shared.Entities.Character", "Character")
+                        .WithMany("Equipments")
+                        .HasForeignKey("CharacterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMAdvantage.Shared.Entities.Equipment", "Equipment")
+                        .WithMany("Characters")
+                        .HasForeignKey("EquipmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Character");
+
+                    b.Navigation("Equipment");
+                });
+
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Creature", b =>
                 {
                     b.HasOne("DMAdvantage.Shared.Entities.User", "User")
@@ -1495,25 +1486,6 @@ namespace DMAdvantage.Server.Migrations
                     b.Navigation("Encounter");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.InitativeEquipmentQuantity", b =>
-                {
-                    b.HasOne("DMAdvantage.Shared.Entities.Equipment", "Equipment")
-                        .WithMany("InitativeData")
-                        .HasForeignKey("EquipmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DMAdvantage.Shared.Entities.InitativeData", "InitativeData")
-                        .WithMany("EquipmentQuantities")
-                        .HasForeignKey("InitativeDataId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Equipment");
-
-                    b.Navigation("InitativeData");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Ship", b =>
@@ -1718,6 +1690,8 @@ namespace DMAdvantage.Server.Migrations
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Character", b =>
                 {
+                    b.Navigation("Equipments");
+
                     b.Navigation("TechPowers");
                 });
 
@@ -1740,12 +1714,7 @@ namespace DMAdvantage.Server.Migrations
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.Equipment", b =>
                 {
-                    b.Navigation("InitativeData");
-                });
-
-            modelBuilder.Entity("DMAdvantage.Shared.Entities.InitativeData", b =>
-                {
-                    b.Navigation("EquipmentQuantities");
+                    b.Navigation("Characters");
                 });
 
             modelBuilder.Entity("DMAdvantage.Shared.Entities.ShipEncounter", b =>

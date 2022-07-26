@@ -15,6 +15,7 @@
         public Creature Creature { get; set; }
         public Being Being => Character == null ? Creature : Character;
         public bool IsCharacter => Character != null;
+        public List<InitativeEquipmentQuantity> EquipmentQuantities { get; set; } = new List<InitativeEquipmentQuantity>();
 
         public Guid EncounterId { get; set; }
         public Encounter Encounter { get; set; }

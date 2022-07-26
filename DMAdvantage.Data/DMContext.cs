@@ -36,6 +36,7 @@ namespace DMAdvantage.Data
         public DbSet<PlayerShip> PlayerShips => Set<PlayerShip>();
         public DbSet<ShipEncounter> ShipEncounters => Set<ShipEncounter>();
         public DbSet<ShipInitativeData> ShipInitativeData => Set<ShipInitativeData>();
+        public DbSet<Equipment> Equipments => Set<Equipment>();
 
         public bool SaveAll()
         {
@@ -65,11 +66,22 @@ namespace DMAdvantage.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            var converter = new EnumToStringConverter<DamageType>();
-
             AddPropertyList(modelBuilder, (Creature c) => c.Vulnerabilities);
             AddPropertyList(modelBuilder, (Creature c) => c.Immunities);
             AddPropertyList(modelBuilder, (Creature c) => c.Resistances);
+
+            modelBuilder.Entity<InitativeEquipmentQuantity>()
+                .HasKey(t => new { t.InitativeDataId, t.EquipmentId });
+
+            modelBuilder.Entity<InitativeEquipmentQuantity>()
+                .HasOne(pt => pt.InitativeData)
+                .WithMany(p => p.EquipmentQuantities)
+                .HasForeignKey(pt => pt.InitativeDataId);
+
+            modelBuilder.Entity<InitativeEquipmentQuantity>()
+                .HasOne(pt => pt.Equipment)
+                .WithMany(t => t.InitativeData)
+                .HasForeignKey(pt => pt.EquipmentId);
         }
 
         private static void AddPropertyList<T1, T2>(ModelBuilder modelBuilder, Expression<Func<T1, List<T2>>> expression) where T1 : BaseEntity
@@ -96,14 +108,16 @@ namespace DMAdvantage.Data
                     .Include(c => c.Class)
                     .Include(c => c.ForcePowers)
                     .Include(c => c.TechPowers)
-                    .Include(c => c.Weapons).ThenInclude(w => w.Properties),
+                    .Include(c => c.Weapons).ThenInclude(w => w.Properties)
+                    .Include(c => c.Equipments),
                 nameof(Creature) => (IQueryable<T>)Creatures
                     .Include(c => c.ForcePowers)
                     .Include(c => c.TechPowers)
                     .Include(c => c.Actions),
                 nameof(Encounter) => (IQueryable<T>)Encounters
                     .Include(e => e.InitativeData).ThenInclude(i => i.Character)
-                    .Include(e => e.InitativeData).ThenInclude(i => i.Creature),
+                    .Include(e => e.InitativeData).ThenInclude(i => i.Creature)
+                    .Include(e => e.InitativeData).ThenInclude(i => i.EquipmentQuantities).ThenInclude(e => e.Equipment),
                 nameof(Weapon) => (IQueryable<T>)Weapons
                     .Include(w => w.Properties),
                 nameof(EnemyShip) => (IQueryable<T>)EnemyShips

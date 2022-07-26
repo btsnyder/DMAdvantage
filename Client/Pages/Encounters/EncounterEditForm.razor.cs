@@ -101,6 +101,8 @@ namespace DMAdvantage.Client.Pages.Encounters
             }
         }
 
+        private readonly Dictionary<Guid, Equipment?> _equipmentQuantities = new();
+
         private async Task OnValidSubmit()
         {
             lock (_saveLock)
@@ -116,6 +118,12 @@ namespace DMAdvantage.Client.Pages.Encounters
                 _model.InitativeData.Clear();
                 foreach (var init in _initatives)
                 {
+                    foreach (var quantity in init.EquipmentQuantities)
+                    {
+                        _equipmentQuantities[quantity.EquipmentId] = quantity.Equipment;
+                        quantity.Equipment = null;
+                        quantity.InitativeData = null;
+                    }
                     _model.InitativeData.Add(init);
                 }
                 _model.CurrentPlayer = _currentPlayer?.Being?.Id ?? Guid.Empty;
@@ -135,10 +143,18 @@ namespace DMAdvantage.Client.Pages.Encounters
                     await ApiService.UpdateEntity(Guid.Parse(Id ?? string.Empty), _model);
                     Snackbar.Add("Update Successful", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                 }
+                foreach (var init in _initatives)
+                {
+                    foreach (var quantity in init.EquipmentQuantities)
+                    {
+                        quantity.Equipment = _equipmentQuantities[quantity.EquipmentId];
+                        quantity.InitativeData = init;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                Snackbar.Add($"Error submitting change: {ex}", Severity.Error);
+                Snackbar.Add($"Error submitting change!", Severity.Error);
             }
             finally
             {

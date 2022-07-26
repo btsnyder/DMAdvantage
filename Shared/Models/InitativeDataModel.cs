@@ -31,7 +31,24 @@ namespace DMAdvantage.Shared.Models
             if (being is Character character)
             {
                 Character = character;
-                CharacterId= character.Id;
+                CharacterId = character.Id;
+                foreach (var equipment in character.Equipments)
+                {
+                    if (!data.EquipmentQuantities.Any(e => e.EquipmentId == equipment.Id))
+                    {
+                        data.EquipmentQuantities.Add(new InitativeEquipmentQuantity
+                        {
+                            EquipmentId = equipment.Id,
+                            Equipment = equipment,
+                            InitativeDataId = data.Id,
+                            InitativeData = data,
+                        });
+                    }
+                }
+                foreach (var quantity in data.EquipmentQuantities.Where(e => !character.Equipments.Select(e => e.Id).Contains(e.EquipmentId)))
+                {
+                    data.EquipmentQuantities.Remove(quantity);
+                }
             }
             else if (being is Creature creature)
             {
@@ -42,6 +59,7 @@ namespace DMAdvantage.Shared.Models
             CurrentFP = data.CurrentFP;
             CurrentTP = data.CurrentTP;
             CurrentHitDice = data.CurrentHitDice;
+            EquipmentQuantities = data.EquipmentQuantities;
         }
 
         public string Name => Being?.Name;

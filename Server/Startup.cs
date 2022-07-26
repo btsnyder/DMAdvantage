@@ -47,8 +47,8 @@ namespace DMAdvantage.Server
 
             services.AddDbContext<DMContext>();
             services.AddTransient<Seeder>();
-            //services.AddTransient<KafkaConsumer>();
-            //services.AddSingleton<KafkaProducer>();
+            services.AddTransient<KafkaConsumer>();
+            services.AddSingleton<KafkaProducer>();
 
             services.AddRazorPages();
         }

@@ -8,7 +8,6 @@ namespace TestEngineering.Data
         public KafkaTopicsTestData()
         {
             Add(Topics.Encounters);
-            Add(Topics.ShipEncounters);
         }
     }
 }

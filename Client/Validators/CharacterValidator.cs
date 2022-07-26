@@ -1,13 +1,11 @@
 ﻿using DMAdvantage.Shared.Entities;
 using FluentValidation;
-using MudBlazor;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class CharacterValidator : AbstractValidator<Character>
+    public class CharacterValidator : BaseValidator<Character>
     {
-        private int[] _possibleHitDice = new int[] { 6, 8, 10, 12 };
-        public ISnackbar? Snackbar { get; set; }
+        private readonly int[] _possibleHitDice = new int[] { 6, 8, 10, 12 };
 
         public CharacterValidator()
         {
@@ -33,19 +31,5 @@ namespace DMAdvantage.Client.Validators
             RuleFor(x => x.MaxForcePowerLevel).InclusiveBetween(0, 10);
             RuleFor(x => x.Level).InclusiveBetween(1, 20);
         }
-
-        public Func<object, string, Task<IEnumerable<string>>> ValidateValue => async (model, propertyName) =>
-        {
-            var result = await ValidateAsync(ValidationContext<Character>.CreateWithOptions((Character)model, x => x.IncludeProperties(propertyName)));
-            if (result.IsValid)
-                return Array.Empty<string>();
-            var errors = result.Errors.Select(e => e.ErrorMessage).ToList();
-            if (Snackbar == null) return errors;
-            foreach (var error in errors)
-            {
-                Snackbar.Add(error, MudBlazor.Severity.Error);
-            }
-            return errors;
-        };
     }
 }

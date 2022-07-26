@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.TestHost;
 using TestEngineering;
 using Xunit;
 
-namespace DMAdvantage.IntegrationTests.Controllers
+namespace DMAdvantage.UnitTests.Controllers
 {
     public class AbilityTests
     {
@@ -21,7 +21,7 @@ namespace DMAdvantage.IntegrationTests.Controllers
         {
             var factory = new TestServerFactory();
             _server = factory.Create();
-        }   
+        }
 
         [Fact]
         public async Task Get_AuthenticatedPageForUnauthenticatedUser_Unauthorized()
