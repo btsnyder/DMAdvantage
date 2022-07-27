@@ -1,13 +1,11 @@
 ﻿using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
-using DMAdvantage.Shared.Extensions;
 using DMAdvantage.Shared.Models;
 using DMAdvantage.Shared.Query;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -49,8 +47,7 @@ namespace DMAdvantage.Server.Controllers
                 if (username == null)
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-                var entityFromRepo = _context.GetQueryable<EnemyShip>()
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                var entityFromRepo = _context.GetQueryable<EnemyShip>().GetEntityByIdAndUser(username, id);
 
                 if (entityFromRepo == null)
                 {
@@ -81,9 +78,7 @@ namespace DMAdvantage.Server.Controllers
             request.Id = entity.Entity.Id;
             entity.CurrentValues.SetValues(request);
             entity.Entity.User = currentUser;
-            var weapons = _context.ShipWeapons
-                .Where(x => request.Weapons.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.Weapons = weapons;
+            entity.Entity.Weapons = _context.GetEntitiesByIds(request.Weapons);
             return entity.Entity;
         }
 

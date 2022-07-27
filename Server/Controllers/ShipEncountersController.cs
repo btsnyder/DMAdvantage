@@ -21,9 +21,11 @@ namespace DMAdvantage.Server.Controllers
 
         public ShipEncountersController(DMContext context,
             ILogger<ShipEncountersController> logger,
-            UserManager<User> userManager)
+            UserManager<User> userManager,
+            KafkaProducer producer)
             : base(context, logger, userManager)
         {
+            _producer = producer;
         }
 
         [HttpGet]
@@ -99,8 +101,7 @@ namespace DMAdvantage.Server.Controllers
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
                 var entityFromRepo = _context.ShipEncounters
-                    .Include(e => e.InitativeData)
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                    .Include(e => e.InitativeData).GetEntityByIdAndUser(username, id);
 
                 if (entityFromRepo == null)
                 {

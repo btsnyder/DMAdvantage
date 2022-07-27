@@ -31,8 +31,7 @@ namespace DMAdvantage.Server.Controllers
                 var username = User.Identity?.Name ?? string.Empty;
 
                 IQueryable<TEntity> queryable = _context.GetQueryable<TEntity>();
-                var query = queryable.AsNoTracking().Where(c => c.User != null && c.User.UserName == username).AsNoTracking();
-
+                var query = queryable.AsNoTrackingWithUser(username);
                 var entities = query.OrderBy(c => c.ToString());
 
                 if (paging == null)
@@ -49,20 +48,15 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
-        public IActionResult GetAllEntities<T>(NamedSearchParameters<T> searching, PagingParameters? paging = null) where T : TEntity
+        public IActionResult GetAllEntities(NamedSearchParameters<TEntity> searching, PagingParameters? paging = null)
         {
             try
             {
                 var username = User.Identity?.Name ?? string.Empty;
                 var search = searching.Search;
-
-                var query = _context.GetQueryable<T>(false)
-                        .Where(c => c.User != null && c.User.UserName == username)
-                        .AsNoTracking();
+                var query = _context.GetQueryable<TEntity>(false).AsNoTrackingWithUser(username);
                 if (search != null)
-                    query = query
-                        .Where(c => c.Name != null && c.Name.ToLower().Contains(search.ToLower()))
-                        .AsNoTracking();
+                    query = query.Where(c => c.Name != null && c.Name.ToLower().Contains(search.ToLower()));
 
                 var entities = query.ToList().OrderBy(c => c.ToString());
 
@@ -86,9 +80,7 @@ namespace DMAdvantage.Server.Controllers
             {
                 var username = User.Identity?.Name ?? string.Empty;
 
-                var entity = _context.GetQueryable<TEntity>()
-                    .AsNoTracking()
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                var entity = _context.GetQueryable<TEntity>().GetEntityByIdAndUser(username, id, false);
 
                 if (entity == null) return NotFound();
                 return Ok(entity);

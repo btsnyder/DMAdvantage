@@ -6,8 +6,6 @@ namespace TestEngineering
 {
     public static class Generation
     {
-        private static readonly Random _random = new();
-
         public static Character Character()
         {
             return new Character
@@ -15,7 +13,7 @@ namespace TestEngineering
                 Name = Faker.Name.FullName(),
                 HitPoints = Faker.RandomNumber.Next(),
                 ArmorClass = Faker.RandomNumber.Next(),
-                Speed = Nonsense(),
+                Speed = Faker.Lorem.GetFirstWord(),
                 Strength = Faker.RandomNumber.Next(),
                 StrengthBonus = Faker.RandomNumber.Next(),
                 Dexterity = Faker.RandomNumber.Next(),
@@ -65,11 +63,11 @@ namespace TestEngineering
         {
             return new Weapon
             {
-                Name = Nonsense(),
+                Name = Faker.Lorem.GetFirstWord(),
                 Type = RandomEnum<WeaponType>(),
                 Melee = Faker.Boolean.Random(),
-                Description = Nonsense(),
-                Damage = Nonsense(),
+                Description = Faker.Lorem.Paragraph(),
+                Damage = Faker.Lorem.GetFirstWord(),
                 DamageType = RandomEnum<DamageType>(),
             };
         }
@@ -78,9 +76,9 @@ namespace TestEngineering
         {
             return new WeaponProperty
             {
-                Description = Nonsense(),
-                Name = Nonsense(),
-                Modifier = Nonsense()
+                Description = Faker.Lorem.Paragraph(),
+                Name = Faker.Lorem.Sentence(),
+                Modifier = Faker.Lorem.GetFirstWord()
             };
         }
 
@@ -88,8 +86,8 @@ namespace TestEngineering
         {
             return new Equipment
             {
-                Description = Nonsense(),
-                Name = Nonsense(),
+                Description = Faker.Lorem.Paragraph(),
+                Name = Faker.Lorem.Sentence(),
                 Category = RandomEnum<EquipmentCategory>()
             };
         }
@@ -112,7 +110,7 @@ namespace TestEngineering
                 Name = Faker.Name.FullName(),
                 HitPoints = Faker.RandomNumber.Next(),
                 ArmorClass = Faker.RandomNumber.Next(),
-                Speed = Nonsense(),
+                Speed = Faker.Lorem.GetFirstWord(),
                 Strength = Faker.RandomNumber.Next(),
                 StrengthBonus = Faker.RandomNumber.Next(),
                 Dexterity = Faker.RandomNumber.Next(),
@@ -141,19 +139,19 @@ namespace TestEngineering
         {
             var forcePowerRequest = new ForcePower
             {
-                Name = Nonsense(),
-                Description = Nonsense(50),
+                Name = Faker.Lorem.Sentence(),
+                Description = Faker.Lorem.Paragraph(),
                 Level = Faker.RandomNumber.Next(),
                 CastingPeriod = RandomEnum<CastingPeriod>(),
-                CastingDescription = Nonsense(50),
+                CastingDescription = Faker.Lorem.Paragraph(),
                 Range = RandomEnum<PowerRange>(),
-                RangeDescription = Nonsense(50),
-                Duration = Nonsense(),
+                RangeDescription = Faker.Lorem.Paragraph(),
+                Duration = Faker.Lorem.GetFirstWord(),
                 Concentration = Faker.Boolean.Random(),
                 HitOption = RandomEnum<HitOption>(),
-                HitDescription = Nonsense(50),
+                HitDescription = Faker.Lorem.Paragraph(),
                 Alignment = RandomEnum<ForceAlignment>(),
-                Potency = Nonsense(),
+                Potency = Faker.Lorem.Sentence(),
                 PrerequisiteId = Guid.NewGuid(),
             };
 
@@ -164,18 +162,18 @@ namespace TestEngineering
         {
             var techPowerRequest = new TechPower
             {
-                Name = Nonsense(),
-                Description = Nonsense(50),
+                Name = Faker.Lorem.Sentence(),
+                Description = Faker.Lorem.Paragraph(),
                 Level = Faker.RandomNumber.Next(),
                 CastingPeriod = RandomEnum<CastingPeriod>(),
-                CastingDescription = Nonsense(50),
+                CastingDescription = Faker.Lorem.Paragraph(),
                 Range = RandomEnum<PowerRange>(),
-                RangeDescription = Nonsense(50),
-                Duration = Nonsense(),
+                RangeDescription = Faker.Lorem.Paragraph(),
+                Duration = Faker.Lorem.GetFirstWord(),
                 Concentration = Faker.Boolean.Random(),
                 HitOption = RandomEnum<HitOption>(),
-                HitDescription = Nonsense(50),
-                Overcharge = Nonsense(),
+                HitDescription = Faker.Lorem.Paragraph(),
+                Overcharge = Faker.Lorem.Sentence(),
             };
 
             return techPowerRequest;
@@ -191,11 +189,11 @@ namespace TestEngineering
         {
             return new BaseAction
             {
-                Name = Nonsense(),
-                Description = Nonsense(50),
-                Hit = Nonsense(),
-                Range = Nonsense(),
-                Damage = Nonsense()
+                Name = Faker.Lorem.Sentence(),
+                Description = Faker.Lorem.Paragraph(),
+                Hit = Faker.Lorem.GetFirstWord(),
+                Range = Faker.Lorem.GetFirstWord(),
+                Damage = Faker.Lorem.GetFirstWord()
             };
         }
 
@@ -208,13 +206,6 @@ namespace TestEngineering
                 list.Add(creation.Invoke());
             }
             return list;
-        }
-
-        public static string Nonsense(int size = 10)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
-            return new string(Enumerable.Repeat(chars, size)
-                .Select(s => s[_random.Next(s.Length)]).ToArray());
         }
 
         public static InitativeData InitativeData()
@@ -239,12 +230,12 @@ namespace TestEngineering
             var mockConcentration = new Dictionary<string, Guid>();
             for (var i = 0; i < Faker.RandomNumber.Next(1, mockInitativeData.Count); i++)
             {
-                mockConcentration[Nonsense()] = Guid.NewGuid();
+                mockConcentration[Faker.Lorem.GetFirstWord()] = Guid.NewGuid();
             }
 
             return new Encounter
             {
-                Name = Nonsense(),
+                Name = Faker.Lorem.Sentence(),
                 CurrentPlayer = mockInitativeData[Faker.RandomNumber.Next(0, mockInitativeData.Count - 1)].Being?.Id ?? Guid.Empty,
                 InitativeData = mockInitativeData,
                 ConcentrationCache = JsonSerializer.Serialize(mockConcentration),
@@ -256,7 +247,7 @@ namespace TestEngineering
             return new Ability
             {
                 Name = Faker.Name.FullName(),
-                Description = Nonsense(),
+                Description = Faker.Lorem.Paragraph(),
             };
         }
 

@@ -32,13 +32,10 @@ namespace DMAdvantage.Server.Controllers
 
                 IQueryable<TechPower> query;
                 if (search == null)
-                    query = _context.TechPowers
-                        .Where(c => c.User != null && c.User.UserName == username)
-                        .AsNoTracking();
+                    query = _context.TechPowers.AsNoTrackingWithUser(username);
                 else
-                    query = _context.TechPowers
-                        .Where(c => c.User != null && c.User.UserName == username && c.Name != null && c.Name.ToLower().Contains(search.ToLower()))
-                        .AsNoTracking();
+                    query = _context.TechPowers.AsNoTrackingWithUser(username)
+                        .Where(c => c.Name.ToLower().Contains(search.ToLower()));
 
                 if (searching.Levels.Any())
                     query = query.Where(c => searching.Levels.Contains(c.Level));

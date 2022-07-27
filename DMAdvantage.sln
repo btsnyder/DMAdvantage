@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DMAdvantage.Shared", "Share
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DMAdvantage.Data", "DMAdvantage.Data\DMAdvantage.Data.csproj", "{F7B27505-D79C-4EDC-A12E-72BDC7339484}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DMAdvantage.IntegrationTests", "DMAdvantage.IntegrationTests\DMAdvantage.IntegrationTests.csproj", "{262FA557-C8DD-49C2-B405-A7F764EA9E9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DMAdvantage.UnitTests", "DMAdvantage.IntegrationTests\DMAdvantage.UnitTests.csproj", "{262FA557-C8DD-49C2-B405-A7F764EA9E9B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEngineering", "TestEngineering\TestEngineering.csproj", "{31BE693E-1703-40B2-8370-CB54977F6D2C}"
 EndProject

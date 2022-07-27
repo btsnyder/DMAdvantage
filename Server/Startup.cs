@@ -4,20 +4,21 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DMAdvantage.Shared.Services.Kafka;
+using DMAdvantage.Shared.Services;
 
 namespace DMAdvantage.Server
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            CurrentEnvironment = env;
         }
 
         public IConfiguration Configuration { get; }
+        private IWebHostEnvironment CurrentEnvironment { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews().AddNewtonsoftJson(options =>
@@ -30,8 +31,19 @@ namespace DMAdvantage.Server
             })
             .AddEntityFrameworkStores<DMContext>();
 
-            var tokenKey = Configuration["Tokens:Key"];
-            var token = Environment.GetEnvironmentVariable(tokenKey);
+            IAWSSecrets secrets;
+            if (CurrentEnvironment.EnvironmentName == Environments.Development)
+            {
+                secrets = new LocalSecrets();
+                services.AddSingleton<IAWSSecrets, LocalSecrets>();
+            }
+            else
+            {
+                secrets = new AWSSecrets();
+                services.AddSingleton<IAWSSecrets, AWSSecrets>();
+            }
+
+            var tokenSecret = secrets.GetSecret(Configuration["Tokens:Key"]);
 
             services.AddAuthentication()
                 .AddCookie()
@@ -41,19 +53,17 @@ namespace DMAdvantage.Server
                     {
                         ValidIssuer = Configuration["Tokens:Issuer"],
                         ValidAudience = Configuration["Tokens:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(token))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenSecret))
                     };
                 });
 
             services.AddDbContext<DMContext>();
-            services.AddTransient<Seeder>();
             services.AddTransient<KafkaConsumer>();
             services.AddSingleton<KafkaProducer>();
 
             services.AddRazorPages();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

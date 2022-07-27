@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace TestEngineering
 {
@@ -21,12 +22,16 @@ namespace TestEngineering
         {
             var builder = new WebHostBuilder().UseStartup<Startup>();
 
+            builder.UseEnvironment(Environments.Development);
+
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, "appsettings.json");
+            var devConfigPath = Path.Combine(projectDir, "appsettings.Development.json");
 
             builder.ConfigureAppConfiguration((_, conf) =>
             {
                 conf.AddJsonFile(configPath);
+                conf.AddJsonFile(devConfigPath);
             });
 
             builder.ConfigureTestServices(services =>

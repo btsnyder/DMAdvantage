@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace DMAdvantage.Server.Controllers
@@ -51,8 +50,7 @@ namespace DMAdvantage.Server.Controllers
                 if (username == null)
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-                var entityFromRepo = _context.GetQueryable<Creature>()
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                var entityFromRepo = _context.GetQueryable<Creature>().GetEntityByIdAndUser(username, id);
 
                 if (entityFromRepo == null)
                 {
@@ -83,12 +81,8 @@ namespace DMAdvantage.Server.Controllers
             request.Id = entity.Entity.Id;
             entity.CurrentValues.SetValues(request);
             entity.Entity.User = currentUser;
-            var forcePowers = _context.ForcePowers
-                .Where(x => request.ForcePowers.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.ForcePowers = forcePowers;
-            var techPowers = _context.TechPowers
-                .Where(x => request.TechPowers.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.TechPowers = techPowers;
+            entity.Entity.ForcePowers = _context.GetEntitiesByIds(request.ForcePowers);
+            entity.Entity.TechPowers = _context.GetEntitiesByIds(request.TechPowers);
             var actions = new List<BaseAction>();
             foreach (var action in request.Actions)
             {

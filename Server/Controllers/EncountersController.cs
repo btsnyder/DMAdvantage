@@ -102,7 +102,7 @@ namespace DMAdvantage.Server.Controllers
 
                 var entityFromRepo = _context.Encounters
                     .Include(e => e.InitativeData)
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                    .GetEntityByIdAndUser(username, id);
 
                 if (entityFromRepo == null)
                 {

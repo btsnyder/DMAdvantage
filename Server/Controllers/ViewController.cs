@@ -30,25 +30,7 @@ namespace DMAdvantage.Server.Controllers
  
                 if (entity != null)
                 {
-                    foreach (var i in entity.InitativeData)
-                    {
-                        if (i.CharacterId != null)
-                        {
-                            i.Character = await _context.GetQueryable<Character>()
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(c => c.Id == i.CharacterId);
-                        }
-                        if (i.CreatureId != null)
-                        {
-                            i.Creature = await _context.GetQueryable<Creature>()
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(c => c.Id == i.CreatureId);
-                        }
-                        foreach (var e in i.EquipmentQuantities)
-                        {
-                            e.Equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.Id == e.EquipmentId);
-                        }
-                    }
+                    await SetInitativeDataForeignKeys(entity.InitativeData);
                     return Ok(entity);
                 }
                 return NotFound();
@@ -57,6 +39,29 @@ namespace DMAdvantage.Server.Controllers
             {
                 _logger.LogError($"Failed to return encounter: {ex}");
                 return BadRequest("Failed to return encounter");
+            }
+        }
+
+        private async Task SetInitativeDataForeignKeys(ICollection<InitativeData> data)
+        {
+            foreach (var i in data)
+            {
+                if (i.CharacterId != null)
+                {
+                    i.Character = await _context.GetQueryable<Character>()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.Id == i.CharacterId);
+                }
+                if (i.CreatureId != null)
+                {
+                    i.Creature = await _context.GetQueryable<Creature>()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.Id == i.CreatureId);
+                }
+                foreach (var e in i.EquipmentQuantities)
+                {
+                    e.Equipment = await _context.Equipments.FirstOrDefaultAsync(x => x.Id == e.EquipmentId);
+                }
             }
         }
 
@@ -72,21 +77,7 @@ namespace DMAdvantage.Server.Controllers
 
                 if (entity != null)
                 {
-                    foreach (var i in entity.InitativeData)
-                    {
-                        if (i.PlayerShipId != null)
-                        {
-                            i.PlayerShip = await _context.GetQueryable<PlayerShip>()
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(c => c.Id == i.PlayerShipId);
-                        }
-                        if (i.EnemyShipId != null)
-                        {
-                            i.EnemyShip = await _context.GetQueryable<EnemyShip>()
-                                .AsNoTracking()
-                                .FirstOrDefaultAsync(c => c.Id == i.EnemyShipId);
-                        }
-                    }
+                    await SetShipInitativeDataForeignKeys(entity.InitativeData);
                     return Ok(entity);
                 }
                 return NotFound();
@@ -98,22 +89,29 @@ namespace DMAdvantage.Server.Controllers
             }
         }
 
+        private async Task SetShipInitativeDataForeignKeys(ICollection<ShipInitativeData> data)
+        {
+            foreach (var i in data)
+            {
+                if (i.PlayerShipId != null)
+                {
+                    i.PlayerShip = await _context.GetQueryable<PlayerShip>()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.Id == i.PlayerShipId);
+                }
+                if (i.EnemyShipId != null)
+                {
+                    i.EnemyShip = await _context.GetQueryable<EnemyShip>()
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(c => c.Id == i.EnemyShipId);
+                }
+            }
+        }
+
         [HttpGet("characters")]
         public IActionResult GetCharactersByIds([FromQuery] Guid[] ids)
         {
-            try
-            {
-                var results = _context.GetQueryable<Character>(false)
-                    .AsNoTracking();
-                if (ids.Any())
-                    results = results.Where(x => ids.Contains(x.Id));
-                return Ok(results);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest("Failed to return entities");
-            }
+            return GetEntitiesByIds<Character>(ids);
         }
 
         [HttpGet("characters/player/{name}")]
@@ -136,42 +134,27 @@ namespace DMAdvantage.Server.Controllers
         [HttpGet("creatures")]
         public IActionResult GetCreaturesByIds([FromQuery] Guid[] ids)
         {
-            try
-            {
-                if (ids.Any())
-                    return Ok(_context.GetQueryable<Creature>().AsNoTracking().Where(x => ids.Contains(x.Id)));
-                return Ok(_context.Creatures);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest("Failed to return entities");
-            }
+            return GetEntitiesByIds<Creature>(ids);
         }
 
         [HttpGet("forcepowers")]
         public IActionResult GetForcePowersByIds([FromQuery] Guid[] ids)
         {
-            try
-            {
-                if (ids.Any())
-                    return Ok(_context.GetQueryable<ForcePower>().AsNoTracking().Where(x => ids.Contains(x.Id)));
-                return Ok(_context.ForcePowers);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Failed to return entities: {ex}");
-                return BadRequest("Failed to return entities");
-            }
+            return GetEntitiesByIds<ForcePower>(ids);
         }
 
         [HttpGet("abilitiesids")]
         public IActionResult GetAbilitiesByIds([FromQuery] Guid[] ids)
         {
+            return GetEntitiesByIds<Ability>(ids);
+        }
+
+        private IActionResult GetEntitiesByIds<T>(Guid[] ids) where T : BaseEntity
+        {
             try
             {
                 if (ids.Any())
-                    return Ok(_context.GetQueryable<Ability>().AsNoTracking().Where(x => ids.Contains(x.Id)));
+                    return Ok(_context.GetQueryable<T>().AsNoTracking().Where(x => ids.Contains(x.Id)));
                 return Ok(_context.Abilities);
             }
             catch (Exception ex)

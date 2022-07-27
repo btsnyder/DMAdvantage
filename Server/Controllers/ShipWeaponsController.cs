@@ -51,7 +51,7 @@ namespace DMAdvantage.Server.Controllers
 
                 var entityFromRepo = _context.ShipWeapons
                     .Include(w => w.Properties)
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                    .GetEntityByIdAndUser(username, id);
 
                 if (entityFromRepo == null)
                 {
@@ -82,9 +82,7 @@ namespace DMAdvantage.Server.Controllers
             request.Id = entity.Entity.Id;
             entity.CurrentValues.SetValues(request);
             entity.Entity.User = currentUser;
-            var properties = _context.ShipWeaponProperties
-                .Where(x => request.Properties.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.Properties = properties;
+            entity.Entity.Properties = _context.GetEntitiesByIds(request.Properties);
             return entity.Entity;
         }
 

@@ -17,9 +17,6 @@ namespace DMAdvantage.Shared.Entities
 
         public override int GetHashCode() => Id.GetHashCode();
 
-        public override string ToString()
-        {
-            return Name;
-        }
+        public override string ToString() => Name;
     }
 }

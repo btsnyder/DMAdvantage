@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+using DMAdvantage.Shared.Entities;
 using DMAdvantage.Shared.Query;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace DMAdvantage.Server
@@ -19,6 +20,18 @@ namespace DMAdvantage.Server
             };
 
             response.Headers.Add(PagedData.Header, JsonSerializer.Serialize(metadata));
+        }
+
+        public static IQueryable<T> AsNoTrackingWithUser<T>(this IQueryable<T> queryable, string username) where T : BaseEntity, new()
+        {
+            return queryable.AsNoTracking().Where(c => c.User != null && c.User.UserName == username);
+        }
+
+        public static T? GetEntityByIdAndUser<T>(this IQueryable<T> queryable, string username, Guid id, bool tracked = true) where T : BaseEntity, new()
+        {
+            if (tracked)
+                return queryable.FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+            return queryable.AsNoTracking().FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
         }
     }
 }

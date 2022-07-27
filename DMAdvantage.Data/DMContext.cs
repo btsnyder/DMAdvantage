@@ -1,22 +1,23 @@
 ﻿using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Services;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using System.Linq.Expressions;
 using System.Text.Json;
-using DMAdvantage.Shared.Enums;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DMAdvantage.Data
 {
     public class DMContext : IdentityDbContext<User>
     {
         private readonly IConfiguration _configuration;
+        private readonly IAWSSecrets _secrets;
 
-        public DMContext(DbContextOptions<DMContext> options, IConfiguration configuration) : base(options)
+        public DMContext(DbContextOptions<DMContext> options, IConfiguration configuration, IAWSSecrets secrets) : base(options)
         {
             _configuration = configuration;
+            _secrets = secrets;
         }
 
         public DbSet<Character> Characters => Set<Character>();
@@ -47,12 +48,9 @@ namespace DMAdvantage.Data
         {
             base.OnConfiguring(bldr);
 
-
-
             if (!bldr.IsConfigured)
             {
-                var dbKey = _configuration["ConnectionVariable:Key"];
-                var connectionString = Environment.GetEnvironmentVariable(dbKey) ?? string.Empty;
+                var connectionString = _secrets.GetSecret(_configuration["ConnectionVariable:Key"]);
                 bldr.UseSqlServer(connectionString,
                         b =>
                         {
@@ -128,6 +126,18 @@ namespace DMAdvantage.Data
                     .Include(w => w.Weapons).ThenInclude(w => w.Properties),
                 _ => Set<T>()
             };
+        }
+
+        public List<T> GetEntitiesByIds<T>(IEnumerable<T> entities) where T : BaseEntity
+        {
+            return Set<T>().Where(x => entities.Select(e => e.Id).Contains(x.Id)).ToList();
+        }
+
+        public T? GetEntityById<T>(T entity) where T : BaseEntity
+        {
+            if (entity == null)
+                return null;
+            return Set<T>().FirstOrDefault(x => entity.Id == x.Id);
         }
     }
 }

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace DMAdvantage.Server.Controllers
 {
@@ -48,8 +47,7 @@ namespace DMAdvantage.Server.Controllers
                 if (username == null)
                     throw new UnauthorizedAccessException($"Could not find user: {User.Identity?.Name}");
 
-                var entityFromRepo = _context.GetQueryable<Character>()
-                    .FirstOrDefault(c => c.Id == id && c.User != null && c.User.UserName == username);
+                var entityFromRepo = _context.GetQueryable<Character>().GetEntityByIdAndUser(username, id);
 
                 if (entityFromRepo == null)
                 {
@@ -80,24 +78,12 @@ namespace DMAdvantage.Server.Controllers
             request.Id = entity.Entity.Id;
             entity.CurrentValues.SetValues(request);
             entity.Entity.User = currentUser;
-            var abilities = _context.Abilities
-                .Where(x => request.Abilities.Select(a => a.Id).Contains(x.Id)).ToList();
-            entity.Entity.Abilities = abilities;
-            var forcePowers = _context.ForcePowers
-                .Where(x => request.ForcePowers.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.ForcePowers = forcePowers;
-            var techPowers = _context.TechPowers
-                .Where(x => request.TechPowers.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.TechPowers = techPowers;
-            var dmclass = _context.DMClasses
-                .FirstOrDefault(x => request.Class != null && request.Class.Id == x.Id);
-            entity.Entity.Class = dmclass;
-            var weapons = _context.Weapons
-                .Where(x => request.Weapons.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.Weapons = weapons;
-            var equipments = _context.Equipments
-                .Where(x => request.Equipments.Select(f => f.Id).Contains(x.Id)).ToList();
-            entity.Entity.Equipments = equipments;
+            entity.Entity.Abilities = _context.GetEntitiesByIds(request.Abilities);
+            entity.Entity.ForcePowers = _context.GetEntitiesByIds(request.ForcePowers);
+            entity.Entity.TechPowers = _context.GetEntitiesByIds(request.TechPowers);
+            entity.Entity.Class = _context.GetEntityById(request.Class);
+            entity.Entity.Weapons = _context.GetEntitiesByIds(request.Weapons);
+            entity.Entity.Equipments = _context.GetEntitiesByIds(request.Equipments);
             return entity.Entity;
         }
 
