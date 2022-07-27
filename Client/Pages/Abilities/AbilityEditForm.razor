@@ -1,4 +1,5 @@
 ﻿@inject IDialogService DialogService
+@inherits BaseEditForm<Ability>
 
 @if (_loading)
 {
@@ -9,7 +10,7 @@ else
     <MudForm Model="@_model" @ref="@_form">
         <MudGrid Class="mb-5">
             <MudItem xs="6">
-                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_abilityValidator.ValidateValue)"/>
+                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_validator.ValidateValue)"/>
             </MudItem>
             <MudItem xs="6"/>
 

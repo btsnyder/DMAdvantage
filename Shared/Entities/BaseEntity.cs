@@ -8,7 +8,12 @@ namespace DMAdvantage.Shared.Entities
         public User User { get; set; }
         [Required]
         public string Name { get; set; }
-
+        public bool IsFound(string search)
+        {
+            if (Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+                return true;
+            return false;
+        }
         public override bool Equals(object o)
         {
             var other = o as BaseEntity;

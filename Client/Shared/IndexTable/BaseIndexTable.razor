@@ -1,0 +1,53 @@
+﻿@typeparam T where T : BaseEntity
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+
+@if (_loading)
+{
+    <LightsaberLoad />
+}
+else
+{
+    <MudTable Items="@_entities" Breakpoint="Breakpoint.Sm" Dense="true" Striped="true" Filter="new Func<T, bool>(SearchEntity)" Elevation="0">
+        <ToolBarContent>
+            <MudText Class="fw-bold" Typo="Typo.h3">@GetDisplayName()</MudText>
+            <MudFab Class="ml-3" StartIcon="@Icons.Filled.Add" Color="Color.Success" OnClick="@(() => NavigationManager.NavigateTo($"{DMTypeExtensions.GetPath<T>()}/add"))"/>
+            <MudSpacer />
+            <MudTextField @bind-Value="_search" Placeholder="Search" Adornment="Adornment.Start" Immediate=true AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"/>
+        </ToolBarContent>
+        <ColGroup>
+            @foreach (var col in _columnNames)
+            {
+                <col/>
+            }
+            <col style="width: 150px;"/>
+        </ColGroup>
+            <HeaderContent>
+                @foreach (var col in _columnNames)
+                {
+                    <MudTh Class="mud-theme-tertiary text-white">@col</MudTh>
+                }
+                <MudTh Class="mud-theme-tertiary text-white"/>
+            </HeaderContent>
+            <RowTemplate>
+                @foreach (var col in _columnNames)
+                {
+                    <MudTd DataLabel="@col">@(typeof(T).GetProperty(col)?.GetValue(context))</MudTd>
+                }
+                <MudTd>
+                    <div class="d-flex justify-content-end">
+                        @if (ViewRouteProperty != null)
+                        {
+                            <MudIconButton Icon="@Icons.Filled.RemoveRedEye" Variant="Variant.Filled" Color="Color.Secondary" Class="mx-1"
+                                OnClick="@(() => NavigationManager.NavigateTo($"{DMTypeExtensions.GetPath<T>()}/view/{typeof(T).GetProperty(ViewRouteProperty)?.GetValue(context)}"))" />
+                        }
+                        <MudIconButton Icon="@Icons.Filled.Edit" OnClick="() => EditEntity(context.Id)" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
+                        <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveEntity(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
+                    </div>
+                </MudTd>
+            </RowTemplate>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
