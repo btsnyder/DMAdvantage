@@ -1,71 +1,14 @@
-﻿using DMAdvantage.Client.Services;
+﻿using DMAdvantage.Client.Shared;
 using DMAdvantage.Client.Validators;
 using DMAdvantage.Shared.Entities;
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
 
 namespace DMAdvantage.Client.Pages.PlayerShips
 {
-    public partial class PlayerShipEditForm
+    public partial class PlayerShipEditForm : BaseEditForm<PlayerShip>
     {
-        private PlayerShip _model = new();
-        private MudForm _form;
-        private bool _loading;
-        private readonly ShipValidator _shipValidator = new();
-
-        [Inject] private IApiService ApiService { get; set; }
-        [Inject] private NavigationManager NavigationManager { get; set; }
-        [Inject] private ISnackbar Snackbar { get; set; }
-
-        [Parameter] public string? Id { get; set; }
-
-        protected override async Task OnInitializedAsync()
+        public PlayerShipEditForm()
         {
-            _loading = true;
-            if (Id != null)
-            {
-                _model = await ApiService.GetEntityById<PlayerShip>(Guid.Parse(Id)) ?? new PlayerShip();
-            }
-
-            await base.OnInitializedAsync();
-            _loading = false;
-        }
-
-        private async void OnValidSubmit()
-        {
-            _loading = true;
-            try
-            {
-                if (Id == null)
-                {
-                    await ApiService.AddEntity(_model);
-                    Snackbar.Add("Player Ship added successfully", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
-                }
-                else
-                {
-                    await ApiService.UpdateEntity(Guid.Parse(Id), _model);
-                    Snackbar.Add("Update successful", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
-                }
-                NavigationManager.NavigateTo("playerships");
-            }
-            catch
-            {
-                Snackbar.Add($"Error submitting change!", Severity.Error);
-            }
-            _loading = false;
-            StateHasChanged();
-        }
-
-        private async Task OnSubmit()
-        {
-            _shipValidator.Snackbar = Snackbar;
-            await _form.Validate();
-            _shipValidator.Snackbar = null;
-
-            if (_form.IsValid)
-            {
-                OnValidSubmit();
-            }
+            _validator = new PlayerShipValidator();
         }
 
         private void GenerateHullPoints()

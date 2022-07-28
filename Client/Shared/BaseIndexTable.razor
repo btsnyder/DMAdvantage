@@ -42,6 +42,10 @@ else
                                 OnClick="@(() => NavigationManager.NavigateTo($"{DMTypeExtensions.GetPath<T>()}/view/{typeof(T).GetProperty(ViewRouteProperty)?.GetValue(context)}"))" />
                         }
                         <MudIconButton Icon="@Icons.Filled.Edit" OnClick="() => EditEntity(context.Id)" Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"/>
+                        @if (CanCopy)
+                        {
+                            <MudIconButton Icon="@Icons.Filled.ContentCopy" OnClick="() => CopyEntity(context)" Variant="Variant.Filled" Color="Color.Tertiary" Class="mx-1"/>
+                        }
                         <MudIconButton Icon="@Icons.Filled.Delete" OnClick="() => RemoveEntity(context)" Variant="Variant.Filled" Color="Color.Error" Class="mx-1"/>
                     </div>
                 </MudTd>

@@ -10,33 +10,14 @@
     @if (AccountService.IsLoggedIn())
     {
         <MudAppBar Elevation="1">
-            @*<MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />*@
+            <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(_ => DrawerToggle())" />
             <MudText Typo="Typo.h5" Class="mx-3">DM Advantage</MudText> 
-            <MudMenu Class="mx-3" StartIcon="@Icons.Filled.BarChart" Label="Data">
-                <MudNavLink Href="/characters" Icon="@Icons.Filled.Person">Characters</MudNavLink>
-                <MudNavLink Href="/creatures" Icon="@Icons.Filled.CrueltyFree">Creatures</MudNavLink>
-                <MudNavGroup Title="Modifiers">
-                    <MudNavLink Href="/forcepowers" Icon="@Icons.Filled.BackHand">Force Powers</MudNavLink>
-                    <MudNavLink Href="/techpowers" Icon="@Icons.Filled.FlashOn">Tech Powers</MudNavLink>
-                    <MudNavLink Href="/abilities" Icon="@Icons.Filled.PersonAdd">Abilities</MudNavLink>
-                    <MudNavLink Href="/classes" Icon="@Icons.Filled.Star">Classes</MudNavLink>
-                    <MudNavLink Href="/weapons" Icon="@Icons.Filled.AutoFixHigh">Weapons</MudNavLink>
-                    <MudNavLink Href="/weaponproperties" Icon="@Icons.Filled.Build">Weapon Properties</MudNavLink>
-                </MudNavGroup>
-                <MudNavGroup Title="Ships" Style="width: 250px;">
-                    <MudNavLink Href="/enemyships" Icon="@Icons.Filled.DirectionsBoat">Ships</MudNavLink>
-                    <MudNavLink Href="/playerships" Icon="@Icons.Filled.AirplanemodeActive">Player Ships</MudNavLink>
-                    <MudNavLink Href="/shipweapons" Icon="@Icons.Filled.Star">Ship Weapons</MudNavLink>
-                    <MudNavLink Href="/shipweaponproperties" Icon="@Icons.Filled.Build">Ship Weapon Properties</MudNavLink>
-                </MudNavGroup>
-            </MudMenu>
             <MudButton Class="mx-3" StartIcon="@Icons.Filled.Fort"
                 OnClick="@(() => NavigationManager.NavigateTo("encounters"))">Encounters</MudButton>
             <MudButton Class="mx-3" StartIcon="@Icons.Filled.Houseboat"
                 OnClick="@(() => NavigationManager.NavigateTo("shipencounters"))">Ship Encounters</MudButton>
             <MudButton Class="mx-3" StartIcon="@Icons.Filled.Logout"
                 OnClick="@(() => NavigationManager.NavigateTo("/account/logout"))">Logout</MudButton>
-
         </MudAppBar>
     }
     <MudDrawer @bind-Open="@_drawerOpen" Variant="DrawerVariant.Temporary">

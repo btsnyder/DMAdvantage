@@ -14,7 +14,7 @@ namespace DMAdvantage.Client.Shared
         protected BaseValidator<T> _validator;
 
         [Inject] protected IApiService ApiService { get; set; }
-        [Inject] private NavigationManager NavigationManager { get; set; }
+        [Inject] protected NavigationManager NavigationManager { get; set; }
         [Inject] private ISnackbar Snackbar { get; set; }
 
         [Parameter] public string? Id { get; set; }

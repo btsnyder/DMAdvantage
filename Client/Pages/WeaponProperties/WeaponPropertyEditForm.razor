@@ -1,4 +1,4 @@
-﻿@inherits MudComponentBase
+﻿@inherits BaseEditForm<WeaponProperty>
 @inject IDialogService DialogService
 
 @if (_loading)
@@ -10,7 +10,7 @@ else
     <MudForm Model="@_model" @ref="@_form">
         <MudGrid Class="mb-5">
             <MudItem xs="6">
-                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_weaponPropertyValidator.ValidateValue)"/>
+                <MudTextField @bind-Value="_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_validator.ValidateValue)"/>
             </MudItem>
             <MudItem xs="6">
                 <MudTextField @bind-Value="_model.Modifier" Label="Modifier" Variant="Variant.Outlined" For="() => _model.Modifier"/>

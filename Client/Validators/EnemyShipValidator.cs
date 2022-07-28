@@ -3,11 +3,11 @@ using FluentValidation;
 
 namespace DMAdvantage.Client.Validators
 {
-    public class ShipValidator : BaseValidator<Ship>
+    public class EnemyShipValidator : BaseValidator<EnemyShip>
     {
         private int[] _possibleHitDice = new int[] { 4, 6, 8, 10, 12 };
 
-        public ShipValidator()
+        public EnemyShipValidator()
         {
             RuleFor(x => x.Name).NotEmpty();
             RuleFor(x => x.HullHitDice).Must(x => _possibleHitDice.Contains(x));

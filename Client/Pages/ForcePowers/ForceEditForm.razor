@@ -1,10 +1,12 @@
-﻿<MudForm Model="@_model" @ref="_form">
+﻿@inherits BaseEditForm<ForcePower>
+
+<MudForm Model="@_model" @ref="_form">
     <MudGrid Class="mb-5">
         <MudItem xs="3">
-            <MudTextField @bind-Value="@_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_forcePowerValidator.ValidateValue)"/>
+            <MudTextField @bind-Value="@_model.Name" Label="Name" Variant="Variant.Outlined" For="() => _model.Name" Validation="@(_validator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="1">
-            <MudNumericField @bind-Value="@_model.Level" Label="Level" Variant="Variant.Outlined" For="() => _model.Level" Validation="@(_forcePowerValidator.ValidateValue)"/>
+            <MudNumericField @bind-Value="@_model.Level" Label="Level" Variant="Variant.Outlined" For="() => _model.Level" Validation="@(_validator.ValidateValue)"/>
         </MudItem>
         <MudItem xs="2">
             <MudSelect T="CastingPeriod" @bind-Value="@_model.CastingPeriod" Label="Casting Period" Variant="Variant.Outlined" For="() => _model.CastingPeriod">

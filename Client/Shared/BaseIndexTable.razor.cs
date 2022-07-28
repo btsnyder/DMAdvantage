@@ -1,7 +1,8 @@
 ﻿using DMAdvantage.Shared.Extensions;
 using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
-namespace DMAdvantage.Client.Shared.IndexTable
+namespace DMAdvantage.Client.Shared
 {
     public partial class BaseIndexTable<T>
     {
@@ -11,6 +12,8 @@ namespace DMAdvantage.Client.Shared.IndexTable
         private IEnumerable<string> _columnNames = Array.Empty<string>();
 
         [Parameter] public string? ViewRouteProperty { get; set; }
+        [Parameter] public bool CanCopy { get; set; }
+        [Inject] private ISnackbar Snackbar { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -38,7 +41,20 @@ namespace DMAdvantage.Client.Shared.IndexTable
             NavigationManager.NavigateTo($"{DMTypeExtensions.GetPath<T>()}/edit/{id}");
         }
 
-        [Parameter] public EventCallback<bool> SelectedEntitiesChanged { get; set; }
+        private async Task CopyEntity(T entity)
+        {
+            try
+            {
+                entity.Id = Guid.Empty;
+                await ApiService.AddEntity(entity);
+                await RefreshEntities();
+                Snackbar.Add("Copied successfully", Severity.Success);
+            }
+            catch
+            {
+                Snackbar.Add("Error copying entity!", Severity.Error);
+            }
+        }
 
 
         private bool SearchEntity(T entity)
