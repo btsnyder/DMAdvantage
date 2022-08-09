@@ -8,12 +8,12 @@ namespace DMAdvantage.Server
         {
             var host = CreateHostBuilder(args).Build();
 
-            RunSeeding(host);
+            RunServices(host);
 
             host.Run();
         }
 
-        private static void RunSeeding(IHost host)
+        private static void RunServices(IHost host)
         {
             var scopeFactory = host.Services.GetService<IServiceScopeFactory>();
             if (scopeFactory == null)

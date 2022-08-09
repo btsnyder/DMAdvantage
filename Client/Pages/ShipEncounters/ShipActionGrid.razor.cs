@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 
-namespace DMAdvantage.Client.Shared
+namespace DMAdvantage.Client.Pages.ShipEncounters
 {
     public partial class ShipActionGrid
     {

@@ -54,7 +54,7 @@ namespace DMAdvantage.Server.Controllers
                     var entity = await CreateNewEncounterInContext(request);
                     if (_context.SaveAll())
                     {
-                        return Created($"/api/{DMTypeExtensions.GetPath<Encounter>()}/{entity.Id}", entity);
+                        return Created($"/api/{GenericHelpers.GetPath<Encounter>()}/{entity.Id}", entity);
                     }
                 }
                 else

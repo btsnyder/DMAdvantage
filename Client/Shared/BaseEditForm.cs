@@ -46,7 +46,7 @@ namespace DMAdvantage.Client.Shared
                     await ApiService.UpdateEntity(Guid.Parse(Id), _model);
                     Snackbar.Add("Update successful", Severity.Success, cfg => { cfg.CloseAfterNavigation = false; });
                 }
-                NavigationManager.NavigateTo(DMTypeExtensions.GetPath<T>());
+                NavigationManager.NavigateTo(GenericHelpers.GetPath<T>());
             }
             catch (Exception ex)
             {

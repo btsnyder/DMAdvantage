@@ -27,7 +27,7 @@ namespace DMAdvantage.UnitTests.Controllers
         {
             var client = _server.CreateClient();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<ForcePower>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -38,7 +38,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateForcePower();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<ForcePower>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var forcePowers = await response.ParseEntityList<ForcePower>();
@@ -67,7 +67,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<ForcePower>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var forcePowersResponse = await response.ParseEntityList<ForcePower>();
@@ -107,7 +107,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 Alignments = new[] { ForceAlignment.Dark }
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}?{searching.GetQuery()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<ForcePower>()}?{searching.GetQuery()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var forcePowersResponse = await response.ParseEntityList<ForcePower>();
@@ -135,7 +135,7 @@ namespace DMAdvantage.UnitTests.Controllers
 
             var forcePower = Generation.ForcePower();
             forcePower.Name = null;
-            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}", forcePower);
+            var response = await client.PostAsync($"/api/{GenericHelpers.GetPath<ForcePower>()}", forcePower);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -146,7 +146,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var forcePower = await client.CreateForcePower();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<ForcePower>()}/{forcePower.Id}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<ForcePower>()}/{forcePower.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedForcePower = await response.ParseEntity<ForcePower>();
@@ -161,7 +161,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var forcePowerEdit = Generation.ForcePower();
             forcePowerEdit.Id = forcePower.Id;
 
-            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<ForcePower>()}/{forcePower.Id}", forcePowerEdit);
+            var response = await client.PutAsync($"api/{GenericHelpers.GetPath<ForcePower>()}/{forcePower.Id}", forcePowerEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedForcePower = await client.GetEntity<ForcePower>(forcePower.Id);
             addedForcePower.Should().NotBeNull();
@@ -174,10 +174,10 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var forcePower = await client.CreateForcePower();
 
-            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<ForcePower>()}/{forcePower.Id}");
+            var response = await client.DeleteAsync($"api/{GenericHelpers.GetPath<ForcePower>()}/{forcePower.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var forcePowerLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<ForcePower>()}/{forcePower.Id}");
+            var forcePowerLookup = await client.GetAsync($"api/{GenericHelpers.GetPath<ForcePower>()}/{forcePower.Id}");
             forcePowerLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

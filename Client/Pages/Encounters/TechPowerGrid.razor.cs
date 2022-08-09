@@ -1,7 +1,7 @@
 ﻿using DMAdvantage.Shared.Entities;
 using Microsoft.AspNetCore.Components;
 
-namespace DMAdvantage.Client.Shared
+namespace DMAdvantage.Client.Pages.Encounters
 {
     public partial class TechPowerGrid
     {

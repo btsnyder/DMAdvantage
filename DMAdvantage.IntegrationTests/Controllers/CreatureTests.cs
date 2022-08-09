@@ -28,7 +28,7 @@ namespace DMAdvantage.UnitTests.Controllers
         {
             var client = _server.CreateClient();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Creature>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -39,7 +39,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateCreature();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Creature>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var creatures = await response.ParseEntityList<Creature>();
@@ -67,7 +67,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Creature>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var creaturesResponse = await response.ParseEntityList<Creature>();
@@ -97,7 +97,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}?search={search.Search}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Creature>()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var creaturesResponse = await response.ParseEntityList<Creature>();
@@ -128,7 +128,7 @@ namespace DMAdvantage.UnitTests.Controllers
 
             var creature = Generation.Creature();
             creature.Name = null;
-            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}", creature);
+            var response = await client.PostAsync($"/api/{GenericHelpers.GetPath<Creature>()}", creature);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -139,7 +139,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var creature = await client.CreateCreature();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Creature>()}/{creature.Id}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Creature>()}/{creature.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedCreature = await response.ParseEntity<Creature>();
@@ -154,7 +154,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var creatureEdit = Generation.Creature();
             creatureEdit.Id = creature.Id;
 
-            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<Creature>()}/{creature.Id}", creatureEdit);
+            var response = await client.PutAsync($"api/{GenericHelpers.GetPath<Creature>()}/{creature.Id}", creatureEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedCreature = await client.GetEntity<Creature>(creature.Id);
             addedCreature.Should().NotBeNull();
@@ -167,10 +167,10 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var creature = await client.CreateCreature();
 
-            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Creature>()}/{creature.Id}");
+            var response = await client.DeleteAsync($"api/{GenericHelpers.GetPath<Creature>()}/{creature.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var creatureLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<Creature>()}/{creature.Id}");
+            var creatureLookup = await client.GetAsync($"api/{GenericHelpers.GetPath<Creature>()}/{creature.Id}");
             creatureLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

@@ -30,7 +30,7 @@ namespace DMAdvantage.UnitTests.Controllers
         {
             var client = _server.CreateClient();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Encounter>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Encounter>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -42,7 +42,7 @@ namespace DMAdvantage.UnitTests.Controllers
 
             await client.CreateEncounter();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Encounter>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Encounter>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var encounters = await response.ParseEntityList<Encounter>();
@@ -66,7 +66,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Encounter>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Encounter>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var encountersResponse = await response.ParseEntityList<Encounter>();
@@ -95,7 +95,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Encounter>()}?search={search.Search}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Encounter>()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var encoutnersResponse = await response.ParseEntityList<Encounter>();
@@ -127,7 +127,7 @@ namespace DMAdvantage.UnitTests.Controllers
 
             var encounter = await client.CreateEncounter();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<Encounter>()}/{encounter.Id}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<Encounter>()}/{encounter.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedEncounter = await response.ParseEntity<Encounter>();
@@ -167,7 +167,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 ConcentrationCache = JsonSerializer.Serialize(new Dictionary<string, Guid>())
             };
             encounterEdit.Id = encounter.Id;
-            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<Encounter>()}/{encounter.Id}", encounterEdit);
+            var response = await client.PutAsync($"api/{GenericHelpers.GetPath<Encounter>()}/{encounter.Id}", encounterEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedEncounter = await client.GetEntity<Encounter>(encounter.Id);
             addedEncounter.Should().NotBeNull();
@@ -186,10 +186,10 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var encounter = await client.CreateEncounter();
 
-            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<Encounter>()}/{encounter.Id}");
+            var response = await client.DeleteAsync($"api/{GenericHelpers.GetPath<Encounter>()}/{encounter.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var encounterLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<Encounter>()}/{encounter.Id}");
+            var encounterLookup = await client.GetAsync($"api/{GenericHelpers.GetPath<Encounter>()}/{encounter.Id}");
             encounterLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

@@ -28,7 +28,7 @@ namespace DMAdvantage.UnitTests.Controllers
         {
             var client = _server.CreateClient();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<DMClass>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -39,7 +39,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateDMClass();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<DMClass>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var classes = await response.ParseEntityList<DMClass>();
@@ -67,7 +67,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<DMClass>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var classesResponse = await response.ParseEntityList<DMClass>();
@@ -97,7 +97,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}?search={search.Search}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<DMClass>()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var classesResponse = await response.ParseEntityList<DMClass>();
@@ -123,7 +123,7 @@ namespace DMAdvantage.UnitTests.Controllers
 
             var dmclass = Generation.DMClass();
             dmclass.Name = null;
-            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}", dmclass);
+            var response = await client.PostAsync($"/api/{GenericHelpers.GetPath<DMClass>()}", dmclass);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -134,7 +134,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var dmclass = await client.CreateDMClass();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<DMClass>()}/{dmclass.Id}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<DMClass>()}/{dmclass.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedDMClass = await response.ParseEntity<DMClass>();
@@ -149,7 +149,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var dmclassEdit = Generation.DMClass();
             dmclassEdit.Id = dmclass.Id;
 
-            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<DMClass>()}/{dmclass.Id}", dmclassEdit);
+            var response = await client.PutAsync($"api/{GenericHelpers.GetPath<DMClass>()}/{dmclass.Id}", dmclassEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedDMClass = await client.GetEntity<DMClass>(dmclass.Id);
             addedDMClass.Should().NotBeNull();
@@ -162,10 +162,10 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var dmclass = await client.CreateDMClass();
 
-            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<DMClass>()}/{dmclass.Id}");
+            var response = await client.DeleteAsync($"api/{GenericHelpers.GetPath<DMClass>()}/{dmclass.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var dmclassLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<DMClass>()}/{dmclass.Id}");
+            var dmclassLookup = await client.GetAsync($"api/{GenericHelpers.GetPath<DMClass>()}/{dmclass.Id}");
             dmclassLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

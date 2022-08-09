@@ -2,7 +2,7 @@
 
 namespace DMAdvantage.Shared.Extensions
 {
-    public static class DMTypeExtensions
+    public static class GenericHelpers
     {
         public static string GetPath<T>()
         {

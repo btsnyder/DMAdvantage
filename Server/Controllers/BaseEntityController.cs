@@ -104,7 +104,7 @@ namespace DMAdvantage.Server.Controllers
                     var entity = await CreateNewEntityInContext(request);
                     if (_context.SaveAll())
                     {
-                        return Created($"/api/{DMTypeExtensions.GetPath<TEntity>()}/{entity.Id}", entity);
+                        return Created($"/api/{GenericHelpers.GetPath<TEntity>()}/{entity.Id}", entity);
                     }
                 }
                 else
@@ -138,7 +138,7 @@ namespace DMAdvantage.Server.Controllers
                 if (entityFromRepo == null)
                 {
                     var entity = await CreateNewEntityInContext(request);
-                    return Created($"/api/{DMTypeExtensions.GetPath<TEntity>()}/{entity.Id}", entity);
+                    return Created($"/api/{GenericHelpers.GetPath<TEntity>()}/{entity.Id}", entity);
                 }
 
                 await CreateNewEntityInContext(request);

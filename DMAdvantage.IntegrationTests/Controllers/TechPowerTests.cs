@@ -28,7 +28,7 @@ namespace DMAdvantage.UnitTests.Controllers
         {
             var client = _server.CreateClient();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<TechPower>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<TechPower>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -39,7 +39,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateTechPower();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<TechPower>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<TechPower>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var techPowers = await response.ParseEntityList<TechPower>();
@@ -68,7 +68,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<TechPower>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<TechPower>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var techPowersResponse = await response.ParseEntityList<TechPower>();
@@ -108,7 +108,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 CastingPeriods = new[] { CastingPeriod.Hour }
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<TechPower>()}?{searching.GetQuery()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<TechPower>()}?{searching.GetQuery()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var techPowers = await response.ParseEntityList<TechPower>();
@@ -136,7 +136,7 @@ namespace DMAdvantage.UnitTests.Controllers
 
             var techPower = Generation.TechPower();
             techPower.Name = null;
-            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<TechPower>()}", techPower);
+            var response = await client.PostAsync($"/api/{GenericHelpers.GetPath<TechPower>()}", techPower);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -147,7 +147,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var techPower = await client.CreateTechPower();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<TechPower>()}/{techPower.Id}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<TechPower>()}/{techPower.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedTechPower = await response.ParseEntity<TechPower>();
@@ -162,7 +162,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var techPowerEdit = Generation.TechPower();
             techPowerEdit.Id = techPower.Id;
 
-            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<TechPower>()}/{techPower.Id}", techPowerEdit);
+            var response = await client.PutAsync($"api/{GenericHelpers.GetPath<TechPower>()}/{techPower.Id}", techPowerEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedTechPower = await client.GetEntity<TechPower>(techPower.Id);
             addedTechPower.Should().NotBeNull();
@@ -175,10 +175,10 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var techPower = await client.CreateTechPower();
 
-            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<TechPower>()}/{techPower.Id}");
+            var response = await client.DeleteAsync($"api/{GenericHelpers.GetPath<TechPower>()}/{techPower.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var techPowerLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<TechPower>()}/{techPower.Id}");
+            var techPowerLookup = await client.GetAsync($"api/{GenericHelpers.GetPath<TechPower>()}/{techPower.Id}");
             techPowerLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }

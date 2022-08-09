@@ -17,7 +17,7 @@ namespace DMAdvantage.Client.Shared
 
         protected override async Task OnInitializedAsync()
         {
-            _columnNames = DMTypeExtensions.GetColumns<T>();
+            _columnNames = GenericHelpers.GetColumns<T>();
             await RefreshEntities();
             await base.OnInitializedAsync();
             _loading = false;
@@ -38,7 +38,7 @@ namespace DMAdvantage.Client.Shared
 
         public void EditEntity(Guid id)
         {
-            NavigationManager.NavigateTo($"{DMTypeExtensions.GetPath<T>()}/edit/{id}");
+            NavigationManager.NavigateTo($"{GenericHelpers.GetPath<T>()}/edit/{id}");
         }
 
         private async Task CopyEntity(T entity)
@@ -66,7 +66,7 @@ namespace DMAdvantage.Client.Shared
 
         private string GetDisplayName()
         {
-            var name = DMTypeExtensions.GetPath<T>();
+            var name = GenericHelpers.GetPath<T>();
             if (name.Length < 2)
                 return name.ToUpper();
             return name[0].ToString().ToUpper() + name[1..];

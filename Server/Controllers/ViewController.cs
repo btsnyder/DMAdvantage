@@ -154,8 +154,8 @@ namespace DMAdvantage.Server.Controllers
             try
             {
                 if (ids.Any())
-                    return Ok(_context.GetQueryable<T>().AsNoTracking().Where(x => ids.Contains(x.Id)));
-                return Ok(_context.Abilities);
+                    return Ok(_context.Set<T>().AsNoTracking().Where(x => ids.Contains(x.Id)));
+                return Ok(_context.Set<T>().AsNoTracking());
             }
             catch (Exception ex)
             {

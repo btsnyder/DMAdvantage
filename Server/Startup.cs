@@ -1,10 +1,10 @@
 using DMAdvantage.Data;
 using DMAdvantage.Shared.Entities;
+using DMAdvantage.Shared.Services.Kafka;
+using DMAdvantage.Shared.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using DMAdvantage.Shared.Services.Kafka;
-using DMAdvantage.Shared.Services;
 
 namespace DMAdvantage.Server
 {

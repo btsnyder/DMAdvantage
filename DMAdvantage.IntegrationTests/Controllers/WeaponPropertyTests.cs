@@ -28,7 +28,7 @@ namespace DMAdvantage.UnitTests.Controllers
         {
             var client = _server.CreateClient();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<WeaponProperty>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
@@ -39,7 +39,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             await client.CreateWeaponProperty();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<WeaponProperty>()}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var weaponProperties = await response.ParseEntityList<WeaponProperty>();
@@ -67,7 +67,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 PageNumber = 2
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<WeaponProperty>()}?pageSize={paging.PageSize}&pageNumber={paging.PageNumber}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var weaponPropertiesResponse = await response.ParseEntityList<WeaponProperty>();
@@ -97,7 +97,7 @@ namespace DMAdvantage.UnitTests.Controllers
                 Search = "found"
             };
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}?search={search.Search}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<WeaponProperty>()}?search={search.Search}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var weaponPropertiesResponse = await response.ParseEntityList<WeaponProperty>();
@@ -127,7 +127,7 @@ namespace DMAdvantage.UnitTests.Controllers
 
             var weaponProperty = Generation.WeaponProperty();
             weaponProperty.Name = null;
-            var response = await client.PostAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}", weaponProperty);
+            var response = await client.PostAsync($"/api/{GenericHelpers.GetPath<WeaponProperty>()}", weaponProperty);
             response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         }
 
@@ -138,7 +138,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var weaponProperty = await client.CreateWeaponProperty();
 
-            var response = await client.GetAsync($"/api/{DMTypeExtensions.GetPath<WeaponProperty>()}/{weaponProperty.Id}");
+            var response = await client.GetAsync($"/api/{GenericHelpers.GetPath<WeaponProperty>()}/{weaponProperty.Id}");
 
             response.StatusCode.Should().Be(HttpStatusCode.OK);
             var addedWeaponProperty = await response.ParseEntity<WeaponProperty>();
@@ -152,7 +152,7 @@ namespace DMAdvantage.UnitTests.Controllers
             var weaponProperty = await client.CreateWeaponProperty();
             var weaponPropertyEdit = Generation.WeaponProperty();
 
-            var response = await client.PutAsync($"api/{DMTypeExtensions.GetPath<WeaponProperty>()}/{weaponProperty.Id}", weaponPropertyEdit);
+            var response = await client.PutAsync($"api/{GenericHelpers.GetPath<WeaponProperty>()}/{weaponProperty.Id}", weaponPropertyEdit);
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
             var addedWeaponProperty = await client.GetEntity<WeaponProperty>(weaponProperty.Id);
             addedWeaponProperty.Should().NotBeNull();
@@ -166,10 +166,10 @@ namespace DMAdvantage.UnitTests.Controllers
             var client = await _server.CreateAuthenticatedClientAsync();
             var weaponProperty = await client.CreateWeaponProperty();
 
-            var response = await client.DeleteAsync($"api/{DMTypeExtensions.GetPath<WeaponProperty>()}/{weaponProperty.Id}");
+            var response = await client.DeleteAsync($"api/{GenericHelpers.GetPath<WeaponProperty>()}/{weaponProperty.Id}");
             response.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-            var weaponPropertyLookup = await client.GetAsync($"api/{DMTypeExtensions.GetPath<WeaponProperty>()}/{weaponProperty.Id}");
+            var weaponPropertyLookup = await client.GetAsync($"api/{GenericHelpers.GetPath<WeaponProperty>()}/{weaponProperty.Id}");
             weaponPropertyLookup.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
     }
